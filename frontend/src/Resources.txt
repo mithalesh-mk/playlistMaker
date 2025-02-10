@@ -1,0 +1,4 @@
+Api to get the plyalist videos = https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=PLu71SKxNbfoBuX3f4EOACle2y-tRC5Q37&maxResults=50&key=AIzaSyAR1pbG-NT53ssivVhzfGxkU2GKR7SLCXQ
+
+Api to get the videos = https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=cvoLc3deAdQ&key=AIzaSyAR1pbG-NT53ssivVhzfGxkU2GKR7SLCXQ
+

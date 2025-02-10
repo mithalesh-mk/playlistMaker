@@ -1,0 +1,66 @@
+{
+    "kind": "youtube#playlistItemListResponse",
+    "etag": "_42IRnaLnp8i2HZZFKBbN67hMQg",
+    "nextPageToken": "EAAajgFQVDpDQUVpRURJNE9VWTBRVFEyUkVZd1FUTXdSRElvQVVqZzNydndsOFNHQTFBQldrVWlRMmxLVVZSSVZUTk5WazVNWlVVMWFWcHRPVU5rVm1kNldtcFNSbFF3UmtSaVIxVjVaVk14TUZWclRURlZWRTB6UldkM1NUQXRiVUZ6ZDFsUlowdE1jWGhSUlNJ",
+    "items": [
+      {
+        "kind": "youtube#playlistItem",
+        "etag": "ZDJPZwYIqMxUofYoilEkNQLs1iM",
+        "id": "UEx1NzFTS3hOYmZvQnVYM2Y0RU9BQ2xlMnktdFJDNVEzNy41NkI0NEY2RDEwNTU3Q0M2",
+        "snippet": {
+          "publishedAt": "2022-12-21T07:56:04Z",
+          "channelId": "UCNQ6FEtztATuaVhZKCY28Yw",
+          "title": "Javascript for beginners | chai aur #javascript",
+          "description": "Visit https://chaicode.com for all related materials, community help, source code etc.\nhttps://github.com/hiteshchoudhary",
+          "thumbnails": {
+            "default": {
+              "url": "https://i.ytimg.com/vi/Hr5iLG7sUa0/default.jpg",
+              "width": 120,
+              "height": 90
+            },
+            "medium": {
+              "url": "https://i.ytimg.com/vi/Hr5iLG7sUa0/mqdefault.jpg",
+              "width": 320,
+              "height": 180
+            },
+            "high": {
+              "url": "https://i.ytimg.com/vi/Hr5iLG7sUa0/hqdefault.jpg",
+              "width": 480,
+              "height": 360
+            },
+            "standard": {
+              "url": "https://i.ytimg.com/vi/Hr5iLG7sUa0/sddefault.jpg",
+              "width": 640,
+              "height": 480
+            },
+            "maxres": {
+              "url": "https://i.ytimg.com/vi/Hr5iLG7sUa0/maxresdefault.jpg",
+              "width": 1280,
+              "height": 720
+            }
+          },
+          "channelTitle": "Chai aur Code",
+          "playlistId": "PLu71SKxNbfoBuX3f4EOACle2y-tRC5Q37",
+          "position": 0,
+          "resourceId": {
+            "kind": "youtube#video",
+            "videoId": "Hr5iLG7sUa0"
+          },
+          "videoOwnerChannelTitle": "Chai aur Code",
+          "videoOwnerChannelId": "UCNQ6FEtztATuaVhZKCY28Yw"
+        },
+        "contentDetails": {
+          "videoId": "Hr5iLG7sUa0",
+          "videoPublishedAt": "2022-12-21T13:30:09Z"
+        },
+        "status": {
+          "privacyStatus": "public"
+        }
+      }
+    ],
+    "pageInfo": {
+      "totalResults": 51,
+      "resultsPerPage": 1
+    }
+  }
+  
