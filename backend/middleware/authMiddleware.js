@@ -1,29 +1,36 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-// Here checking if user is authorize to access it or not this will be check here
 module.exports = (req, res, next) => {
   try {
-    //spliting based on whitespace because header part look like "bearer token"
-    //So token will only have token
-    const token = req.headers.authorization.split(" ")[1];
+    // Checking if the token exists in cookies
+    const token = req.cookies.token; // Ensure the cookie name matches
 
     if (!token) {
-      return res.send({
-        message: "Auth failed",
+      return res.status(401).send({
+        message: "Authentication failed: No token provided",
         success: false,
-        data: null,
       });
     }
 
-    // jwt.verify if not verified then it will throw an error then catch block will be executed
+    // Verifying the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    //now decoded hash user object
-    req.body.userId = decoded.userId;
-    //next will call the route where api called middleware
+
+    // Attaching the decoded userId to req.user for further use
+    req.user = { userId: decoded.userId };
+
+    // Proceeding to the next middleware or route handler
     return next();
   } catch (error) {
-    return res.send({
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).send({
+        message: "Token has expired",
+        success: false,
+      });
+    }
+
+    // General error for invalid token or verification failure
+    return res.status(401).send({
       message: "Authentication failed",
       success: false,
     });

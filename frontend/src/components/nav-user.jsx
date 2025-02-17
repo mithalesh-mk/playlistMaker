@@ -1,12 +1,10 @@
 "use client"
 
 import {
-  BadgeCheck,
+  User2Icon,
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  Sparkles,
   SunMoon
 } from "lucide-react"
 
@@ -78,21 +76,17 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem onClick={toggleTheme}>
-                <SunMoon />
-                Theme
+            <DropdownMenuGroup>  
+              <DropdownMenuItem>
+                <User2Icon />
+                Profile
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
+             <DropdownMenuItem onClick={toggleTheme}>
+                <SunMoon />
+                Theme
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
