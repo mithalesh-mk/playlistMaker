@@ -15,7 +15,7 @@ const UserSchema = new mongoose.Schema(
            required: true
        },
  
-       bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Playlist" }],
+        bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Playlist" }],
         profilePic: {
            type: String,
        },

@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Command } from "lucide-react";
 
 import {
   Collapsible,
@@ -42,11 +42,11 @@ export function NavMain({
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
+                  {item.items?.map((subItem, index) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
                         <a href={subItem.url}>
-                          <span>{subItem.title}</span>
+                          <span className={`${item.items.length-1===index?'opacity-70':''}`}>{subItem.title}</span>
                         </a>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
@@ -56,6 +56,7 @@ export function NavMain({
             </SidebarMenuItem>
           </Collapsible>
         ))}
+        
       </SidebarMenu>
     </SidebarGroup>)
   );

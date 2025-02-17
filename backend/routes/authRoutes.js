@@ -4,11 +4,13 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 require("dotenv").config();
 
+
 const router = express.Router();
 
 //Registering of user
 
 router.post("/register", async (req, res) => {
+  console.log(req.body);
   const { username, email, password } = req.body;
   try {
     let user = await User.findOne({ email });
@@ -59,6 +61,13 @@ router.post("/login", async (req, res) => {
       expiresIn: "1d",
     });
 
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 3600000 * 24,
+      secure: process.env.NODE_ENV === 'production', // Only secure cookies in production
+      sameSite: 'Strict', // Optionally specify 'Strict' or 'Lax' for cross-origin cookie security
+    });
+    
     return res.send({
       message: "logged in successfully",
       success: true,

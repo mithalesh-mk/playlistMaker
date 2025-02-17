@@ -1,15 +1,12 @@
 import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
+  ListVideo ,
+  BookmarkPlus ,
+  GraduationCap ,
+  Music ,
+  Plane ,
+  Clapperboard ,
+  ListCollapse,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -31,125 +28,83 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
+  
   navMain: [
     {
-      title: "Playground",
+      title: "My Playlist",
       url: "#",
-      icon: SquareTerminal,
+      icon: ListVideo ,
       isActive: true,
       items: [
         {
-          title: "History",
+          title: "playlist 1",
           url: "#",
         },
         {
-          title: "Starred",
+          title: "playlist 2",
           url: "#",
         },
         {
-          title: "Settings",
+          title: "playlist 3",
           url: "#",
         },
+        {
+          title: "••• More",
+          url: "#",
+        },
+
       ],
     },
     {
-      title: "Models",
+      title: "Bookmarks",
       url: "#",
-      icon: Bot,
+      icon: BookmarkPlus ,
       items: [
         {
-          title: "Genesis",
+          title: "Bookmark 1",
           url: "#",
         },
         {
-          title: "Explorer",
+          title: "Bookmark 2",
           url: "#",
         },
         {
-          title: "Quantum",
+          title: " Bookmark 3",
+          url: "#",
+        },
+        {
+          title: "••• More",
           url: "#",
         },
       ],
     },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
+    
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "Education",
       url: "#",
-      icon: Frame,
+      icon: GraduationCap ,
     },
     {
-      name: "Sales & Marketing",
+      name: "Music",
       url: "#",
-      icon: PieChart,
+      icon: Music ,
     },
     {
       name: "Travel",
       url: "#",
-      icon: Map,
+      icon: Plane ,
+    },
+    {
+      name: "Series",
+      url: "#",
+      icon: Clapperboard ,
+    },
+    {
+      name: "Others",
+      url: "#",
+      icon: ListCollapse ,
     },
   ],
 }
@@ -160,7 +115,7 @@ export function AppSidebar({
   return (
     (<Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher/>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
