@@ -1,6 +1,7 @@
 const express = require("express");
 const connectDB = require("./config/dbConfig");
 const authRoutes = require("./routes/authRoutes");
+const playlistRoutes = require("./routes/playListRoutes");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/playlist", playlistRoutes);
 
 // Connect to MongoDB
 connectDB();
