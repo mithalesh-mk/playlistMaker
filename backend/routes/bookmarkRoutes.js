@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/userModel');
 const Playlist = require('../models/playlistModel');
-const auth = require('../middleware/auth');
+const auth = require('../middleware/authMiddleware');
 
 // Get all bookmarks for the authenticated user
 router.get('/bookmarks', auth, async (req, res) => {
            
            try {
-             const user = await User.findById(req.userId).populate('bookmarks', 'name videos');
+             const user = await User.findById(req.userId).populate('bookmarks', 'playlistId ');
              if (!user) {
                return res.status(404).send({ message: 'User not found', success: false });
              }
@@ -33,7 +33,7 @@ router.post('/bookmarks/:playlistId', auth, async (req, res) => {
                return res.status(404).send({ message: 'Playlist not found', success: false });
              }
          
-             const user = await User.findById(req.userId);
+             const user = await User.findById(req.body.userId);
          
              if (user.bookmarks.includes(playlistId)) {
                return res.status(400).send({ message: 'Playlist already bookmarked', success: false });
