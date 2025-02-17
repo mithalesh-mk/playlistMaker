@@ -23,13 +23,11 @@ const playlistSchema = new mongoose.Schema(
                 ref: "Comment",
             },
         ],
-        likes: {
+        rating: {
             type: Number,
-            default: 0,
-        },
-        dislikes: {
-            type: Number,
-            default: 0,
+            min: 0, // Minimum rating is 0
+            max: 5, // Maximum rating is 5
+            default: 0, // Default to 0 rating initially
         },
         shares: {
             type: Number,
