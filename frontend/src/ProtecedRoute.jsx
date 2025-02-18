@@ -3,6 +3,7 @@ import { useAuth } from "./userContext/AuthProvider";
 
 const ProtectedRoute = ({ children }) => {
     const {user, loading } = useAuth();
+    console.log(user)
 
     if (loading) return <p>Loading...</p>; // Show a loading state while checking authentication
 

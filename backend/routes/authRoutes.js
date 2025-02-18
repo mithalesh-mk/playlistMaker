@@ -10,24 +10,31 @@ const router = express.Router();
 //Registering of user
 
 router.post("/register", async (req, res) => {
-  console.log(req.body);
   const { username, email, password } = req.body;
+
   try {
     let user = await User.findOne({ email });
+   
     if (user)
       return res.status(400).send({
         message: "User Already exist",
         success: false,
-      });
-
+    });
+    
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
     user = new User({ username, email, password: hashedPassword });
     await user.save();
+    
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
 
     return res.status(200).send({
       message: "Created new user successfully.",
+      token: token,
+      user: user,
       success: true,
     });
   } catch (error) {
@@ -40,7 +47,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email })
     if (!user) {
       return res.status(400).send({
         message: "User Does Not Exist",
@@ -82,6 +89,20 @@ router.get("/verify", authMiddleware, async (req, res) => {
     success: true,
     user: user, // Send back the userId
   });
+});
+
+router.post("/select-avatar", async (req, res) => {
+  const { avatar,id } = req.body; 
+  console.log(avatar) 
+
+  // Save the avatar to the user in the database
+  const user = await User.findOneAndUpdate({ _id: id },{
+    profilePic: avatar
+  });  
+  return res.status(200).json({
+    message: "Avatar selected successfully",
+    success: true,
+  }); 
 });
 
 module.exports = router;
