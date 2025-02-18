@@ -6,10 +6,15 @@ import { Label } from '@/components/ui/label';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
+import { useAuth } from '@/userContext/AuthProvider';
+
 
 export function LoginForm({ className, ...props }) {
   const [inputs, setInputs] = useState({});
   const navigate = useNavigate();
+  const [error, setError] = useState("");
+
+  const {handleLogin} = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,14 +25,17 @@ export function LoginForm({ className, ...props }) {
     e.preventDefault();
 
     try {
+      console.log('hlelo')
       const res = await axios.post(
         'http://localhost:3000/api/auth/login',
-        inputs,
+        inputs
       );
       console.log(res.data);
       if (res.data.success) {
+        handleLogin(res.data.token, res.data.user);
         navigate('/');
       } else {
+        setError(res.data.message);
         console.log(data.message);
       }
     } catch (error) {
@@ -38,6 +46,7 @@ export function LoginForm({ className, ...props }) {
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card className="overflow-hidden">
+        {error && (<p className='text-red-500'>{error}</p>)}
         <CardContent className="grid p-0 md:grid-cols-2">
           <form className="p-6 md:p-8" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">

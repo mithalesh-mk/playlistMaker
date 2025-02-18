@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const authMiddleware = require("../middleware/authMiddleware");
 require("dotenv").config();
 
 
@@ -60,22 +61,30 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-
-    res.cookie('token', token, {
-      httpOnly: true,
-      maxAge: 3600000 * 24,
-      secure: process.env.NODE_ENV === 'production', // Only secure cookies in production
-      sameSite: 'Strict', // Optionally specify 'Strict' or 'Lax' for cross-origin cookie security
-    });
     
     return res.send({
       message: "logged in successfully",
       success: true,
-      data: token,
+      user: user,
+      token: token
     });
   } catch (error) {
     return res.status(500).json({ message: "Server Error" });
   }
 });
+
+router.get("/verify", authMiddleware, async (req, res) => {
+  // The userId is decoded from the token in the authMiddleware
+  const userId = req.user.userId;
+
+  const user = await User.findById(userId).select("-password");
+
+  return res.status(200).json({
+    message: "User verified",
+    success: true,
+    user: user, // Send back the userId
+  });
+});
+
 
 module.exports = router;
