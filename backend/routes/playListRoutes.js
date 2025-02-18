@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.post("/addplaylist", authMiddleware, async (req, res) => {
   try {
+    console.log(req.body.userId);
     const newPlayList = new Playlist({ ...req.body, user: req.body.userId });
     await newPlayList.save();
     return res.status(200).send({
@@ -13,6 +14,7 @@ router.post("/addplaylist", authMiddleware, async (req, res) => {
       data: "",
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       message: "PlayList creation failed",
       data: error,

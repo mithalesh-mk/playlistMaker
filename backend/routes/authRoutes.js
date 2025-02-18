@@ -80,7 +80,7 @@ router.post("/login", async (req, res) => {
 
 router.get("/verify", authMiddleware, async (req, res) => {
   // The userId is decoded from the token in the authMiddleware
-  const userId = req.user.userId;
+  const userId = req.body.userId;
 
   const user = await User.findById(userId).select("-password");
 
