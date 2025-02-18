@@ -10,7 +10,6 @@ import ChooseAvatar from "@/app/avatar/ChooseAvatar"
 import { useToast } from "@/hooks/use-toast"
 
 import { useAuth } from "@/userContext/AuthProvider"
-import { error } from "console"
 
 
 export function SignupForm({
