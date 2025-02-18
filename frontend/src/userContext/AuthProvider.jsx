@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import AnimatedLoader from "@/components/Loading";
 
 const UserContext = createContext();
 
@@ -14,6 +15,7 @@ export const AuthProvider = ({ children }) => {
 
             if (!token) {
                 setLoading(false);
+                handleLogout();
                 return;
             }
 
@@ -24,6 +26,7 @@ export const AuthProvider = ({ children }) => {
                 });
 
                 if (response.data.success) {
+                    console.log('response',response.data)
                     setUser(response.data.user);
                 } else {
                     handleLogout();
@@ -39,6 +42,7 @@ export const AuthProvider = ({ children }) => {
         verifyUser();
     }, []);
 
+    if(loading) return <AnimatedLoader/>
     const handleLogin = (token, userData) => {
         localStorage.setItem("auth_token", token); // ✅ Store JWT in Local Storage
         setUser(userData);
