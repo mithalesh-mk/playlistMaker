@@ -4,7 +4,7 @@ require("dotenv").config();
 module.exports = (req, res, next) => {
   try {
     // Extracting token from the Authorization header (Bearer <token>)
-    const authHeader = req.headers['authorization'];
+    const authHeader = req.headers["authorization"];
     if (!authHeader) {
       return res.status(401).send({
         message: "Authentication failed: No token provided",
@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
     }
 
     // Bearer token format (Bearer <token>)
-    const token = authHeader.split(' ')[1];
+    const token = authHeader.split(" ")[1];
 
     if (!token) {
       return res.status(401).send({
@@ -26,12 +26,12 @@ module.exports = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Attaching the decoded userId to req.user for further use
-    req.user = { userId: decoded.userId };
+    req.body.userId = decoded.userId;
 
     // Proceeding to the next middleware or route handler
     return next();
   } catch (error) {
-    if (error.name === 'TokenExpiredError') {
+    if (error.name === "TokenExpiredError") {
       return res.status(401).send({
         message: "Token has expired",
         success: false,
