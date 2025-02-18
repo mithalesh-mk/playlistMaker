@@ -5,7 +5,6 @@ const User = require("../models/userModel");
 const authMiddleware = require("../middleware/authMiddleware");
 require("dotenv").config();
 
-
 const router = express.Router();
 
 //Registering of user
@@ -32,7 +31,6 @@ router.post("/register", async (req, res) => {
       success: true,
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ message: "Unable to upload" });
   }
 });
@@ -61,12 +59,12 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    
+
     return res.send({
       message: "logged in successfully",
       success: true,
       user: user,
-      token: token
+      token: token,
     });
   } catch (error) {
     return res.status(500).json({ message: "Server Error" });
@@ -85,6 +83,5 @@ router.get("/verify", authMiddleware, async (req, res) => {
     user: user, // Send back the userId
   });
 });
-
 
 module.exports = router;
