@@ -3,8 +3,17 @@ require("dotenv").config();
 
 module.exports = (req, res, next) => {
   try {
-    // Checking if the token exists in cookies
-    const token = req.cookies.token; // Ensure the cookie name matches
+    // Extracting token from the Authorization header (Bearer <token>)
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
+      return res.status(401).send({
+        message: "Authentication failed: No token provided",
+        success: false,
+      });
+    }
+
+    // Bearer token format (Bearer <token>)
+    const token = authHeader.split(' ')[1];
 
     if (!token) {
       return res.status(401).send({
