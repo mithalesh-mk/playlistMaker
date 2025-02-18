@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema(
         bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Playlist" }],
         profilePic: {
            type: String,
+           default: '',
        },
     },
     { timestamps: true } 

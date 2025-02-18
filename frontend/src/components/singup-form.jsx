@@ -6,6 +6,11 @@ import { Label } from "@/components/ui/label"
 import { Link,useNavigate } from "react-router-dom"
 import { useState } from "react"
 import axios from "axios"
+import ChooseAvatar from "@/app/avatar/ChooseAvatar"
+import { useToast } from "@/hooks/use-toast"
+
+import { useAuth } from "@/userContext/AuthProvider"
+import { error } from "console"
 
 
 export function SignupForm({
@@ -17,6 +22,7 @@ export function SignupForm({
     email: "",
     password: "",
   })
+  const {handleLogin} = useAuth()
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -26,6 +32,8 @@ export function SignupForm({
     })
   }
 
+  const { toast } = useToast()
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -33,13 +41,26 @@ export function SignupForm({
       const data = res.data;
       console.log(data)
       if (data.success) {
-        console.log(data.message)
-        navigate('/login')
+        console.log(data)
+        handleLogin(data.token, data.user)
+        navigate("/choose-avatar") 
+        toast({
+          title: "Account created successfully!",
+          description: "Please select an avatar to continue.",
+        })
       } else {  
         console.log(data.message) 
+        toast({
+          title: data.message,
+          
+        })
       }
     } catch (error) {
       console.log(error)
+      toast({
+        title: error.message,
+        description: "Please try again later.",
+      })
     }
   }
 
@@ -56,7 +77,7 @@ export function SignupForm({
                 </p>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="username">Email</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input id="username" name="username" onChange={handleChange} value={input.username} type="text" placeholder="john Doe" required />
               </div>
               <div className="grid gap-2">
