@@ -59,8 +59,10 @@ router.get("/allplaylists", authMiddleware, async (req, res) => {
   try {
     const userId = req.body.userId;
 
-    // Find all playlists where the user field matches the provided userId
-    const playlists = await Playlist.find({ user: userId });
+    // Find all playlists with populated likes and dislikes
+    const playlists = await Playlist.find({ user: userId })
+      .populate("likes", "username") // Populate likes with user names
+      .populate("dislikes", "username"); // Populate dislikes with user names
 
     if (playlists.length === 0) {
       return res.status(404).send({

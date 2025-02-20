@@ -10,6 +10,7 @@ const playlistSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
     videos: [
       {
@@ -38,6 +39,11 @@ const playlistSchema = new mongoose.Schema(
     shares: {
       type: Number,
       default: 0,
+    },
+    category: {
+      type: String,
+      enum: ["music", "podcast", "audiobook", "other"],
+      required: true,
     },
   },
   { timestamps: true }
