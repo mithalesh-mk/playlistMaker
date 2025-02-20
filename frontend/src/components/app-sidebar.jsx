@@ -27,50 +27,20 @@ const data = {
   navMain: [
     {
       title: "My Playlist",
-      url: "#",
+      url: "playlists",
       icon: ListVideo ,
       isActive: true,
       items: [
-        {
-          title: "playlist 1",
-          url: "#",
-        },
-        {
-          title: "playlist 2",
-          url: "#",
-        },
-        {
-          title: "playlist 3",
-          url: "#",
-        },
-        {
-          title: "••• More",
-          url: "#",
-        },
+        
 
       ],
     },
     {
       title: "Bookmarks",
-      url: "#",
+      url: "bookmarks",
       icon: BookmarkPlus ,
       items: [
-        {
-          title: "Bookmark 1",
-          url: "#",
-        },
-        {
-          title: "Bookmark 2",
-          url: "#",
-        },
-        {
-          title: " Bookmark 3",
-          url: "#",
-        },
-        {
-          title: "••• More",
-          url: "#",
-        },
+        
       ],
     },
     

@@ -11,7 +11,7 @@ router.post("/addplaylist", authMiddleware, async (req, res) => {
     return res.status(200).send({
       message: "Play List Created successfully",
       success: true,
-      data: "",
+      data: newPlayList,
     });
   } catch (error) {
     console.log(error);
