@@ -24,7 +24,6 @@ module.exports = (req, res, next) => {
 
     // Verifying the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded)
 
     // Attaching the decoded userId to req.user for further use
     req.body.userId = decoded.userId;
@@ -33,7 +32,7 @@ module.exports = (req, res, next) => {
     return next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {
-      console.log("Token has expired"); 
+      console.log("Token has expired");
       return res.status(401).send({
         message: "Token has expired",
         success: false,

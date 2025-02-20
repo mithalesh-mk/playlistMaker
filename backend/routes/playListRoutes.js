@@ -53,6 +53,37 @@ router.delete(
     }
   }
 );
+
+//Get playlist
+router.get("/allplaylists", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.body.userId;
+
+    // Find all playlists where the user field matches the provided userId
+    const playlists = await Playlist.find({ user: userId });
+
+    if (playlists.length === 0) {
+      return res.status(404).send({
+        message: "No playlists found for this user",
+        data: [],
+        success: false,
+      });
+    }
+
+    return res.status(200).send({
+      message: "Playlists retrieved successfully",
+      data: playlists,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: "Unable to get playlists",
+      error,
+      success: false,
+    });
+  }
+});
+
 // Like a playlist
 router.post("/:playlistId/like", authMiddleware, async (req, res) => {
   try {
@@ -71,10 +102,13 @@ router.post("/:playlistId/like", authMiddleware, async (req, res) => {
     // Check if the user has already liked the playlist
     if (playlist.likes.includes(userId)) {
       // If the user has liked it, remove the like
-      playlist.likes = playlist.likes.filter((id) => id !== userId);
+      console.log("Like Id present");
+      playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
     } else {
       // If the user has disliked it, remove the dislike
-      playlist.dislikes = playlist.dislikes.filter((id) => id !== userId);
+      playlist.dislikes = playlist.dislikes.filter(
+        (id) => id.toString() !== userId
+      );
       // Add the like
       playlist.likes.push(userId);
     }
@@ -90,7 +124,6 @@ router.post("/:playlistId/like", authMiddleware, async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
     res.status(500).send({
       message: "Error updating like",
       success: false,
@@ -117,10 +150,13 @@ router.post("/:playlistId/dislike", authMiddleware, async (req, res) => {
     // Check if the user has already disliked the playlist
     if (playlist.dislikes.includes(userId)) {
       // If the user has disliked it, remove the dislike
-      playlist.dislikes = playlist.dislikes.filter((id) => id !== userId);
+      console.log("Id present");
+      playlist.dislikes = playlist.dislikes.filter(
+        (id) => id.toString() !== userId
+      );
     } else {
       // If the user has liked it, remove the like
-      playlist.likes = playlist.likes.filter((id) => id !== userId);
+      playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
       // Add the dislike
       playlist.dislikes.push(userId);
     }
@@ -136,7 +172,6 @@ router.post("/:playlistId/dislike", authMiddleware, async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
     res.status(500).send({
       message: "Error updating dislike",
       success: false,
