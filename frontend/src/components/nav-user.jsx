@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useContext } from "react"
 import { useAuth } from "@/userContext/AuthProvider"
+import { Link } from "react-router-dom"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -77,10 +78,12 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>  
+              <Link to="/profile">
               <DropdownMenuItem>
                 <User2Icon />
                 Profile
               </DropdownMenuItem>
+              </Link>
             </DropdownMenuGroup>
             
             <DropdownMenuGroup>

@@ -6,8 +6,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { useLocation } from "react-router-dom";
 
 export default function Sidebar({ children }) {
+  const location = useLocation(); 
+  const pathParts = location.pathname.split("/").filter(Boolean);
   return (
     (<SidebarProvider>
       <AppSidebar />
@@ -17,7 +20,7 @@ export default function Sidebar({ children }) {
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            
+            <p>{pathParts[0]}</p>
           </div>
         </header>
         {children}

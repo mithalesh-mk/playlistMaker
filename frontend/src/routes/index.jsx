@@ -7,6 +7,9 @@ import ProtectedRoute from "@/ProtecedRoute";
 import Sidebar from "@/app/dashboard/Sidebar";
 import Profile from "@/app/profile/Profile";
 import ChooseAvatar from "@/app/avatar/ChooseAvatar";
+import Playlists from "@/app/playlist/Playlists";
+import BookMarks from "@/app/bookmark/BookMarks";
+import Playlist from "@/app/playlist/Playlist";
 
 const router = createBrowserRouter([
   {
@@ -17,7 +20,10 @@ const router = createBrowserRouter([
       { path: "/login", element: <Login /> },  // About page will render Login component
       { path: '/signup', element: < Singup/> },  // About page will render SignupForm component
       {path: '/profile', element: <Sidebar><ProtectedRoute><Profile /></ProtectedRoute></Sidebar>},
-      {path: '/choose-avatar', element: <ChooseAvatar/>}  
+      {path: '/choose-avatar', element: <ChooseAvatar/>},
+      {path: '/playlists', element: <Sidebar><ProtectedRoute><Playlists /></ProtectedRoute></Sidebar>},
+      {path: '/bookmarks', element: <Sidebar><ProtectedRoute><BookMarks /></ProtectedRoute></Sidebar>},
+      {path: '/playlists/:id', element: <Sidebar><ProtectedRoute><Playlist /></ProtectedRoute></Sidebar>},
     ],
   },
 ]);

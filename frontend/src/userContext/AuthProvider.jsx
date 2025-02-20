@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "@/axiosInstance";
 import AnimatedLoader from "@/components/Loading";
 
 const UserContext = createContext();
@@ -21,9 +21,7 @@ export const AuthProvider = ({ children }) => {
 
             console.log('token',token)
             try {
-                const response = await axios.get("http://localhost:3000/api/auth/verify", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const response = await axiosInstance.get("/auth/verify");
 
                 if (response.data.success) {
                     console.log('response',response.data)

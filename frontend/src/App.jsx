@@ -7,7 +7,7 @@ function App() {
 
   return (
 
-     <div>
+     <div className='overflow-y-auto scrollbar scrollbar-thumb-orange-500 scrollbar-track-gray-200 dark:scrollbar-track-gray-800 '>
         
        <Toaster/>
        <Outlet />

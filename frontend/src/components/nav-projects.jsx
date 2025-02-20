@@ -1,29 +1,73 @@
-import { Command, Folder, Forward, MessageCircleQuestion, MessageSquareQuote, MoreHorizontal, Trash2 } from "lucide-react";
-
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  MessageCircleQuestion,
+  MessageSquareQuote,
+  ListPlus,
+} from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import axiosInstance from "@/axiosInstance";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar';
 
-export function NavProjects({
-  projects
-}) {
-  const { isMobile } = useSidebar()
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import axios from 'axios';
+
+export function NavProjects({ projects }) {
+  const [inputValue, setInputValue] = useState({ name: '', description: '', category: '' });
+  const navigate = useNavigate();
+  const [error, setError] = useState(false);
+
+  const handleChange = (e) => {
+    setInputValue({ ...inputValue, [e.target.name]: e.target.value });
+  };
+
+  
+  const handleCreate = async () => {
+    if (inputValue.name === '' || inputValue.description === '' || inputValue.category === '') {
+        setError('Please fill in all fields');
+        return;
+    }
+
+    try {
+        // Call API to create playlist
+        const resp = await axiosInstance.post('/playlist/addplaylist', inputValue);
+
+        const playlistData = resp.data;
+
+        if (playlistData.success) {  // Fixed typo
+            console.log(playlistData.data);
+            
+            navigate(`/playlists/${playlistData.data._id}`);
+        } else {
+            setError('Failed to create playlist');
+            console.log('Playlist not created');
+        }
+    } catch (error) {
+        console.error("Error creating playlist:", error);
+        setError("An error occurred. Please try again.");
+    }
+};
 
   return (
-    (<SidebarGroup className="group-data-[collapsible=icon]:hidden">
+    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Explore</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
@@ -34,20 +78,89 @@ export function NavProjects({
                 <span>{item.name}</span>
               </a>
             </SidebarMenuButton>
-           
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem className="mt-8">
           <SidebarMenuButton tooltip={'FeedBack'}>
-                  {MessageSquareQuote  && <MessageSquareQuote  />}
-                  <span>{"FeedBack"}</span>
-        </SidebarMenuButton>
-        <SidebarMenuButton tooltip={'Help'}>
-                  {MessageCircleQuestion   && <MessageCircleQuestion    />}
-                  <span>{"Help"}</span>
-        </SidebarMenuButton>
+            {MessageSquareQuote && <MessageSquareQuote />}
+            <span>{'FeedBack'}</span>
+          </SidebarMenuButton>
+          <SidebarMenuButton tooltip={'Help'}>
+            {MessageCircleQuestion && <MessageCircleQuestion />}
+            <span>{'Help'}</span>
+          </SidebarMenuButton>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              
+              <SidebarMenuButton
+                tooltip={'Create Playlist'}
+                onClick={() => {
+                  setError(false)
+                  setInputValue({ name: '', description: '', category: '' })
+                }}
+              >
+                <ListPlus />
+                <span>{'Create Playlist'}</span>
+              </SidebarMenuButton>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Create Playlist</DialogTitle>
+                {error && (
+                  <DialogDescription className="text-red-500">
+                    {error}
+                  </DialogDescription>
+                )}
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    value={inputValue.name}
+                    onChange={handleChange}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="description" className="text-right">
+                    Description
+                  </Label>
+                  <Input
+                    id="description"
+                    name="description"
+                    value={inputValue.description}
+                    onChange={handleChange}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="category" className="text-right">
+                    Category
+                  </Label>
+                  <select id="category" name="category" value={inputValue.category} onChange={handleChange} className="col-span-3 dark:text-white outline-none rounded p-1 dark:bg-black border ">
+                    <option value="">Choose a Category</option>
+                    <option value="education">Eductaion</option>
+                    <option value="music">Music</option>
+                    <option value="travel">Travel</option>
+                    <option value="series">Series</option>
+                    <option value="other">Others</option>
+                  </select>
+                </div>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button onClick={handleCreate}>Create</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </SidebarMenuItem>
       </SidebarMenu>
-    </SidebarGroup>)
+    </SidebarGroup>
   );
 }
