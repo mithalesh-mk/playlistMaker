@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import AnimatedLoader from "@/components/Loading";
-import ChooseAvatar from "@/app/avatar/ChooseAvatar";
 
 const UserContext = createContext();
 
@@ -30,11 +29,15 @@ export const AuthProvider = ({ children }) => {
                     console.log('response',response.data)
                     setUser(response.data.user);
                 } else {
+                    setLoading(false)
                     handleLogout();
+                    return;
                 }
             } catch (error) {
+                setLoading(false)
                 console.log("Verification failed:", error);
                 handleLogout();
+                return;
             }
 
             setLoading(false);
@@ -52,9 +55,10 @@ export const AuthProvider = ({ children }) => {
     };
 
     const handleLogout = () => {
+        
         localStorage.removeItem("auth_token"); // ✅ Remove token
         setUser(null);
-        window.location.reload(); // ✅ Refresh to apply authentication state
+        window.location.href = "/login"; // ✅ Refresh to apply authentication state
     };
 
     return (
