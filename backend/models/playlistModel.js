@@ -14,7 +14,7 @@ const playlistSchema = new mongoose.Schema(
     videos: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Video", 
+        ref: "Video",
       },
     ],
     comments: [
@@ -23,14 +23,18 @@ const playlistSchema = new mongoose.Schema(
         ref: "Comment",
       },
     ],
-    likes: {
-      type: Number,
-      default: 0,
-    },
-    dislikes: {
-      type: Number,
-      default: 0,
-    },
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    dislikes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     shares: {
       type: Number,
       default: 0,
