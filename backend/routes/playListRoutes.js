@@ -65,10 +65,10 @@ router.get("/allplaylists", authMiddleware, async (req, res) => {
       .populate("dislikes", "username"); // Populate dislikes with user names
 
     if (playlists.length === 0) {
-      return res.status(404).send({
+      return res.status(201).send({
         message: "No playlists found for this user",
         data: [],
-        success: false,
+        success: true,
       });
     }
 
