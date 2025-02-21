@@ -27,13 +27,14 @@ import {
 } from '@/components/ui/sidebar';
 
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import axios from 'axios';
+import { useRef, useState } from 'react';
+import { toast } from '@/hooks/use-toast';
 
 export function NavProjects({ projects }) {
   const [inputValue, setInputValue] = useState({ name: '', description: '', category: '' });
   const navigate = useNavigate();
   const [error, setError] = useState(false);
+  const closeRef = useRef(null);
 
   const handleChange = (e) => {
     setInputValue({ ...inputValue, [e.target.name]: e.target.value });
@@ -51,11 +52,15 @@ export function NavProjects({ projects }) {
         const resp = await axiosInstance.post('/playlist/addplaylist', inputValue);
 
         const playlistData = resp.data;
-
-        if (playlistData.success) {  // Fixed typo
+        console.log(playlistData);  
+        if (playlistData.success) {  
             console.log(playlistData.data);
-            
+            toast({
+              description: "Playlist created successfully",
+            })
             navigate(`/playlists/${playlistData.data._id}`);
+            closeRef.current?.click(console.log('Playlist created successfully'));
+            
         } else {
             setError('Failed to create playlist');
             console.log('Playlist not created');
@@ -153,9 +158,12 @@ export function NavProjects({ projects }) {
                 </div>
               </div>
               <DialogFooter>
-                <DialogClose asChild>
-                  <Button onClick={handleCreate}>Create</Button>
-                </DialogClose>
+                <Button onClick={handleCreate}>
+                  Create
+                </Button>  
+                  <DialogClose ref={closeRef}>
+                  </DialogClose>
+
               </DialogFooter>
             </DialogContent>
           </Dialog>

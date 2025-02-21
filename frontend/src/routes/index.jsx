@@ -23,7 +23,7 @@ const router = createBrowserRouter([
       {path: '/choose-avatar', element: <ChooseAvatar/>},
       {path: '/playlists', element: <Sidebar><ProtectedRoute><Playlists /></ProtectedRoute></Sidebar>},
       {path: '/bookmarks', element: <Sidebar><ProtectedRoute><BookMarks /></ProtectedRoute></Sidebar>},
-      {path: '/playlists/:id', element: <Sidebar><ProtectedRoute><Playlist /></ProtectedRoute></Sidebar>},
+      {path: '/playlists/:playlistId', element: <Sidebar><ProtectedRoute><Playlist /></ProtectedRoute></Sidebar>},
     ],
   },
 ]);

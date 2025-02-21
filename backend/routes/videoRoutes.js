@@ -84,7 +84,7 @@ router.post("/addvideo/:playlistId", authMiddleware, async (req, res) => {
       data: savedVideo, // ✅ Send video details instead of an empty array
     });
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     return res.status(500).json({ message: "Unable to upload" });
   }
 });
