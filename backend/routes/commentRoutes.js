@@ -47,6 +47,38 @@ router.post("/addcomment/:playlistId", authMiddleware, async (req, res) => {
   }
 });
 
+// Add a reply to a comment
+router.post("/addreply/:commentId", authMiddleware, async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const { userId, replyText } = req.body;
+
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+      return res.status(404).send({
+        message: "Comment not found",
+        success: false,
+      });
+    }
+
+    comment.replies.push({ userId, replyText });
+    await comment.save();
+
+    return res.status(200).send({
+      message: "Reply added successfully",
+      data: comment.replies,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: "Unable to add reply",
+      data: error,
+      success: false,
+    });
+  }
+});
+
 //delete Comment
 router.delete(
   "/deletecomment/:playlistId",
