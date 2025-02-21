@@ -2,6 +2,7 @@ const express = require("express");
 const authMiddleware = require("../middleware/authMiddleware");
 const Playlist = require("../models/playlistModel");
 const router = express.Router();
+const mongoose = require("mongoose");
 
 // Add a new playlist
 router.post("/addplaylist", authMiddleware, async (req, res) => {
@@ -53,6 +54,28 @@ router.delete(
     }
   }
 );
+
+router.get("/getplaylist/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log("Request ID:", id);
+    // Validate ID before querying
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid playlist ID" });
+    }
+
+    // Fetch playlist by ID
+    const playlist = await Playlist.findById(id);
+    if (!playlist) {
+      return res.status(404).json({ error: "Playlist not found" });
+    }
+
+    res.json(playlist);
+  } catch (error) {
+    console.error("Error fetching playlist:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 //Get playlist
 router.get("/allplaylists", authMiddleware, async (req, res) => {

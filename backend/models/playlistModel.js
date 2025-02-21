@@ -46,7 +46,6 @@ const playlistSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["music", "podcast", "audiobook", "other"],
       required: true,
     },
   },
