@@ -25,6 +25,7 @@ import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
 
+
 const Playlist = () => {
   const { playlistId } = useParams();
   const [error, setError] = useState('');
@@ -56,13 +57,24 @@ const Playlist = () => {
         category: data.category,
         videos: data.videos,
       });
+      fetVideos()
     } catch (error) {
       console.log(error);
     }
   };
 
+  const fetVideos = async () => {
+    const resp = await axiosInstance.get(`/video/getvideo/${playlistId}/videos`);
+    const videos = resp.data;
+    setData((prev) => ({ ...prev, videos: videos.data }));
+  }
+
+  console.log(data)
+
+
   useEffect(() => {
     fetchPlaylist();
+
   }, [playlistId]);
 
   const handleCreate = async () => {
@@ -70,7 +82,6 @@ const Playlist = () => {
       setError('Please fill in all fields');
       return;
     }
-    console.log(link)
 
     try {
       // Call API to create playlist
@@ -168,89 +179,31 @@ const Playlist = () => {
         <Bookmark className="absolute top-5 right-5" />
       </div>
       <div className="">
-        <h1 className="mt-3 font-bold text-4xl">Vidoes</h1>
+        
+      <h1 className="mt-3 font-bold text-4xl">Vidoes</h1>
+      <div className="flex justify-center flex-col items-center ">
+      <div className="h-[100vh] mt-6 p-4 overflow-y-scroll flex flex-col scrollbar-hide justify-start items-center w-[90%] mx-auto">
         {data.videos.length > 0 ? (
           data.videos.map((video) => (
-            <div key={video._id}>
-              <h2>{video.title}</h2>
-              <p>{video.description}</p>
-              <p>{video.url}</p>
+            <div key={video._id} className='flex bg-muted w-full gap-6'>
+                <img src={video.thumbnail} className='w-[150px] h-auto object-cover' alt={video.title} />
+                <div>
+                  <p>{video.title}</p>
+                  <p className='truncate w-[400px]'>{video.description}</p>
+                  </div>
+              
             </div>
           ))
         ) : (
-          <div className="flex justify-center   items-center ">
-            <div className="h-[100vh] mt-6 p-4 overflow-y-scroll flex flex-col scrollbar-hide justify-start items-center w-[90%] mx-auto">
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
-              <p>No videos found</p>
-              <Button>Add Videos</Button>
+          
+            <div>
               <p>No videos found</p>
               <Button>Add Videos</Button>
             </div>
-          </div>
+          
         )}
+        </div>
+      </div>
       </div>
     </div>
   );

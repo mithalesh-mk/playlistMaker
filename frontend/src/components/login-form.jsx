@@ -7,9 +7,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '@/userContext/AuthProvider';
+import { toast } from '@/hooks/use-toast';
 
 
-export function LoginForm({ className, ...props }) {
+export function LoginForm() {
   const [inputs, setInputs] = useState({});
   const navigate = useNavigate();
   const [error, setError] = useState("");
@@ -33,6 +34,9 @@ export function LoginForm({ className, ...props }) {
       console.log(res.data);
       if (res.data.success) {
         handleLogin(res.data.token, res.data.user);
+        toast({
+          description: "Logged in successfully",
+        })
         navigate('/');
       } else {
         setError(res.data.message);
@@ -40,11 +44,14 @@ export function LoginForm({ className, ...props }) {
       }
     } catch (error) {
       console.error(error);
+      toast({
+        description: "Unable to login",
+      })
     }
   };
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className='flex flex-col gap-6'>
       <Card className="overflow-hidden">
         {error && (<p className='text-red-500'>{error}</p>)}
         <CardContent className="grid p-0 md:grid-cols-2">
@@ -71,12 +78,12 @@ export function LoginForm({ className, ...props }) {
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
+                  <Link
+                    to={'/forgot-password'}
                     className="ml-auto text-sm underline-offset-2 hover:underline"
                   >
                     Forgot your password?
-                  </a>
+                  </Link>
                 </div>
                 <Input id="password" type="password" required name="password" onChange={handleChange} value={inputs.value} />
               </div>
