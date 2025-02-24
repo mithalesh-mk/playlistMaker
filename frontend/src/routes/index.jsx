@@ -10,6 +10,7 @@ import ChooseAvatar from "@/app/avatar/ChooseAvatar";
 import Playlists from "@/app/playlist/Playlists";
 import BookMarks from "@/app/bookmark/BookMarks";
 import Playlist from "@/app/playlist/Playlist";
+import ForgotPassword from "@/app/login/Forgot-password";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
       {path: '/playlists', element: <Sidebar><ProtectedRoute><Playlists /></ProtectedRoute></Sidebar>},
       {path: '/bookmarks', element: <Sidebar><ProtectedRoute><BookMarks /></ProtectedRoute></Sidebar>},
       {path: '/playlists/:playlistId', element: <Sidebar><ProtectedRoute><Playlist /></ProtectedRoute></Sidebar>},
+      {path: '/forgot-password', element: <ForgotPassword/>},
     ],
   },
 ]);

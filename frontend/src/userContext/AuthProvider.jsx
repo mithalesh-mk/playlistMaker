@@ -15,7 +15,6 @@ export const AuthProvider = ({ children }) => {
 
             if (!token) {
                 setLoading(false);
-                handleLogout();
                 return;
             }
 
