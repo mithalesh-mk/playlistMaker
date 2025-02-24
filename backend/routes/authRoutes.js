@@ -136,7 +136,25 @@ router.post("/forgot-password", async (req, res) => {
     }
 
     // Send OTP via email
-    await sendEmail(email, "Password Reset OTP", `Your OTP is: ${otp}`);
+    await sendEmail(email, "Password Reset OTP", `
+      <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 500px; border: 1px solid #ddd; border-radius: 10px;">
+        <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
+        <p style="color: #555;">Hello there, </p>
+        <p style="color: #555;">
+          You requested to reset your password. Please use the OTP below to proceed:
+        </p>
+        <div style="text-align: center; font-size: 22px; font-weight: bold; padding: 10px; background: #f4f4f4; border-radius: 5px;">
+          ${otp}
+        </div>
+        <p style="color: #555;">This OTP is valid for only one minute.</p>
+        <p style="color: #555;">
+          If you did not request a password reset, please ignore this email.
+        </p>
+        <p style="color: #555;">Best regards,</p>
+        <p style="color: #333; font-weight: bold;">PlayList Maker</p>
+      </div>
+      `
+      `);
 
     res.status(200).send({ message: "OTP sent to email", success: true });
   } catch (error) {
