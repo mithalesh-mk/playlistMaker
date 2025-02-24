@@ -135,26 +135,45 @@ router.post("/forgot-password", async (req, res) => {
       console.log("❌ OTP was not stored properly!");
     }
 
+    const emailBody = `
+          <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;">
+            <div style="max-width: 500px; background: #ffffff; margin: auto; padding: 30px; border-radius: 12px; box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2); text-align: center;">
+              
+              <h2 style="color: #333; text-align: center; margin-bottom: 20px;">🔐 Password Reset Request</h2>
+              
+              <p style="color: #555; font-size: 16px; margin-bottom: 15px;">
+                Hello there, 
+              </p>
+              
+              <p style="color: #555; font-size: 16px; margin-bottom: 20px;">
+                You requested to reset your password. Please use the OTP below to proceed:
+              </p>
+
+              <div style="display: inline-block; background: #ffcc00; color: #333; font-size: 26px; font-weight: bold; padding: 15px 25px; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2); letter-spacing: 2px;">
+                ${otp}
+              </div>
+
+              <p style="color: #777; font-size: 14px; margin-top: 15px;">
+                This OTP is valid for only <strong>5 minute</strong>.
+              </p>
+
+              <p style="color: #555; font-size: 14px; margin-top: 20px;">
+                If you did not request a password reset, please ignore this email.
+              </p>
+
+              <hr style="border: none; border-top: 1px solid #ddd; margin: 25px 0;">
+
+              <p style="color: #555; font-size: 14px; margin-top: 15px;">
+                Best regards, <br>
+                <strong style="color: #333;">PlayList Maker</strong>
+              </p>
+            </div>
+          </div>
+    `; 
+
+
     // Send OTP via email
-    await sendEmail(email, "Password Reset OTP", `
-      <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 500px; border: 1px solid #ddd; border-radius: 10px;">
-        <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
-        <p style="color: #555;">Hello there, </p>
-        <p style="color: #555;">
-          You requested to reset your password. Please use the OTP below to proceed:
-        </p>
-        <div style="text-align: center; font-size: 22px; font-weight: bold; padding: 10px; background: #f4f4f4; border-radius: 5px;">
-          ${otp}
-        </div>
-        <p style="color: #555;">This OTP is valid for only one minute.</p>
-        <p style="color: #555;">
-          If you did not request a password reset, please ignore this email.
-        </p>
-        <p style="color: #555;">Best regards,</p>
-        <p style="color: #333; font-weight: bold;">PlayList Maker</p>
-      </div>
-      `
-    );
+    await sendEmail(email, "Password Reset OTP", emailBody);
 
     res.status(200).send({ message: "OTP sent to email", success: true });
   } catch (error) {
