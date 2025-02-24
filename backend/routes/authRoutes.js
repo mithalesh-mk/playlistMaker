@@ -154,7 +154,7 @@ router.post("/forgot-password", async (req, res) => {
         <p style="color: #333; font-weight: bold;">PlayList Maker</p>
       </div>
       `
-      `);
+    );
 
     res.status(200).send({ message: "OTP sent to email", success: true });
   } catch (error) {
