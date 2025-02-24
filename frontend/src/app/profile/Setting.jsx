@@ -1,71 +1,63 @@
 import React from "react";
 import { useState } from "react";
 import { useAuth } from "@/userContext/AuthProvider";
-
+import { UserRoundPen } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 function Setting() {
   const { user } = useAuth();
-  const { username, email } = user;
-  const [newemail, setEmail] = useState(email);
+  const { username, email, profilePic } = user;
   const [newusername, setUsername] = useState(username);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  // const [newProfilePic, setProfilePic] = useState(profilePic);
+  const [newPassword, setPassword] = useState("");
 
-  const handleEmailChange = (e) => setEmail(e.target.value);
   const handleUsernameChange = (e) => setUsername(e.target.value);
-  const handleCurrentPasswordChange = (e) => setCurrentPassword(e.target.value);
-  const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
+  const handlePasswordChange = (e) => setPassword(e.target.value);
+
+  const changeProfile = () => {
+    useNavigate("/choose-avatar");
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Implement your update logic here
-    console.log("Email:", email);
-    console.log("Username:", username);
-    console.log("Current Password:", currentPassword);
-    console.log("New Password:", newPassword);
   };
 
   return (
     <div className="max-w-[1024] mx-auto p-4 shadow-md">
       <h2 className="text-xl font-bold mb-4">Profile Settings</h2>
-      <form onSubmit={handleSubmit} className="max-w-[640px]">
-        <div className="mb-4">
-          <label className="block">Change Email:</label>
-          <input
-            type="email"
-            value={newemail}
-            onChange={handleEmailChange}
-            className="w-full border p-2 rounded text-black"
-            placeholder="Enter new email"
+      <div className="relative max-w-[400px]">
+        <img
+          src={profilePic}
+          className="w-full h-auto max-h-[350px] max-w-[350px]"
+        ></img>
+        <Link to={"/choose-avatar"}>
+          <UserRoundPen
+            onClick={() => {
+              changeProfile;
+            }}
+            className="absolute bottom-[2rem] right-[7rem] dark:bg-black rounded-sm bg-white"
           />
-        </div>
+        </Link>
+      </div>
+      <form onSubmit={handleSubmit} className="max-w-[640px]">
         <div className="mb-4">
           <label className="block">Change Username:</label>
           <input
             type="text"
             value={newusername}
             onChange={handleUsernameChange}
-            className="w-full border p-2 rounded text-black"
+            className=" border p-2 rounded dark:bg-black dark:text-white w-full max-w-[250px]"
             placeholder="Enter new username"
           />
         </div>
         <div className="mb-4">
-          <label className="block">Current Password:</label>
-          <input
-            type="password"
-            value={currentPassword}
-            onChange={handleCurrentPasswordChange}
-            className="w-full border p-2 rounded text-black"
-            placeholder="Enter current password"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block">New Password:</label>
+          <label className="block">Change Password:</label>
           <input
             type="password"
             value={newPassword}
-            onChange={handleNewPasswordChange}
-            className="w-full border p-2 rounded text-black"
-            placeholder="Enter new password"
+            onChange={handlePasswordChange}
+            className=" border p-2 rounded dark:bg-black dark:text-white w-full max-w-[250px]"
+            placeholder="Enter new Password"
           />
         </div>
         <button
