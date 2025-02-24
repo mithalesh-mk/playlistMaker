@@ -219,7 +219,48 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
+/// Change Password Route
+router.post("/change-password", authMiddleware, async (req, res) => {
+  try {
+    const { oldPassword, newPassword, reenterNewPassword } = req.body;
+    const userId = req.body.userId; 
 
+    // Check if new passwords match
+    if (newPassword !== reenterNewPassword) {
+      return res.status(400).send({ message: "New passwords do not match", success: false });
+    }
+
+    // Fetch user from database
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).send({ message: "User not found", success: false });
+    }
+
+    // Compare old password with stored password
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).send({ message: "Old password is incorrect", success: false });
+    }
+
+    // Check if the new password is the same as the old password
+    const isSameAsOldPassword = await bcrypt.compare(newPassword, user.password);
+    if (isSameAsOldPassword) {
+      return res.status(400).send({ message: "New password cannot be the same as the old password", success: false });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password in database
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).send({ message: "Password changed successfully", success: true });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).send({ message: "Server error", success: false });
+  }
+});
 
 
 module.exports = router;
