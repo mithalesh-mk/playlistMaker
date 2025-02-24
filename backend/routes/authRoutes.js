@@ -92,7 +92,7 @@ router.get("/verify", authMiddleware, async (req, res) => {
     user: user, // Send back the userId
   });
 });
-
+// Select avatar
 router.post("/select-avatar", async (req, res) => {
   const { avatar,id } = req.body; 
   console.log(avatar) 
@@ -256,7 +256,7 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-/// Change Password Route
+// Change Password 
 router.post("/change-password", authMiddleware, async (req, res) => {
   try {
     const { oldPassword, newPassword, reenterNewPassword } = req.body;
@@ -296,6 +296,82 @@ router.post("/change-password", authMiddleware, async (req, res) => {
   } catch (error) {
     console.error("Error changing password:", error);
     res.status(500).send({ message: "Server error", success: false });
+  }
+});
+// Change username
+router.put("/change-username", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.body.userId; // Get user ID from middleware
+    const newUsername = req.body.newUsername?.trim(); // Trim early
+
+    // Validate newUsername
+    if (!newUsername || typeof newUsername !== "string" || newUsername.length < 3) {
+      return res.status(400).json({
+        message: "Invalid username. It must be at least 3 characters long.",
+        success: false,
+      });
+    }
+    // Find user and update username
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    user.username = newUsername;
+    await user.save();
+
+    return res.status(200).json({
+      message: "Username updated successfully",
+      success: true,
+      data: { username: user.username, email: user.email },
+    });
+
+  } catch (error) {
+    console.error("Error updating username:", error);
+    return res.status(500).json({
+      message: "Server error",
+      success: false,
+      error: error.message,
+    });
+  }
+});
+// change avatar
+router.put("/change-profile-picture", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.body.userId; // Get user ID from authenticated user
+    const { avatar } = req.body; // avatar = image URL
+
+    if (!avatar || typeof avatar !== "string" || !avatar.trim()) {
+      return res.status(400).json({ message: "Invalid avatar URL", success: false });
+    }
+
+    // Validate MongoDB ObjectId
+    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid user ID", success: false });
+    }
+
+    // Update the user's profile picture
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: avatar.trim() },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found", success: false });
+    }
+
+    return res.status(200).json({
+      message: "Profile picture updated successfully",
+      success: true,
+      profilePictureUrl: user.profilePic,
+    });
+  } catch (error) {
+    console.error("Error updating profile picture:", error);
+    return res.status(500).json({ message: "Server error", success: false });
   }
 });
 
