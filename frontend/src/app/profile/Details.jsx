@@ -20,11 +20,19 @@ function Details() {
             </h1>
           </div>
         </div>
-        <div className="basis-1/2 flex items-center justify-center border-l-2 border-gray">
+
+        <div className="basis-1/2 flex items-center justify-center">
           <div className="h-auto md:h-[10rem] flex flex-col justify-around text-xl text-center md:text-left">
-            <p>Email: {email}</p>
-            <p>Total playlist: </p>
-            <p>Total bookmarks: {bookmarks.length}</p>
+            <p className="text-lg font-semibold text-gray-800 dark:text-gray-300">
+              Email: <span className="text-blue-600">{email}</span>
+            </p>
+            <p className="text-lg font-semibold text-gray-800 dark:text-gray-300">
+              Total playlist: <span className="text-green-600">0</span>
+            </p>
+            <p className="text-lg font-semibold text-gray-800 dark:text-gray-300">
+              Total bookmarks:{" "}
+              <span className="text-purple-600">{bookmarks.length}</span>
+            </p>
           </div>
         </div>
       </div>

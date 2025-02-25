@@ -70,7 +70,7 @@ router.get("/getplaylist/:id", async (req, res) => {
       return res.status(404).json({ error: "Playlist not found" });
     }
 
-    res.json(playlist);
+    return res.json(playlist);
   } catch (error) {
     console.error("Error fetching playlist:", error);
     res.status(500).json({ error: "Server error" });
