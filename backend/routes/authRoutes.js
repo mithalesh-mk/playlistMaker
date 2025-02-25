@@ -30,10 +30,26 @@ router.post("/register", async (req, res) => {
     const otpExpires = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
 
     // Store user temporarily until they verify OTP
+
     pendingUsers.set(email, { username, email, password, otp, otpExpires });
 
+    const emailBody = `
+    <div style="max-width: 500px; margin: 50px auto; background: #1e1e1e; padding: 40px; border-radius: 12px; box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1); text-align: center;">
+        <h2 style="color: #ffffff; font-size: 26px; margin-bottom: 15px; font-weight: 600;">EMAIL Verification</h2>
+        <p style="color: #bbbbbb; font-size: 16px; line-height: 1.6;">Use the One-Time Password (OTP) below to verify your identity.</p>
+        <div style="font-size: 34px; font-weight: bold; color: #ffffff; padding: 15px 30px; background: #393939; display: inline-block; border-radius: 8px; margin-top: 10px;">
+            <span style="display: inline-block; letter-spacing:10px; margin-left: 10px">${otp}</span>
+        </div>
+        <div>
+          <p style="color: #aaaaaa; font-size: 14px; margin-top: 20px;">This OTP is valid for a short period. Please do not share it with anyone.</p>
+          <p style="color: #888888; font-size: 12px;">If you did not request this OTP, please ignore this email.</p>
+          <hr style="border: 0; height: 1px; background: #333; margin: 25px 0;">
+        <img src="https://res.cloudinary.com/dhzeynyhc/image/upload/v1740514032/Vessel_logo_nt0ofw.png" width="85" height="85" alt="Logo">
+        </div>   
+    </div>
+    `; 
     // Send OTP via email
-    await sendEmail(email, "Email Verification OTP", `Your OTP is: ${otp}`);
+    await sendEmail(email, "Email Verification OTP", emailBody);
 
     res.status(200).json({ message: "OTP sent to email. Verify to continue.", success: true });
   } catch (error) {
@@ -201,7 +217,7 @@ router.post("/forgot-password", async (req, res) => {
           <p style="color: #aaaaaa; font-size: 14px; margin-top: 20px;">This OTP is valid for a short period. Please do not share it with anyone.</p>
           <p style="color: #888888; font-size: 12px;">If you did not request this OTP, please ignore this email.</p>
           <hr style="border: 0; height: 1px; background: #333; margin: 25px 0;">
-        <img src="https://res.cloudinary.com/dhzeynyhc/image/upload/v1740514032/Vessel_logo_nt0ofw.png" width="50" height="50" alt="Logo">
+        <img src="https://res.cloudinary.com/dhzeynyhc/image/upload/v1740514032/Vessel_logo_nt0ofw.png" width="85" height="85" alt="Logo">
         </div>   
     </div>
     `; 
