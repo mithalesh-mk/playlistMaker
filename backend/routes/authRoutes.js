@@ -161,11 +161,11 @@ router.post("/verify-otp", async (req, res) => {
     console.log("OTP Expiry Time:", user.otpExpires, "Current Time:", Date.now());
 
     if (!user.otp || user.otp !== otp) {
-      return res.status(400).send({ message: "Invalid OTP", success: false });
+      return res.status(401).send({ message: "Invalid OTP", success: false });
     }
 
     if (user.otpExpires < Date.now()) {
-      return res.status(400).send({ message: "Expired OTP", success: false });
+      return res.status(402).send({ message: "Expired OTP", success: false });
     }
 
     res.status(200).send({ message: "OTP verified", success: true });
