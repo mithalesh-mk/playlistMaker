@@ -15,8 +15,8 @@ const pendingUsers = new Map(); // { email: { username, email, otp, otpExpires }
 // Step 1: Signup 
 router.post("/register", async (req, res) => {
   try {
-    const { username, email } = req.body;
-    if (!username || !email) {
+    const { username, email,password } = req.body;
+    if (!username || !email || !password) {
       return res.status(400).json({ message: "Username and email are required", success: false });
     }
 
@@ -30,7 +30,9 @@ router.post("/register", async (req, res) => {
     const otpExpires = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
 
     // Store user temporarily until they verify OTP
-    pendingUsers.set(email, { username, email, otp, otpExpires });
+
+    pendingUsers.set(email, { username, email, password, otp, otpExpires });
+
     const emailBody = `
     <div style="max-width: 500px; margin: 50px auto; background: #1e1e1e; padding: 40px; border-radius: 12px; box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1); text-align: center;">
         <h2 style="color: #ffffff; font-size: 26px; margin-bottom: 15px; font-weight: 600;">EMAIL Verification</h2>
@@ -59,8 +61,8 @@ router.post("/register", async (req, res) => {
 //Verify OTP & Register 
 router.post("/verify-email", async (req, res) => {
   try {
-    const { otp, password } = req.body;
-    if (!otp || !password) {
+    const { otp } = req.body;
+    if (!otp) {
       return res.status(400).json({ message: "OTP and password are required", success: false });
     }
 
@@ -71,12 +73,12 @@ router.post("/verify-email", async (req, res) => {
       return res.status(400).json({ message: "Invalid OTP. Try again.", success: false });
     }
 
-    const { username, email, otpExpires } = userEntry;
+    const { username, email,password, otpExpires } = userEntry;
 
     // Check if OTP is expired
     if (Date.now() > otpExpires) {
       pendingUsers.delete(email);
-      return res.status(400).json({ message: "OTP expired. Request a new one.", success: false });
+      return res.status(401).json({ message: "OTP expired. Request a new one.", success: false });
     }
 
     // Hash password
@@ -105,7 +107,7 @@ router.post("/verify-email", async (req, res) => {
     // Generate JWT Token
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-    res.status(200).json({ message: "Registration successful", token, success: true });
+    res.status(200).json({ message: "Registration successful", token, user:newUser, success: true });
   } catch (error) {
     console.error("Error verifying OTP:", error);
     res.status(500).json({ message: "Server error", success: false });

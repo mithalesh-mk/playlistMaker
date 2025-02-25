@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/userContext/AuthProvider"
 
 
-export function SignupForm({
+function SignupForm({
   className,
   ...props
 }) {
