@@ -9,7 +9,7 @@ router.get("/bookmarks", auth, async (req, res) => {
   try {
     const user = await User.findById(req.body.userId).populate(
       "bookmarks",
-      "playlistId user"
+      "playlistId user name description videos"
     );
     if (!user) {
       return res
