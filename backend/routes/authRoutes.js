@@ -136,39 +136,19 @@ router.post("/forgot-password", async (req, res) => {
     }
 
     const emailBody = `
-          <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px 20px;">
-            <div style="max-width: 500px; background: #ffffff; margin: auto; padding: 30px; border-radius: 12px; box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2); text-align: center;">
-              
-              <h2 style="color: #333; text-align: center; margin-bottom: 20px;">🔐 Password Reset Request</h2>
-              
-              <p style="color: #555; font-size: 16px; margin-bottom: 15px;">
-                Hello there, 
-              </p>
-              
-              <p style="color: #555; font-size: 16px; margin-bottom: 20px;">
-                You requested to reset your password. Please use the OTP below to proceed:
-              </p>
-
-              <div style="display: inline-block; background: #ffcc00; color: #333; font-size: 26px; font-weight: bold; padding: 15px 25px; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2); letter-spacing: 2px;">
-                ${otp}
-              </div>
-
-              <p style="color: #777; font-size: 14px; margin-top: 15px;">
-                This OTP is valid for only <strong>5 minute</strong>.
-              </p>
-
-              <p style="color: #555; font-size: 14px; margin-top: 20px;">
-                If you did not request a password reset, please ignore this email.
-              </p>
-
-              <hr style="border: none; border-top: 1px solid #ddd; margin: 25px 0;">
-
-              <p style="color: #555; font-size: 14px; margin-top: 15px;">
-                Best regards, <br>
-                <strong style="color: #333;">PlayList Maker</strong>
-              </p>
-            </div>
-          </div>
+    <div style="max-width: 500px; margin: 50px auto; background: #1e1e1e; padding: 40px; border-radius: 12px; box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1); text-align: center;">
+        <h2 style="color: #ffffff; font-size: 26px; margin-bottom: 15px; font-weight: 600;">OTP Verification</h2>
+        <p style="color: #bbbbbb; font-size: 16px; line-height: 1.6;">Use the One-Time Password (OTP) below to verify your identity.</p>
+        <div style="font-size: 34px; font-weight: bold; color: #ffffff; padding: 15px 30px; background: #393939; display: inline-block; border-radius: 8px; margin-top: 10px;">
+            <span style="display: inline-block; letter-spacing:10px; margin-left: 10px">${otp}</span>
+        </div>
+        <div>
+          <p style="color: #aaaaaa; font-size: 14px; margin-top: 20px;">This OTP is valid for a short period. Please do not share it with anyone.</p>
+          <p style="color: #888888; font-size: 12px;">If you did not request this OTP, please ignore this email.</p>
+          <hr style="border: 0; height: 1px; background: #333; margin: 25px 0;">
+          <p style="color: #00fff0 ; font-size: 12px;">PlayList Maker</p>
+        </div>   
+    </div>
     `; 
 
 
