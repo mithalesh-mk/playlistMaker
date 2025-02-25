@@ -61,7 +61,7 @@ export default function ChooseAvatar() {
       const data = res.data;
       if(data.success){
         console.log(data)
-        navigate('/') 
+        navigate('/login'); 
       }
     } catch (error) {
       console.error('Error saving avatar:', error);
