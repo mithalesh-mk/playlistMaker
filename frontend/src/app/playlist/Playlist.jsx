@@ -8,6 +8,7 @@ import {
   Bookmark,
   PlusCircleIcon,
   ListPlus,
+  Trash,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,7 +25,6 @@ import { Label } from '@radix-ui/react-dropdown-menu';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
-
 
 const Playlist = () => {
   const { playlistId } = useParams();
@@ -57,24 +57,24 @@ const Playlist = () => {
         category: data.category,
         videos: data.videos,
       });
-      fetVideos()
+      fetVideos();
     } catch (error) {
       console.log(error);
     }
   };
 
   const fetVideos = async () => {
-    const resp = await axiosInstance.get(`/video/getvideo/${playlistId}/videos`);
+    const resp = await axiosInstance.get(
+      `/video/getvideo/${playlistId}/videos`
+    );
     const videos = resp.data;
     setData((prev) => ({ ...prev, videos: videos.data }));
-  }
+  };
 
-  console.log(data)
-
+  console.log(data);
 
   useEffect(() => {
     fetchPlaylist();
-
   }, [playlistId]);
 
   const handleCreate = async () => {
@@ -85,7 +85,9 @@ const Playlist = () => {
 
     try {
       // Call API to create playlist
-      const resp = await axiosInstance.post(`/video/addvideo/${playlistId}`,{url:link});
+      const resp = await axiosInstance.post(`/video/addvideo/${playlistId}`, {
+        url: link,
+      });
 
       const videoData = resp.data;
       console.log(videoData);
@@ -94,7 +96,8 @@ const Playlist = () => {
         toast({
           description: 'video added successfully',
         });
-        
+        fetVideos();
+
         closeRef.current?.click(console.log('video added'));
       } else {
         setError('failed to add video');
@@ -107,9 +110,9 @@ const Playlist = () => {
   };
 
   return (
-    <div className="flex flex-col w-[95%] max-h-[90vh] overflow-hidden sm:w-[85%] lg:w-[80%] xl:w-[60%] rounded-lg mx-auto gap-4 border-2 p-4 ">
+    <div className="flex flex-col w-[95%] max-h-[94vh] sm:w-[85%] lg:w-[80%] rounded-t-lg mx-auto gap-4 border-t-2 border-l-2 border-r-2 p-4 ">
       <div className="flex gap-4 relative flex-col lg:flex-row pb-3 border-b">
-        <div className="w-66 sm:w-96 overflow-hidden rounded-md">
+        <div className="w-66 sm:w-96 rounded-md">
           <img src="/playlist.jpeg" alt="playlist" />
           <div className="mt-4 flex gap-4 items-center justify-start">
             <p className="flex gap-1 items-center">
@@ -178,32 +181,39 @@ const Playlist = () => {
         </Dialog>
         <Bookmark className="absolute top-5 right-5" />
       </div>
-      <div className="">
-        
-      <h1 className="mt-3 font-bold text-4xl">Vidoes</h1>
-      <div className="flex justify-center flex-col items-center ">
-      <div className="h-[100vh] mt-6 p-4 overflow-y-scroll flex flex-col scrollbar-hide justify-start items-center w-[90%] mx-auto">
-        {data.videos.length > 0 ? (
-          data.videos.map((video) => (
-            <div key={video._id} className='flex bg-muted w-full gap-6'>
-                <img src={video.thumbnail} className='w-[150px] h-auto object-cover' alt={video.title} />
-                <div>
-                  <p>{video.title}</p>
-                  <p className='truncate w-[400px]'>{video.description}</p>
-                  </div>
-              
-            </div>
-          ))
-        ) : (
-          
+      <div className="scrollbar-hide overflow-y-auto">
+        <h1 className="mt-3 font-bold text-4xl">Vidoes</h1>
+        <div className="h-[100vh] mt-6 p-4 flex flex-col gap-5  justify-start items-center w-[90%] mx-auto">
+          {data.videos.length > 0 ? (
+            data.videos.map((video) => (
+              <div
+                key={video._id}
+                className=" w-full p-2 hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer bg-white/10 backdrop-blur-lg border border-white/30 shadow-lg rounded-xl flex text-white"
+              >
+                <div className="w-[150px] overflow-hidden  rounded-lg">
+                  <img
+                    src={video.thumbnail}
+                    className="w-full h-full object-cover"
+                    alt={video.title}
+                  />
+                </div>
+                <div className='w-[50%] pl-4'>
+                  <p className='text-md font-semibold'>{video.title}</p>
+                  <p className='line-clamp-2 text-sm'>{video.description}</p>
+                  <p className='text-sm'>{video.views} views</p>
+                </div>
+                <div className="absolute right-4 top-4">
+                    <Trash size={24} className="text-red-500 animate-shake" onClick={() => console.log('edit')}/>
+                </div>
+              </div>
+            ))
+          ) : (
             <div>
               <p>No videos found</p>
               <Button>Add Videos</Button>
             </div>
-          
-        )}
+          )}
         </div>
-      </div>
       </div>
     </div>
   );
