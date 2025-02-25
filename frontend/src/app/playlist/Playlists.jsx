@@ -12,7 +12,7 @@ const Playlists = () => {
   useEffect(() => {
     const fetchPlaylists = async () => {
       try {
-        const response = await axiosInstance.get('/playlist/allplaylists');
+        const response = await axiosInstance.get('/playlist/userplaylists');
         const data = await response.data;
         console.log(data);
         if (data.success) {

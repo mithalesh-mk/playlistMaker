@@ -78,18 +78,48 @@ router.get("/getplaylist/:id", async (req, res) => {
 });
 
 //Get playlist
-router.get("/allplaylists", authMiddleware, async (req, res) => {
+router.get("/userplaylists", authMiddleware, async (req, res) => {
   try {
     const userId = req.body.userId;
 
+    console.log("User ID:", userId);
     // Find all playlists with populated likes and dislikes
     const playlists = await Playlist.find({ user: userId })
       .populate("likes", "username") // Populate likes with user names
-      .populate("dislikes", "username"); // Populate dislikes with user names
+      .populate("dislikes", "username") // Populate dislikes with user names
+      .populate('user', 'username profilePic')
 
     if (playlists.length === 0) {
       return res.status(201).send({
         message: "No playlists found for this user",
+        data: [],
+        success: true,
+      });
+    }
+
+    return res.status(200).send({
+      message: "Playlists retrieved successfully",
+      data: playlists,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: "Unable to get playlists",
+      error,
+      success: false,
+    });
+  }
+});
+
+// Get all playlists
+router.get('/allplaylists', async (req, res) => {  
+  try {
+    const playlists = await Playlist.find()
+      .populate('user', 'username profilePic')
+
+    if (playlists.length === 0) {
+      return res.status(201).send({
+        message: "No playlists found",
         data: [],
         success: true,
       });
