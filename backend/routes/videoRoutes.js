@@ -19,7 +19,7 @@ router.post("/addvideo/:playlistId", authMiddleware, async (req, res) => {
     const params = {
       part: "snippet,contentDetails,statistics", // ✅ Added contentDetails
       id: extractVideoId(req.body.url), // ✅ Accept videoId dynamically from request body
-      key: "AIzaSyAR1pbG-NT53ssivVhzfGxkU2GKR7SLCXQ",
+      key: process.env.YOUTUBE_API_KEY,
     };
 
     const response = await axios.get(API_URL, { params });
