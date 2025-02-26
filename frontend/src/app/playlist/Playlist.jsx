@@ -1,6 +1,6 @@
-import axiosInstance from '@/axiosInstance';
-import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import axiosInstance from "@/axiosInstance";
+import React, { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   ThumbsUp,
   ThumbsDown,
@@ -9,8 +9,8 @@ import {
   PlusCircleIcon,
   ListPlus,
   Trash,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -20,34 +20,36 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-} from '@/components/ui/dialog';
-import { Label } from '@radix-ui/react-dropdown-menu';
-import { SidebarMenuButton } from '@/components/ui/sidebar';
-import { Input } from '@/components/ui/input';
-import { toast } from '@/hooks/use-toast';
+} from "@/components/ui/dialog";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
 
 const Playlist = () => {
   const { playlistId } = useParams();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const closeRef = useRef(null);
-  const [link, setLink] = useState('');
+  const [link, setLink] = useState("");
 
   const [data, setData] = useState({
-    title: '',
-    description: '',
+    title: "",
+    description: "",
     likes: 0,
     dislikes: 0,
     shares: 0,
-    category: '',
+    category: "",
     videos: [],
   });
 
+  //Getting Playlist by playlist ID
   const fetchPlaylist = async () => {
     try {
       const response = await axiosInstance.get(
         `/playlist/getplaylist/${playlistId}`
       );
       const data = response.data;
+      console.log(data);
       setData({
         title: data.name,
         description: data.description,
@@ -56,13 +58,16 @@ const Playlist = () => {
         shares: data.shares,
         category: data.category,
         videos: data.videos,
+        isOwner: data.isOwner,
       });
+      console.log(data);
       fetVideos();
     } catch (error) {
       console.log(error);
     }
   };
 
+  //Getting videos of current Playlist
   const fetVideos = async () => {
     const resp = await axiosInstance.get(
       `/video/getvideo/${playlistId}/videos`
@@ -78,8 +83,8 @@ const Playlist = () => {
   }, [playlistId]);
 
   const handleCreate = async () => {
-    if (link === '') {
-      setError('Please fill in all fields');
+    if (link === "") {
+      setError("Please fill in all fields");
       return;
     }
 
@@ -90,22 +95,22 @@ const Playlist = () => {
       });
 
       const videoData = resp.data;
-      console.log(videoData);
+
       if (videoData.success) {
         console.log(videoData.data);
         toast({
-          description: 'video added successfully',
+          description: "video added successfully",
         });
         fetVideos();
 
-        closeRef.current?.click(console.log('video added'));
+        closeRef.current?.click(console.log("video added"));
       } else {
-        setError('failed to add video');
-        console.log('video not added');
+        setError("failed to add video");
+        console.log("video not added");
       }
     } catch (error) {
-      console.error('Error fetching videos:', error);
-      setError('An error occurred. Please try again.');
+      console.error("Error fetching videos:", error);
+      setError("An error occurred. Please try again.");
     }
   };
 
@@ -119,11 +124,11 @@ const Playlist = () => {
               <span>{data.likes}</span> <ThumbsUp size={18} className="mb-1" />
             </p>
             <p className="flex gap-1 items-center">
-              <span>{data.dislikes}</span>{' '}
+              <span>{data.dislikes}</span>{" "}
               <ThumbsDown size={18} className="mt-1" />
             </p>
             <p className="flex gap-1 items-center">
-              <span>{data.shares}</span> <Share2 size={18} />{' '}
+              <span>{data.shares}</span> <Share2 size={18} />{" "}
             </p>
             <p className="rounded-full bg-slate-800 border border-white/20 px-4 py-[2px]">
               {data.category}
@@ -140,15 +145,17 @@ const Playlist = () => {
 
         <Dialog>
           <DialogTrigger asChild>
-            <Button
-              onClick={() => {
-                setError(false);
-                setLink('');
-              }}
-              className="absolute bottom-5 right-5 hidden sm:block"
-            >
-              Add Videos
-            </Button>
+            {data.isOwner && (
+              <Button
+                onClick={() => {
+                  setError(false);
+                  setLink("");
+                }}
+                className="absolute bottom-5 right-5 hidden sm:block"
+              >
+                Add Videos
+              </Button>
+            )}
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
@@ -197,13 +204,19 @@ const Playlist = () => {
                     alt={video.title}
                   />
                 </div>
-                <div className='w-[50%] pl-4'>
-                  <p className='text-md font-semibold'>{video.title}</p>
-                  <p className='line-clamp-2 text-sm'>{video.description}</p>
-                  <p className='text-sm'>{video.views} views</p>
+                <div className="w-[50%] pl-4">
+                  <p className="text-md font-semibold">{video.title}</p>
+                  <p className="line-clamp-2 text-sm">{video.description}</p>
+                  <p className="text-sm">{video.views} views</p>
                 </div>
                 <div className="absolute right-4 top-4">
-                    <Trash size={24} className="text-red-500 animate-shake" onClick={() => console.log('edit')}/>
+                  {data.isOwner && (
+                    <Trash
+                      size={24}
+                      className="text-red-500 animate-shake"
+                      onClick={() => console.log("edit")}
+                    />
+                  )}
                 </div>
               </div>
             ))
