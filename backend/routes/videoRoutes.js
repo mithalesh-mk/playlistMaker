@@ -151,7 +151,7 @@ router.get("/getvideo/:playlistId/videos", authMiddleware, async (req, res) => {
       data: videos,
     });
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return res.status(500).json({ message: "Server error" });
   }
 });

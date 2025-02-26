@@ -55,24 +55,36 @@ router.delete(
   }
 );
 
-router.get("/getplaylist/:id", async (req, res) => {
+//Get playlist details by playlist ID
+router.get("/getplaylist/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    console.log("Request ID:", id);
     // Validate ID before querying
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid playlist ID" });
     }
 
     // Fetch playlist by ID
-    const playlist = await Playlist.findById(id);
+    let playlist = await Playlist.findById(id);
     if (!playlist) {
       return res.status(404).json({ error: "Playlist not found" });
     }
+    let Owner = true;
 
-    return res.json(playlist);
+    if (playlist.user.toString() !== req.body.userId) {
+      Owner = false;
+    }
+    // playlist = {
+    //   ...playlist,
+    //   isOwner: Owner,
+    // };
+    const playlistObj = playlist.toObject();
+    playlistObj.isOwner = Owner;
+    console.log(playlistObj);
+
+    return res.json(playlistObj);
   } catch (error) {
-    console.error("Error fetching playlist:", error);
+    console.log(error);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -87,7 +99,7 @@ router.get("/userplaylists", authMiddleware, async (req, res) => {
     const playlists = await Playlist.find({ user: userId })
       .populate("likes", "username") // Populate likes with user names
       .populate("dislikes", "username") // Populate dislikes with user names
-      .populate('user', 'username profilePic')
+      .populate("user", "username profilePic");
 
     if (playlists.length === 0) {
       return res.status(201).send({
@@ -112,10 +124,12 @@ router.get("/userplaylists", authMiddleware, async (req, res) => {
 });
 
 // Get all playlists
-router.get('/allplaylists', async (req, res) => {  
+router.get("/allplaylists", authMiddleware, async (req, res) => {
   try {
-    const playlists = await Playlist.find()
-      .populate('user', 'username profilePic')
+    const playlists = await Playlist.find().populate(
+      "user",
+      "username profilePic"
+    );
 
     if (playlists.length === 0) {
       return res.status(201).send({
