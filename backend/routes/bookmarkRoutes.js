@@ -90,4 +90,32 @@ router.delete("/bookmarks/:playlistId", auth, async (req, res) => {
   }
 });
 
+router.put("/bookmarks/:playlistId", auth, async (req, res) => {
+  try {
+    const { playlistId } = req.params;
+    const user = await User.findById(req.body.userId);
+
+    if (user.bookmarks.includes(playlistId)) {
+      return res.status(200).send({
+        message: "BooMarked",
+        success: true,
+        data: { isBookMark: true },
+      });
+    }
+
+    return res.status(200).send({
+      message: "BooMarked",
+      success: true,
+      data: { isBookMark: false },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      message: "Server Error",
+      data: null,
+      success: false,
+    });
+  }
+});
+
 module.exports = router;
