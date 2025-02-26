@@ -84,7 +84,7 @@ const Playlist = () => {
         isOwner: data.isOwner,
       });
 
-      fetVideos();
+      fetchVideos();
 
     } catch (error) {
       console.error(error);
