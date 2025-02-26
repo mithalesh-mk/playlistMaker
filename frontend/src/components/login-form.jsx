@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '@/userContext/AuthProvider';
 import { toast } from '@/hooks/use-toast';
@@ -15,12 +15,18 @@ export function LoginForm() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
-  const {handleLogin} = useAuth();
+  const {handleLogin,user} = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setInputs((inputs) => ({ ...inputs, [name]: value }));
   };
+
+  useEffect(() => {
+    if(user){
+      navigate('/',{replace:true}); 
+    }
+  }, [user])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +43,7 @@ export function LoginForm() {
         toast({
           description: "Logged in successfully",
         })
-        navigate('/');
+        navigate('/',{replace:true});
       } else {
         setError(res.data.message);
         console.log(data.message);

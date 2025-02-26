@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 import axios from 'axios';
@@ -36,9 +36,13 @@ const SignupForm = () => {
     password: '',
   });
   const { toast } = useToast();
-  const {handleLogin} = useAuth()
+  const {handleLogin,user} = useAuth()
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if(user) navigate('/')
+  },[navigate])
 
   const handleChange = (e) => {
     setInput({
