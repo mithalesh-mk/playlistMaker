@@ -6,6 +6,7 @@ import {
   ThumbsDown,
   Share2,
   Bookmark,
+  BookmarkCheck,
   PlusCircleIcon,
   ListPlus,
   Trash,
@@ -25,12 +26,14 @@ import { Label } from "@radix-ui/react-dropdown-menu";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@clerk/clerk-react";
 
 const Playlist = () => {
   const { playlistId } = useParams();
   const [error, setError] = useState("");
   const closeRef = useRef(null);
   const [link, setLink] = useState("");
+  const [isBookmark, setBookmark] = useState(false);
 
   const [data, setData] = useState({
     title: "",
@@ -49,7 +52,6 @@ const Playlist = () => {
         `/playlist/getplaylist/${playlistId}`
       );
       const data = response.data;
-      console.log(data);
       setData({
         title: data.name,
         description: data.description,
@@ -60,7 +62,6 @@ const Playlist = () => {
         videos: data.videos,
         isOwner: data.isOwner,
       });
-      console.log(data);
       fetVideos();
     } catch (error) {
       console.log(error);
@@ -76,11 +77,57 @@ const Playlist = () => {
     setData((prev) => ({ ...prev, videos: videos.data }));
   };
 
-  console.log(data);
+  //Checking is Current playlist is Bookmark
+  const checkBookMark = async () => {
+    try {
+      const res = await axiosInstance.put(`/bookmark/bookmarks/${playlistId}`);
+      if (!res.data.success) {
+        console.log(res.data.message);
+      }
+      // console.log(res.data.data.isBookMark);
+      setBookmark(res.data.data.isBookMark);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //Adding BookMark to current Playlist
+  const addToBookMark = async () => {
+    try {
+      const res = await axiosInstance.post(`/bookmark/bookmarks/${playlistId}`);
+      if (!res.data.success) {
+        alert(res.data.message);
+      } else {
+        setBookmark(res.data.success); //Basically it is setBookmark(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //Deleting current playlist from Bookmark
+  const deleteBookMark = async () => {
+    try {
+      const res = await axiosInstance.delete(
+        `/bookmark/bookmarks/${playlistId}`
+      );
+      if (!res.data.success) {
+        alert(res.data.message);
+      } else {
+        setBookmark(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     fetchPlaylist();
   }, [playlistId]);
+
+  useEffect(() => {
+    checkBookMark();
+  }, [isBookmark]);
 
   const handleCreate = async () => {
     if (link === "") {
@@ -186,7 +233,22 @@ const Playlist = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        <Bookmark className="absolute top-5 right-5" />
+        {isBookmark && (
+          <BookmarkCheck
+            className="absolute top-5 right-5"
+            onClick={() => {
+              deleteBookMark();
+            }}
+          />
+        )}
+        {!isBookmark && (
+          <Bookmark
+            className="absolute top-5 right-5"
+            onClick={() => {
+              addToBookMark();
+            }}
+          />
+        )}
       </div>
       <div className="scrollbar-hide overflow-y-auto">
         <h1 className="mt-3 font-bold text-4xl">Vidoes</h1>
