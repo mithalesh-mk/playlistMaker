@@ -88,7 +88,7 @@ export function NavProjects({ projects }) {
         <SidebarMenuItem className="mt-8">
           <SidebarMenuButton tooltip={'FeedBack'}>
             {MessageSquareQuote && <MessageSquareQuote />}
-            <span>{'FeedBack'}</span>
+            <Link to={'/feedback'}><span>{'FeedBack'}</span></Link>
           </SidebarMenuButton>
           <SidebarMenuButton tooltip={'Help'}>
             {MessageCircleQuestion && <MessageCircleQuestion />}

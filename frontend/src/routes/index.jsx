@@ -11,6 +11,7 @@ import Playlists from "@/app/playlist/Playlists";
 import BookMarks from "@/app/bookmark/BookMarks";
 import Playlist from "@/app/playlist/Playlist";
 import ForgotPassword from "@/app/login/Forgot-password";
+import Feedback from "@/app/feedback/Feedback";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
       {path: '/bookmarks', element: <Sidebar><ProtectedRoute><BookMarks /></ProtectedRoute></Sidebar>},
       {path: '/playlists/:playlistId', element: <Sidebar><ProtectedRoute><Playlist /></ProtectedRoute></Sidebar>},
       {path: '/forgot-password', element: <ForgotPassword/>},
+      {path : "/feedback" , element : <Sidebar><ProtectedRoute><Feedback/></ProtectedRoute></Sidebar>}, 
     ],
   },
 ]);
