@@ -249,4 +249,31 @@ router.post("/:playlistId/dislike", authMiddleware, async (req, res) => {
   }
 });
 
+
+router.put("/updateOrder/:playlistId", async (req, res) => {
+  const { playlistId } = req.params;
+  const { newOrder } = req.body; // Array of video IDs in correct order
+
+  try {
+    const updatedPlaylist = await Playlist.findByIdAndUpdate(
+      playlistId,
+      { videos: newOrder },
+      { new: true, runValidators: true } // Ensures latest data and applies validation
+    );
+
+    if (!updatedPlaylist) {
+      return res.status(404).json({ success: false, message: "Playlist not found" });
+    }
+    
+
+    res.json({ success: true, message: "Playlist order updated", updatedOrder: updatedPlaylist.videos });
+  } catch (error) {
+    console.error("Error updating order:", error);
+    res.status(500).json({ success: false, message: "Error updating order" });
+  }
+});
+
+
+
+
 module.exports = router;
