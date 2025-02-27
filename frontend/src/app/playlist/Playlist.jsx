@@ -41,8 +41,10 @@ import {
   SortableContext,
   verticalListSortingStrategy,
   useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import Comments from '../comments/Comments';
+
 
 const Playlist = () => {
   const { playlistId } = useParams();
@@ -467,7 +469,9 @@ const Playlist = () => {
             </ul>
           </SortableContext>
         </DndContext>
+        <Comments/>
       </div>
+      
     </div>
   );
 };
