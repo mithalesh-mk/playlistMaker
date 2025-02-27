@@ -84,7 +84,6 @@ router.post("/addvideo/:playlistId", authMiddleware, async (req, res) => {
       data: savedVideo, // ✅ Send video details instead of an empty array
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ message: "Unable to upload" });
   }
 });
@@ -126,7 +125,6 @@ router.delete("/deletevideo/:playlistId", authMiddleware, async (req, res) => {
       success: true,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ message: "Server error" });
   }
 });
@@ -142,18 +140,23 @@ router.get("/getvideo/:playlistId/videos", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "Playlist not found" });
     }
 
-    // Fetch videos from the Video collection
+    // Fetch videos and maintain order
     const videos = await Video.find({ _id: { $in: playlist.videos } });
+
+    // Sort videos based on playlist.videos order
+    const orderedVideos = playlist.videos.map((id) =>
+      videos.find((video) => video._id.toString() === id.toString())
+    );
 
     return res.status(200).json({
       message: "Videos fetched successfully",
       success: true,
-      data: videos,
+      data: orderedVideos,
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ message: "Server error" });
   }
 });
+
 
 module.exports = router;

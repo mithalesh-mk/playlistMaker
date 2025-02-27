@@ -18,7 +18,6 @@ router.get("/feedbacks", authMiddleware, async (req, res) => {
       data: feedbacks,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).send({ message: "Server error", success: false });
   }
 });
@@ -28,7 +27,6 @@ router.post("/feedbacks", authMiddleware, async (req, res) => {
            try {
              const { message, rating } = req.body;
              const userId = req.body.userId; // Get userId from middleware
-             console.log("User ID:", userId);
          
              if (!message) {
                return res.status(400).send({
@@ -53,7 +51,6 @@ router.post("/feedbacks", authMiddleware, async (req, res) => {
                data: feedback,
              });
            } catch (error) {
-             console.error(error);
              return res.status(500).send({ message: "Server error", success: false });
            }
          });
@@ -85,7 +82,6 @@ router.delete("/feedbacks/:feedbackId", authMiddleware, async (req, res) => {
       success: true,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).send({ message: "Server error", success: false });
   }
 });
