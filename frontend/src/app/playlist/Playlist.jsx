@@ -44,6 +44,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import Comments from '../comments/Comments';
 
 
 const Playlist = () => {
@@ -402,7 +403,9 @@ const Playlist = () => {
             </ul>
           </SortableContext>
         </DndContext>
+        <Comments/>
       </div>
+      
     </div>
   );
 };
