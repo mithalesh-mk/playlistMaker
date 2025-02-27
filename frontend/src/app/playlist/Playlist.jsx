@@ -53,6 +53,8 @@ const Playlist = () => {
   const [isBookmark, setBookmark] = useState(false);
   const [noOfLikes, setNoOfLikes] = useState(0);
   const [noOfDislike, setNoOfDislikes] = useState(0);
+  const [newOrder, setNewOrder] = useState([])
+
 
   const [data, setData] = useState({
     title: "",
@@ -82,7 +84,7 @@ const Playlist = () => {
         videos: data.videos,
         isOwner: data.isOwner,
       });
-
+        console.log(data,'playlistData')
       fetchVideos();
     } catch (error) {
       console.error(error);
@@ -176,7 +178,7 @@ const Playlist = () => {
 
   useEffect(() => {
     fetchPlaylist();
-  }, [playlistId]);
+  }, []);
 
   // Handle Create Video
 
@@ -227,34 +229,32 @@ const Playlist = () => {
       }
 
       const newVideos = arrayMove(prev.videos, oldIndex, newIndex);
-
-      console.log(
-        "New Order:",
-        newVideos.map((v) => v._id)
-      ); // Debugging
-
-      updateVideoOrder(newVideos);
-
+  
+      console.log("New Order:", newVideos.map((v) => v._id)); // Debugging
+  
+      setNewOrder(newVideos);
+  
       return { ...prev, videos: newVideos };
     });
   };
+
+  useEffect(() => {
+    if (newOrder.length === 0) return;
+   updateVideoOrder(newOrder);
+    
+}, [newOrder]);
+  
+  console.log(data.videos)
 
   // Function to send updated order to backend
   const updateVideoOrder = async (newVideos) => {
     try {
       const newOrder = newVideos.map((video) => video._id);
-      const response = await axiosInstance.put(
-        `/playlist/updateOrder/${playlistId}`,
-        { newOrder }
-      );
-
-      if (response.data.success) {
-        toast({ description: "Playlist order updated!" });
-      } else {
-        toast({
-          description: "Failed to update order",
-          variant: "destructive",
-        });
+      console.log(newOrder)
+      const response = await axiosInstance.put(`/playlist/updateOrder/${playlistId}`, { newOrder });
+  
+      if (response.data.success === false) {
+         toast({ description: "Failed to update order", variant: "destructive" })
       }
     } catch (error) {
       console.error("Error updating playlist order:", error);
