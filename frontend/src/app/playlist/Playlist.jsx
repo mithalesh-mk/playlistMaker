@@ -53,8 +53,7 @@ const Playlist = () => {
   const [isBookmark, setBookmark] = useState(false);
   const [noOfLikes, setNoOfLikes] = useState(0);
   const [noOfDislike, setNoOfDislikes] = useState(0);
-  const [newOrder, setNewOrder] = useState([])
-
+  const [newOrder, setNewOrder] = useState([]);
 
   const [data, setData] = useState({
     title: "",
@@ -84,7 +83,9 @@ const Playlist = () => {
         videos: data.videos,
         isOwner: data.isOwner,
       });
-        console.log(data,'playlistData')
+
+      setNoOfLikes(data.likes.length);
+      setNoOfDislikes(data.dislikes.length);
       fetchVideos();
     } catch (error) {
       console.error(error);
@@ -98,6 +99,7 @@ const Playlist = () => {
         `/video/getvideo/${playlistId}/videos`
       );
       setData((prev) => ({ ...prev, videos: resp.data.data }));
+      console.log(resp.data.data);
     } catch (error) {
       console.error("Error fetching videos:", error);
     }
@@ -176,12 +178,29 @@ const Playlist = () => {
     }
   };
 
+  //Function to delete Video
+
+  const deleteVideo = async (link) => {
+    try {
+      const res = await axiosInstance.delete(
+        `/video/deletevideo/${playlistId}`,
+        { data: { url: link } }
+      );
+      if (!res.data.success) {
+        toast({ description: `${res.data.message}` });
+      }
+      toast({ description: `${res.data.message}` });
+      fetchVideos();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchPlaylist();
   }, []);
 
   // Handle Create Video
-
   useEffect(() => {
     checkBookMark();
   }, [isBookmark]);
@@ -229,32 +248,40 @@ const Playlist = () => {
       }
 
       const newVideos = arrayMove(prev.videos, oldIndex, newIndex);
-  
-      console.log("New Order:", newVideos.map((v) => v._id)); // Debugging
-  
+
+      console.log(
+        "New Order:",
+        newVideos.map((v) => v._id)
+      ); // Debugging
+
       setNewOrder(newVideos);
-  
+
       return { ...prev, videos: newVideos };
     });
   };
 
   useEffect(() => {
     if (newOrder.length === 0) return;
-   updateVideoOrder(newOrder);
-    
-}, [newOrder]);
-  
-  console.log(data.videos)
+    updateVideoOrder(newOrder);
+  }, [newOrder]);
+
+  console.log(data.videos);
 
   // Function to send updated order to backend
   const updateVideoOrder = async (newVideos) => {
     try {
       const newOrder = newVideos.map((video) => video._id);
-      console.log(newOrder)
-      const response = await axiosInstance.put(`/playlist/updateOrder/${playlistId}`, { newOrder });
-  
+      console.log(newOrder);
+      const response = await axiosInstance.put(
+        `/playlist/updateOrder/${playlistId}`,
+        { newOrder }
+      );
+
       if (response.data.success === false) {
-         toast({ description: "Failed to update order", variant: "destructive" })
+        toast({
+          description: "Failed to update order",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error("Error updating playlist order:", error);
@@ -307,6 +334,9 @@ const Playlist = () => {
           <Trash
             size={24}
             className="text-red-500 cursor-pointer absolute right-4"
+            onClick={() => {
+              deleteVideo(video.url);
+            }}
           />
         )}
       </li>

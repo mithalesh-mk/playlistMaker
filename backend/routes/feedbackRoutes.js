@@ -11,7 +11,6 @@ router.get("/feedbacks", authMiddleware, async (req, res) => {
       .populate("user", "username profilePic") // Fetch username & profile
       .select("message rating createdAt");
 
-
     return res.status(200).send({
       message: "Feedbacks retrieved successfully",
       success: true,
@@ -24,37 +23,37 @@ router.get("/feedbacks", authMiddleware, async (req, res) => {
 
 // Submit feedback
 router.post("/feedbacks", authMiddleware, async (req, res) => {
-           try {
-             const { message, rating } = req.body;
-             const userId = req.body.userId; // Get userId from middleware
-         
-             if (!message) {
-               return res.status(400).send({
-                 message: "Message is required",
-                 success: false,
-               });
-             }
-         
-             if (!userId) {
-               return res.status(400).send({
-                 message: "User ID is missing",
-                 success: false,
-               });
-             }
-         
-             const feedback = new Feedback({ user: userId, message, rating });
-             await feedback.save();
-         
-             return res.status(201).send({
-               message: "Feedback submitted successfully",
-               success: true,
-               data: feedback,
-             });
-           } catch (error) {
-             return res.status(500).send({ message: "Server error", success: false });
-           }
-         });
-         
+  try {
+    const { message, rating } = req.body;
+    const userId = req.body.userId; // Get userId from middleware
+
+    if (!message) {
+      return res.status(400).send({
+        message: "Message is required",
+        success: false,
+      });
+    }
+
+    if (!userId) {
+      return res.status(400).send({
+        message: "User ID is missing",
+        success: false,
+      });
+    }
+
+    const feedback = new Feedback({ user: userId, message, rating });
+    await feedback.save();
+
+    return res.status(201).send({
+      message: "Feedback submitted successfully",
+      success: true,
+      data: feedback,
+    });
+  } catch (error) {
+    return res.status(500).send({ message: "Server error", success: false });
+  }
+});
+
 // Delete feedback (Admin or Owner)
 router.delete("/feedbacks/:feedbackId", authMiddleware, async (req, res) => {
   const { feedbackId } = req.params;
