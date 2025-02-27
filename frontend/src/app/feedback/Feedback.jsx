@@ -1,10 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/axiosInstance";
 import GiveFeedback from "./GiveFeedback";
 import { useAuth } from "@/userContext/AuthProvider";
+import { toast } from '@/hooks/use-toast';
 
 
 const FeedbackCard = ({ name, avatar, message, rating, time }) => {
@@ -39,18 +39,12 @@ const Feedback = () => {
 
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-
-  const {user} = useAuth();
-  const { username, profilePic } = user;
 
   useEffect(() => {
     const fetchfeedback = async () => {
       try {
         const response = await axiosInstance.get("/feedbacks");
         const data = await response.data;
-        console.log(data);
         if (data.success) {
           setFeedbacks(data.data);
         } else {
@@ -58,26 +52,26 @@ const Feedback = () => {
         }
       } catch (error) {
         console.log(error);
-        setError("Failed to fetch feedback");
       }
       setLoading(false);
     };
-
     fetchfeedback();
-  }, []);
-
-  //console.log("User Name:", username);
-  //console.log("User ProfilePic:", profilePic);
+  }, [loading]);
 
   const handleFeedbackSubmit = async (feedbackData) => {
     try {
       const response = await axiosInstance.post("/feedbacks", feedbackData);
+      setLoading(!loading);
       if (response.data.success) {
-        alert("Feedback submitted successfully!");
+        toast({
+          description: "Feedback submitted successfully, thank you!",
+        })
+
       }
     } catch (error) {
-      console.error("Error submitting feedback:", error);
-      alert("Failed to submit feedback.");
+      toast({
+        description: "Failed to submit feedback, please try again!",
+      })
     }
   };
 
@@ -90,15 +84,20 @@ const Feedback = () => {
     <div className="min-h-screen flex flex-col items-center p-6">
       <h1 className="text-2xl font-bold text-white mb-6">User Feedback</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-6xl">
-        {feedbacks.map((feedback) => (
-          <FeedbackCard key={feedback.id} 
-            name={feedback.user.username} 
-            avatar={feedback.user.profilePic} 
-            message={feedback.message} 
-            rating={feedback.rating} 
-            time={new Date(feedback.createdAt).toDateString()}
-          />
+        {feedbacks
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by newest first
+          .slice(0, 8) // Get only the latest 8 feedbacks
+          .map((feedback) => (
+            <FeedbackCard 
+              key={feedback._id} 
+              name={feedback.user.username} 
+              avatar={feedback.user.profilePic} 
+              message={feedback.message} 
+              rating={feedback.rating} 
+              time={new Date(feedback.createdAt).toDateString()}
+            />
         ))}
+
       </div>
       <div>
         <motion.h1

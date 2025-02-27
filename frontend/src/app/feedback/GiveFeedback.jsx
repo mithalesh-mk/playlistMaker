@@ -17,9 +17,6 @@ const GiveFeedback = ({ onSubmit }) => {
       alert("Please select a rating!");
       return;
     }
-    console.log("User:", username, profilePic);
-    console.log("Rating:", rating);
-    console.log("Message:", message);
     onSubmit({ rating, message, username, profilePic });
     setRating(0);
     setMessage("");
