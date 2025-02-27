@@ -83,6 +83,9 @@ const Playlist = () => {
         isOwner: data.isOwner,
       });
 
+      setNoOfLikes(data.likes.length);
+      setNoOfDislikes(data.dislikes.length);
+
       fetchVideos();
     } catch (error) {
       console.error(error);
@@ -96,6 +99,7 @@ const Playlist = () => {
         `/video/getvideo/${playlistId}/videos`
       );
       setData((prev) => ({ ...prev, videos: resp.data.data }));
+      console.log(resp.data.data);
     } catch (error) {
       console.error("Error fetching videos:", error);
     }
@@ -174,12 +178,29 @@ const Playlist = () => {
     }
   };
 
+  //Function to delete Video
+
+  const deleteVideo = async (link) => {
+    try {
+      const res = await axiosInstance.delete(
+        `/video/deletevideo/${playlistId}`,
+        { data: { url: link } }
+      );
+      if (!res.data.success) {
+        toast({ description: `${res.data.message}` });
+      }
+      toast({ description: `${res.data.message}` });
+      fetchVideos();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchPlaylist();
   }, [playlistId]);
 
   // Handle Create Video
-
   useEffect(() => {
     checkBookMark();
   }, [isBookmark]);
@@ -307,6 +328,9 @@ const Playlist = () => {
           <Trash
             size={24}
             className="text-red-500 cursor-pointer absolute right-4"
+            onClick={() => {
+              deleteVideo(video.url);
+            }}
           />
         )}
       </li>

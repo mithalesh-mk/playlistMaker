@@ -4,6 +4,7 @@ const axios = require("axios");
 const router = express.Router();
 const Video = require("../models/videoModel");
 const PlayList = require("../models/playlistModel");
+require("dotenv").config();
 
 //Extracting video Id from video URL
 const extractVideoId = (url) => {
@@ -85,7 +86,9 @@ router.post("/addvideo/:playlistId", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Unable to upload" });
+    return res
+      .status(500)
+      .send({ message: "Unable to upload", success: false, data: error });
   }
 });
 
@@ -113,7 +116,7 @@ router.delete("/deletevideo/:playlistId", authMiddleware, async (req, res) => {
     // Find playlist and remove video reference
     const playlist = await PlayList.findById(playlistId);
     if (!playlist) {
-      return res.status(404).json({ message: "Playlist not found" });
+      return res.status(403).json({ message: "Playlist not found" });
     }
 
     playlist.videos = playlist.videos.filter(
