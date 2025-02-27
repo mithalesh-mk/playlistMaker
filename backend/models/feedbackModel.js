@@ -14,7 +14,7 @@ const feedbackSchema = new mongoose.Schema(
     },
     rating: {
       type: Number,
-      min: 0, // Minimum rating is 0
+      min: 1, // Minimum rating is 0
       max: 5, // Maximum rating is 5
       default: 5, // Default to 5 rating initially
       required: true,
