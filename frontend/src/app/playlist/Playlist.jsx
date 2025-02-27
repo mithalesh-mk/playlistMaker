@@ -1,6 +1,6 @@
-import axiosInstance from '@/axiosInstance';
-import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import axiosInstance from "@/axiosInstance";
+import React, { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   ThumbsUp,
   ThumbsDown,
@@ -10,8 +10,8 @@ import {
   PlusCircleIcon,
   Trash,
   GripVertical,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -21,13 +21,12 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
-
-} from '@/components/ui/dialog';
-import { Label } from '@radix-ui/react-dropdown-menu';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/dialog";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@clerk/clerk-react";
 import {
   DndContext,
@@ -36,32 +35,33 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
   useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const Playlist = () => {
   const { playlistId } = useParams();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const closeRef = useRef(null);
 
   const [link, setLink] = useState("");
   const [isBookmark, setBookmark] = useState(false);
-
+  const [noOfLikes, setNoOfLikes] = useState(0);
+  const [noOfDislike, setNoOfDislikes] = useState(0);
+  const [newOrder, setNewOrder] = useState([]);
 
   const [data, setData] = useState({
-    title: '',
-    description: '',
+    title: "",
+    description: "",
     likes: 0,
     dislikes: 0,
     shares: 0,
-    category: '',
+    category: "",
     videos: [],
     isOwner: false,
   });
@@ -84,8 +84,9 @@ const Playlist = () => {
         isOwner: data.isOwner,
       });
 
+      setNoOfLikes(data.likes.length);
+      setNoOfDislikes(data.dislikes.length);
       fetchVideos();
-
     } catch (error) {
       console.error(error);
     }
@@ -98,11 +99,11 @@ const Playlist = () => {
         `/video/getvideo/${playlistId}/videos`
       );
       setData((prev) => ({ ...prev, videos: resp.data.data }));
+      console.log(resp.data.data);
     } catch (error) {
-      console.error('Error fetching videos:', error);
+      console.error("Error fetching videos:", error);
     }
   };
-
 
   //Checking is Current playlist is Bookmark
   const checkBookMark = async () => {
@@ -148,22 +149,65 @@ const Playlist = () => {
     }
   };
 
+  //Function For like
+  const functionLike = async () => {
+    try {
+      const res = await axiosInstance.post(`playlist/${playlistId}/like`);
+      if (!res.data.success) {
+        alert(res.data.data);
+      }
+      setNoOfLikes(res.data.data.likes);
+      setNoOfDislikes(res.data.data.dislikes);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //Function for Dislike
+  const functionDislike = async () => {
+    try {
+      const res = await axiosInstance.post(`playlist/${playlistId}/dislike`);
+      console.log(res);
+      if (!res.data.success) {
+        alert(res.data.data);
+      }
+      setNoOfLikes(res.data.data.likes);
+      setNoOfDislikes(res.data.data.dislikes);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //Function to delete Video
+
+  const deleteVideo = async (link) => {
+    try {
+      const res = await axiosInstance.delete(
+        `/video/deletevideo/${playlistId}`,
+        { data: { url: link } }
+      );
+      if (!res.data.success) {
+        toast({ description: `${res.data.message}` });
+      }
+      toast({ description: `${res.data.message}` });
+      fetchVideos();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     fetchPlaylist();
-  }, [playlistId]);
-
+  }, []);
 
   // Handle Create Video
-
   useEffect(() => {
     checkBookMark();
   }, [isBookmark]);
 
-
   const handleCreate = async () => {
     if (!link) {
-      setError('Please fill in all fields');
+      setError("Please fill in all fields");
       return;
     }
 
@@ -173,15 +217,15 @@ const Playlist = () => {
       });
 
       if (resp.data.success) {
-        toast({ description: 'Video added successfully' });
+        toast({ description: "Video added successfully" });
         fetchVideos();
         closeRef.current?.click();
       } else {
-        setError('Failed to add video');
+        setError("Failed to add video");
       }
     } catch (error) {
-      console.error('Error adding video:', error);
-      setError('An error occurred. Please try again.');
+      console.error("Error adding video:", error);
+      setError("An error occurred. Please try again.");
     }
   };
 
@@ -193,45 +237,57 @@ const Playlist = () => {
   const handleDragEnd = async (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-  
+
     setData((prev) => {
       const oldIndex = prev.videos.findIndex((v) => v._id === active.id);
       const newIndex = prev.videos.findIndex((v) => v._id === over.id);
-  
+
       if (oldIndex === -1 || newIndex === -1) {
         console.error("Invalid indices for reordering");
         return prev;
       }
-  
+
       const newVideos = arrayMove(prev.videos, oldIndex, newIndex);
-  
-      console.log("New Order:", newVideos.map((v) => v._id)); // Debugging
-  
-      updateVideoOrder(newVideos);
-  
+
+      console.log(
+        "New Order:",
+        newVideos.map((v) => v._id)
+      ); // Debugging
+
+      setNewOrder(newVideos);
+
       return { ...prev, videos: newVideos };
     });
   };
-  
+
+  useEffect(() => {
+    if (newOrder.length === 0) return;
+    updateVideoOrder(newOrder);
+  }, [newOrder]);
+
+  console.log(data.videos);
 
   // Function to send updated order to backend
   const updateVideoOrder = async (newVideos) => {
     try {
       const newOrder = newVideos.map((video) => video._id);
-      const response = await axiosInstance.put(`/playlist/updateOrder/${playlistId}`, { newOrder });
-  
-      if (response.data.success) {
-        toast({ description: "Playlist order updated!" });
-  
-      } else {
-        toast({ description: "Failed to update order", variant: "destructive" });
+      console.log(newOrder);
+      const response = await axiosInstance.put(
+        `/playlist/updateOrder/${playlistId}`,
+        { newOrder }
+      );
+
+      if (response.data.success === false) {
+        toast({
+          description: "Failed to update order",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error("Error updating playlist order:", error);
       toast({ description: "Failed to update order", variant: "destructive" });
     }
   };
-  
 
   const SortableVideo = ({ video }) => {
     const { attributes, listeners, setNodeRef, transform, transition } =
@@ -278,6 +334,9 @@ const Playlist = () => {
           <Trash
             size={24}
             className="text-red-500 cursor-pointer absolute right-4"
+            onClick={() => {
+              deleteVideo(video.url);
+            }}
           />
         )}
       </li>
@@ -291,10 +350,22 @@ const Playlist = () => {
           <img src="/playlist.jpeg" alt="playlist" />
           <div className="mt-4 flex gap-4 items-center">
             <p className="flex gap-1 items-center">
-              <span>{data.likes}</span> <ThumbsUp size={18} />
+              <span>{noOfLikes}</span>{" "}
+              <ThumbsUp
+                onClick={() => {
+                  functionLike();
+                }}
+                size={18}
+              />
             </p>
             <p className="flex gap-1 items-center">
-              <span>{data.dislikes}</span> <ThumbsDown size={18} />
+              <span>{noOfDislike}</span>{" "}
+              <ThumbsDown
+                onClick={() => {
+                  functionDislike();
+                }}
+                size={18}
+              />
             </p>
             <p className="flex gap-1 items-center">
               <span>{data.shares}</span> <Share2 size={18} />
