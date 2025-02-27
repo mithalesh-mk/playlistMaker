@@ -7,7 +7,6 @@ const mongoose = require("mongoose");
 // Add a new playlist
 router.post("/addplaylist", authMiddleware, async (req, res) => {
   try {
-    console.log(req.body.userId);
     const newPlayList = new Playlist({ ...req.body, user: req.body.userId });
     await newPlayList.save();
     return res.status(200).send({
@@ -16,7 +15,6 @@ router.post("/addplaylist", authMiddleware, async (req, res) => {
       data: newPlayList,
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).send({
       message: "PlayList creation failed",
       data: error,
@@ -45,7 +43,6 @@ router.delete(
         success: true,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).send({
         message: "PlayList Cannot be deleted",
         data: error,
@@ -80,11 +77,9 @@ router.get("/getplaylist/:id", authMiddleware, async (req, res) => {
     // };
     const playlistObj = playlist.toObject();
     playlistObj.isOwner = Owner;
-    console.log(playlistObj);
 
     return res.json(playlistObj);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -94,7 +89,6 @@ router.get("/userplaylists", authMiddleware, async (req, res) => {
   try {
     const userId = req.body.userId;
 
-    console.log("User ID:", userId);
     // Find all playlists with populated likes and dislikes
     const playlists = await Playlist.find({ user: userId })
       .populate("likes", "username") // Populate likes with user names
@@ -171,7 +165,6 @@ router.post("/:playlistId/like", authMiddleware, async (req, res) => {
     // Check if the user has already liked the playlist
     if (playlist.likes.includes(userId)) {
       // If the user has liked it, remove the like
-      console.log("Like Id present");
       playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
     } else {
       // If the user has disliked it, remove the dislike
@@ -219,7 +212,6 @@ router.post("/:playlistId/dislike", authMiddleware, async (req, res) => {
     // Check if the user has already disliked the playlist
     if (playlist.dislikes.includes(userId)) {
       // If the user has disliked it, remove the dislike
-      console.log("Id present");
       playlist.dislikes = playlist.dislikes.filter(
         (id) => id.toString() !== userId
       );
@@ -253,14 +245,11 @@ router.post("/:playlistId/dislike", authMiddleware, async (req, res) => {
 router.put("/updateOrder/:playlistId", async (req, res) => {
   const { playlistId } = req.params;
   const { newOrder } = req.body; // Array of video IDs in correct order
-
   try {
     const updatedPlaylist = await Playlist.findByIdAndUpdate(
       playlistId,
-      { videos: newOrder },
-      { new: true, runValidators: true } // Ensures latest data and applies validation
+      { videos: newOrder }
     );
-
     if (!updatedPlaylist) {
       return res.status(404).json({ success: false, message: "Playlist not found" });
     }
@@ -268,7 +257,6 @@ router.put("/updateOrder/:playlistId", async (req, res) => {
 
     res.json({ success: true, message: "Playlist order updated", updatedOrder: updatedPlaylist.videos });
   } catch (error) {
-    console.error("Error updating order:", error);
     res.status(500).json({ success: false, message: "Error updating order" });
   }
 });

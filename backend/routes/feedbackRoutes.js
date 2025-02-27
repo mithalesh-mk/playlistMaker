@@ -17,13 +17,13 @@ router.get("/feedbacks", authMiddleware, async (req, res) => {
       data: feedbacks,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).send({ message: "Server error", success: false });
   }
 });
 
 // Submit feedback
 router.post("/feedbacks", authMiddleware, async (req, res) => {
+<<<<<<< HEAD
   try {
     const { message, rating } = req.body;
     const userId = req.body.userId; // Get userId from middleware
@@ -56,6 +56,39 @@ router.post("/feedbacks", authMiddleware, async (req, res) => {
   }
 });
 
+=======
+           try {
+             const { message, rating } = req.body;
+             const userId = req.body.userId; // Get userId from middleware
+         
+             if (!message) {
+               return res.status(400).send({
+                 message: "Message is required",
+                 success: false,
+               });
+             }
+         
+             if (!userId) {
+               return res.status(400).send({
+                 message: "User ID is missing",
+                 success: false,
+               });
+             }
+         
+             const feedback = new Feedback({ user: userId, message, rating });
+             await feedback.save();
+         
+             return res.status(201).send({
+               message: "Feedback submitted successfully",
+               success: true,
+               data: feedback,
+             });
+           } catch (error) {
+             return res.status(500).send({ message: "Server error", success: false });
+           }
+         });
+         
+>>>>>>> acc4964bf790dcd78218c59a239523a1c1f0f3c6
 // Delete feedback (Admin or Owner)
 router.delete("/feedbacks/:feedbackId", authMiddleware, async (req, res) => {
   const { feedbackId } = req.params;
@@ -83,7 +116,6 @@ router.delete("/feedbacks/:feedbackId", authMiddleware, async (req, res) => {
       success: true,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).send({ message: "Server error", success: false });
   }
 });
