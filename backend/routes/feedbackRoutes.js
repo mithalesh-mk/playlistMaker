@@ -56,7 +56,7 @@ router.post("/feedbacks", authMiddleware, async (req, res) => {
              console.error(error);
              return res.status(500).send({ message: "Server error", success: false });
            }
-         });
+});
          
 // Delete feedback (Admin or Owner)
 router.delete("/feedbacks/:feedbackId", authMiddleware, async (req, res) => {
