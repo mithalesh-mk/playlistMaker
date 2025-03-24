@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const authMiddleware = require("../middleware/authMiddleware");
 const sendEmail = require("../utils/sendEmail");
+const Playlist=require("../models/playlistModel");
 const OTP = require("../models/otpModel");
 require("dotenv").config();
 
@@ -20,9 +21,7 @@ exports.register = async (req, res) => {
 
     let user = await User.findOne({ email });
     if (user) {
-      return res
-        .status(400)
-        .json({ message: "Email already registered", success: false });
+      return res.status(409).json({ message: "Email already registered", success: false });
     }
 
     // Generate OTP
@@ -147,7 +146,7 @@ exports.login = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).send({
+      return res.status(409).send({
         message: "User Does Not Exist",
         success: false,
       });
@@ -155,7 +154,7 @@ exports.login = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).send({
+      return res.status(410).send({
         message: "Invalid Credentials",
         success: false,
       });
@@ -520,5 +519,34 @@ exports.changeProfilePicture = async (req, res) => {
   } catch (error) {
     console.error("Error updating profile picture:", error);
     return res.status(500).json({ message: "Server error", success: false });
+  }
+};
+
+// delete user
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const userId = req.body.userId; // Extract user ID from request
+
+    // Validate user ID
+    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid user ID", success: false });
+    }
+
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found", success: false });
+    }
+
+    // Delete user's playlists
+    await Playlist.deleteMany({ user: userId });
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+
+    res.status(200).json({ message: "User and associated playlists deleted successfully", success: true });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Server error", success: false });
   }
 };
