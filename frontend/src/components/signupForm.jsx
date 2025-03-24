@@ -29,6 +29,7 @@ const SignupForm = () => {
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const ref = useRef();
+  const [showCarousel, setShowCarousel] = useState(false);
 
   const [input, setInput] = useState({
     username: '',
@@ -63,7 +64,9 @@ const SignupForm = () => {
         toast({
           description: 'OTP sent successfully',
         });
-        ref.current.click();
+        setShowCarousel(true);
+        setTimeout(() => ref.current?.click(), 100);
+        
       } else {
         setError(resp.data.message);
         toast({
@@ -141,7 +144,7 @@ const SignupForm = () => {
             <CardContent className="grid p-0 md:grid-cols-2">
               <Carousel>
                 <CarouselContent>
-                  <CarouselItem>
+                  <CarouselItem className={`${showCarousel ? 'hidden' : ''} w-full h-full`}>  
                     <form className="p-6 md:p-8" onSubmit={handleSubmit}>
                       <div className="flex flex-col gap-6">
                         <div className="flex flex-col items-center text-center">
@@ -244,7 +247,7 @@ const SignupForm = () => {
                       </div>
                     </form>
                   </CarouselItem>
-                  <CarouselItem>
+                  <CarouselItem className={`${!showCarousel ? 'hidden' : ''} h-[50vh]`}>
                     <form className="p-6 md:p-8" onSubmit={handleVerifyOtp}>
                       <div className="flex flex-col gap-6">
                         <div className="flex flex-col items-center text-center">
