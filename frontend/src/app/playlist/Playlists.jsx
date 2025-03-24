@@ -69,8 +69,6 @@ const Playlists = () => {
     fetchPlaylists();
   }, []);
 
-  console.log(playlists);
-
   return (
     <div className="flex flex-col gap-6 mt-10 px-4 md:px-8">
       {loading && (
