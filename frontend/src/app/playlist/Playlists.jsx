@@ -69,6 +69,8 @@ const Playlists = () => {
     fetchPlaylists();
   }, []);
 
+  console.log(playlists);
+
   return (
     <div className="flex flex-col gap-6 mt-10 px-4 md:px-8">
       {loading && (
@@ -93,6 +95,17 @@ const Playlists = () => {
                 <h2 className="text-xl font-semibold text-foreground group-hover:hidden">{playlist.name}</h2>
                 <p className="text-sm text-muted-foreground group-hover:hidden">{playlist.description}</p>
                 <p className="text-xs text-muted-foreground group-hover:hidden">Videos: {playlist.videos.length}</p>
+                <p className="text-sm text-muted-foreground group-hover:hidden">
+                  {new Date(playlist.createdAt).toLocaleString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+
               </div>
               <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-[95%] transition-opacity duration-300 p-5 flex flex-col justify-center rounded-xl text-center text-white">
               <p className="text-lg font-semibold italic">{playlist.name}</p>
