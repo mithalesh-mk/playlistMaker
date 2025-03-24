@@ -43,12 +43,11 @@ export const AuthProvider = ({ children }) => {
         handleLogout();
         return;
       }
+           setLoading(false);
+        };
+        verifyUser();
+    }, [user]);
 
-      setLoading(false);
-    };
-
-    verifyUser();
-  }, []);
 
   if (loading) return <AnimatedLoader />;
 
