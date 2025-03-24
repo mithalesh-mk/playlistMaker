@@ -7,16 +7,16 @@ const Playlist=require("../models/playlistModel");
 const OTP = require("../models/otpModel");
 require("dotenv").config();
 
-
-
 const pendingUsers = new Map(); // { email: { username, email, otp, otpExpires } }
 
-// Step 1: Signup 
+// Step 1: Signup
 exports.register = async (req, res) => {
   try {
-    const { username, email,password } = req.body;
+    const { username, email, password } = req.body;
     if (!username || !email || !password) {
-      return res.status(400).json({ message: "Username and email are required", success: false });
+      return res
+        .status(400)
+        .json({ message: "Username and email are required", success: false });
     }
 
     let user = await User.findOne({ email });
@@ -46,38 +46,51 @@ exports.register = async (req, res) => {
         <img src="https://res.cloudinary.com/dhzeynyhc/image/upload/v1740514032/Vessel_logo_nt0ofw.png" width="85" height="85" alt="Logo">
         </div>   
     </div>
-    `; 
+    `;
     // Send OTP via email
     await sendEmail(email, "Email Verification OTP", emailBody);
 
-    res.status(200).json({ message: "OTP sent to email. Verify to continue.", success: true });
+    res
+      .status(200)
+      .json({
+        message: "OTP sent to email. Verify to continue.",
+        success: true,
+      });
   } catch (error) {
     console.error("Error in signup:", error);
     res.status(500).json({ message: "Server error", success: false });
   }
 };
 
-//Verify OTP & Register 
+//Verify OTP & Register
 exports.verifyEmail = async (req, res) => {
   try {
     const { otp } = req.body;
     if (!otp) {
-      return res.status(400).json({ message: "OTP and password are required", success: false });
+      return res
+        .status(400)
+        .json({ message: "OTP and password are required", success: false });
     }
 
     // Find user entry by OTP
-    let userEntry = [...pendingUsers.values()].find(entry => entry.otp === otp);
+    let userEntry = [...pendingUsers.values()].find(
+      (entry) => entry.otp === otp
+    );
 
     if (!userEntry) {
-      return res.status(400).json({ message: "Invalid OTP. Try again.", success: false });
+      return res
+        .status(400)
+        .json({ message: "Invalid OTP. Try again.", success: false });
     }
 
-    const { username, email,password, otpExpires } = userEntry;
+    const { username, email, password, otpExpires } = userEntry;
 
     // Check if OTP is expired
     if (Date.now() > otpExpires) {
       pendingUsers.delete(email);
-      return res.status(401).json({ message: "OTP expired. Request a new one.", success: false });
+      return res
+        .status(401)
+        .json({ message: "OTP expired. Request a new one.", success: false });
     }
 
     // Hash password
@@ -87,7 +100,12 @@ exports.verifyEmail = async (req, res) => {
     // Check if user already exists
     let existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User already registered. Please log in.", success: false });
+      return res
+        .status(400)
+        .json({
+          message: "User already registered. Please log in.",
+          success: false,
+        });
     }
 
     // Create new user
@@ -104,22 +122,29 @@ exports.verifyEmail = async (req, res) => {
     pendingUsers.delete(email);
 
     // Generate JWT Token
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
-    res.status(200).json({ message: "Registration successful", token, user:newUser, success: true });
+    res
+      .status(200)
+      .json({
+        message: "Registration successful",
+        token,
+        user: newUser,
+        success: true,
+      });
   } catch (error) {
     console.error("Error verifying OTP:", error);
     res.status(500).json({ message: "Server error", success: false });
   }
 };
 
-
 //Log in user
 exports.login = async (req, res) => {
-
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(409).send({
         message: "User Does Not Exist",
@@ -150,31 +175,62 @@ exports.login = async (req, res) => {
   }
 };
 exports.verify = async (req, res) => {
-  // The userId is decoded from the token in the authMiddleware
-  const userId = req.body.userId;
+  try {
+    // Check if userId is present
+    const userId = req.body.userId;
 
-  const user = await User.findById(userId).select("-password");
+    if (!userId) {
+      return res.status(400).json({
+        message: "User ID is missing from the request.",
+        success: false,
+      });
+    }
 
-  return res.status(200).json({
-    message: "User verified",
-    success: true,
-    user: user, // Send back the userId
-  });
+    // Find the user by ID and exclude the password
+    const user = await User.findById(userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found.",
+        success: false,
+      });
+    }
+
+    // Return success response if user is verified
+    return res.status(200).json({
+      message: "User verified successfully.",
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error("Error during user verification:", error.message);
+
+    // Send appropriate error response
+    return res.status(500).json({
+      message: "An error occurred while verifying the user.",
+      success: false,
+      error: error.message,
+    });
+  }
 };
+
 // Select avatar
 exports.selectAvatar = async (req, res) => {
-  const { avatar,id } = req.body; 
-  console.log(avatar) 
+  const { avatar, id } = req.body;
+  console.log(avatar);
 
   // Save the avatar to the user in the database
-  const user = await User.findOneAndUpdate({ _id: id },{
-    profilePic: avatar
-  });  
+  const user = await User.findOneAndUpdate(
+    { _id: id },
+    {
+      profilePic: avatar,
+    }
+  );
   return res.status(200).json({
     message: "Avatar selected successfully",
     user,
     success: true,
-  }); 
+  });
 };
 // Forgot password
 exports.forgotPassword = async (req, res) => {
@@ -183,7 +239,9 @@ exports.forgotPassword = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).send({ message: "User not found", success: false });
+      return res
+        .status(400)
+        .send({ message: "User not found", success: false });
     }
 
     // Generate a 6-digit OTP
@@ -195,7 +253,7 @@ exports.forgotPassword = async (req, res) => {
     // Store OTP in database
     const updatedUser = await User.findOneAndUpdate(
       { email },
-      { $set: { otp, otpExpires } }, 
+      { $set: { otp, otpExpires } },
       { new: true }
     );
 
@@ -219,8 +277,7 @@ exports.forgotPassword = async (req, res) => {
         <img src="https://res.cloudinary.com/dhzeynyhc/image/upload/v1740514032/Vessel_logo_nt0ofw.png" width="85" height="85" alt="Logo">
         </div>   
     </div>
-    `; 
-
+    `;
 
     // Send OTP via email
     await sendEmail(email, "Password Reset OTP", emailBody);
@@ -240,12 +297,19 @@ exports.verifyOTP = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).send({ message: "User not found", success: false });
+      return res
+        .status(404)
+        .send({ message: "User not found", success: false });
     }
 
     console.log("Entered OTP:", otp);
     console.log("Stored OTP:", user.otp);
-    console.log("OTP Expiry Time:", user.otpExpires, "Current Time:", Date.now());
+    console.log(
+      "OTP Expiry Time:",
+      user.otpExpires,
+      "Current Time:",
+      Date.now()
+    );
 
     if (!user.otp || user.otp !== otp) {
       return res.status(401).send({ message: "Invalid OTP", success: false });
@@ -262,7 +326,6 @@ exports.verifyOTP = async (req, res) => {
   }
 };
 
-
 // Reset password after OTP verification
 exports.resetPassword = async (req, res) => {
   try {
@@ -272,12 +335,19 @@ exports.resetPassword = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).send({ message: "User not found", success: false });
+      return res
+        .status(404)
+        .send({ message: "User not found", success: false });
     }
 
     console.log("Entered OTP:", otp);
     console.log("Stored OTP:", user.otp);
-    console.log("OTP Expiry Time:", user.otpExpires, "Current Time:", Date.now());
+    console.log(
+      "OTP Expiry Time:",
+      user.otpExpires,
+      "Current Time:",
+      Date.now()
+    );
 
     // Check if OTP is valid and not expired
     if (!user.otp || user.otp !== otp) {
@@ -297,40 +367,58 @@ exports.resetPassword = async (req, res) => {
       { $set: { password: hashedPassword, otp: null, otpExpires: null } }
     );
 
-    res.status(200).send({ message: "Password reset successful", success: true });
+    res
+      .status(200)
+      .send({ message: "Password reset successful", success: true });
   } catch (error) {
     console.error("Error resetting password:", error);
-    res.status(500).send({ message: "Error resetting password", success: false });
+    res
+      .status(500)
+      .send({ message: "Error resetting password", success: false });
   }
 };
 
-// Change Password 
+// Change Password
 exports.changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword, reenterNewPassword } = req.body;
-    const userId = req.body.userId; 
+    const userId = req.body.userId;
 
     // Check if new passwords match
     if (newPassword !== reenterNewPassword) {
-      return res.status(400).send({ message: "New passwords do not match", success: false });
+      return res
+        .status(400)
+        .send({ message: "New passwords do not match", success: false });
     }
 
     // Fetch user from database
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).send({ message: "User not found", success: false });
+      return res
+        .status(404)
+        .send({ message: "User not found", success: false });
     }
 
     // Compare old password with stored password
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) {
-      return res.status(400).send({ message: "Old password is incorrect", success: false });
+      return res
+        .status(400)
+        .send({ message: "Old password is incorrect", success: false });
     }
 
     // Check if the new password is the same as the old password
-    const isSameAsOldPassword = await bcrypt.compare(newPassword, user.password);
+    const isSameAsOldPassword = await bcrypt.compare(
+      newPassword,
+      user.password
+    );
     if (isSameAsOldPassword) {
-      return res.status(400).send({ message: "New password cannot be the same as the old password", success: false });
+      return res
+        .status(400)
+        .send({
+          message: "New password cannot be the same as the old password",
+          success: false,
+        });
     }
 
     // Hash new password
@@ -340,7 +428,9 @@ exports.changePassword = async (req, res) => {
     user.password = hashedPassword;
     await user.save();
 
-    res.status(200).send({ message: "Password changed successfully", success: true });
+    res
+      .status(200)
+      .send({ message: "Password changed successfully", success: true });
   } catch (error) {
     console.error("Error changing password:", error);
     res.status(500).send({ message: "Server error", success: false });
@@ -353,7 +443,11 @@ exports.changeUsername = async (req, res) => {
     const newUsername = req.body.newUsername?.trim(); // Trim early
 
     // Validate newUsername
-    if (!newUsername || typeof newUsername !== "string" || newUsername.length < 3) {
+    if (
+      !newUsername ||
+      typeof newUsername !== "string" ||
+      newUsername.length < 3
+    ) {
       return res.status(400).json({
         message: "Invalid username. It must be at least 3 characters long.",
         success: false,
@@ -376,7 +470,6 @@ exports.changeUsername = async (req, res) => {
       success: true,
       data: { username: user.username, email: user.email },
     });
-
   } catch (error) {
     console.error("Error updating username:", error);
     return res.status(500).json({
@@ -393,12 +486,16 @@ exports.changeProfilePicture = async (req, res) => {
     const { avatar } = req.body; // avatar = image URL
 
     if (!avatar || typeof avatar !== "string" || !avatar.trim()) {
-      return res.status(400).json({ message: "Invalid avatar URL", success: false });
+      return res
+        .status(400)
+        .json({ message: "Invalid avatar URL", success: false });
     }
 
     // Validate MongoDB ObjectId
     if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({ message: "Invalid user ID", success: false });
+      return res
+        .status(400)
+        .json({ message: "Invalid user ID", success: false });
     }
 
     // Update the user's profile picture
@@ -409,7 +506,9 @@ exports.changeProfilePicture = async (req, res) => {
     );
 
     if (!user) {
-      return res.status(404).json({ message: "User not found", success: false });
+      return res
+        .status(404)
+        .json({ message: "User not found", success: false });
     }
 
     return res.status(200).json({
