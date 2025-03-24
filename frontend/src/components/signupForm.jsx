@@ -71,7 +71,13 @@ const SignupForm = () => {
         });
       }
     } catch (error) {
-      console.log(error);
+      if (error.response && error.response.status === 409) {
+        toast({
+          description: 'Email already exists',
+        });
+      } else {
+        console.log(error);
+      }
     } finally {
       setLoading(false);
     }

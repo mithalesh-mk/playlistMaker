@@ -19,7 +19,7 @@ exports.register = async (req, res) => {
 
     let user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ message: "Email already registered", success: false });
+      return res.status(409).json({ message: "Email already registered", success: false });
     }
 
     // Generate OTP
@@ -119,7 +119,7 @@ exports.login = async (req, res) => {
   try {
     const user = await User.findOne({ email })
     if (!user) {
-      return res.status(400).send({
+      return res.status(409).send({
         message: "User Does Not Exist",
         success: false,
       });
@@ -127,7 +127,7 @@ exports.login = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).send({
+      return res.status(410).send({
         message: "Invalid Credentials",
         success: false,
       });
