@@ -49,11 +49,23 @@ export function LoginForm() {
         console.log(data.message);
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.status === 409) {
+        toast({
+          description: 'Email does not registered',
+        });
+      }
+    else  if(error.response.status === 410 && error.response){
+        toast({
+          description: 'Invalid password',
+        });
+      }
+       else {
+        console.log(error);
       toast({
         description: "Unable to login",
       })
     }
+  }
   };
 
   return (
