@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
            setLoading(false);
         };
         verifyUser();
-    }, [user]);
+    }, []);
 
 
   if (loading) return <AnimatedLoader />;
