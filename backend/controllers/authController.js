@@ -4,6 +4,7 @@ const User = require("../models/userModel");
 const authMiddleware = require("../middleware/authMiddleware");
 const sendEmail = require("../utils/sendEmail");
 const Playlist=require("../models/playlistModel");
+const Feedback=require("../models/feedbackModel");
 const OTP = require("../models/otpModel");
 require("dotenv").config();
 
@@ -541,6 +542,8 @@ exports.deleteUser = async (req, res) => {
 
     // Delete user's playlists
     await Playlist.deleteMany({ user: userId });
+    //Delete feedback
+    await Feedback.deleteMany({ user: userId });
     // Delete the user
     await User.findByIdAndDelete(userId);
 
