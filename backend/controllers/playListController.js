@@ -25,6 +25,7 @@ exports.addPlaylist = async (req, res) => {
 exports.deletePlaylist = async (req, res) => {
     try {
       const playlistId = req.params.playlistId;
+ 
       const deletedPlaylist = await Playlist.findByIdAndDelete(playlistId);
       if (!deletedPlaylist)
         return res.status(400).send({
@@ -255,6 +256,50 @@ exports.updateOrder = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, message: "Error updating order" });
+  }
+};
+
+// Update a playlist (name, description, category)
+exports.updatePlaylist = async (req, res) => {
+  try {
+    const { playlistId } = req.params;
+    const { name, description, category, userId } = req.body;
+
+    // Find the playlist
+    const playlist = await Playlist.findById(playlistId);
+    if (!playlist) {
+      return res.status(404).send({
+        message: "Playlist not found",
+        success: false,
+      });
+    }
+
+    // Check if the requesting user is the owner of the playlist
+    if (playlist.user.toString() !== userId) {
+      return res.status(403).send({
+        message: "Unauthorized to edit this playlist",
+        success: false,
+      });
+    }
+
+    // Update playlist fields
+    if (name) playlist.name = name;
+    if (description) playlist.description = description;
+    if (category) playlist.category = category;
+
+    await playlist.save();
+
+    return res.status(200).send({
+      message: "Playlist updated successfully",
+      success: true,
+      data: playlist,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: "Error updating playlist",
+      success: false,
+      data: error,
+    });
   }
 };
 
