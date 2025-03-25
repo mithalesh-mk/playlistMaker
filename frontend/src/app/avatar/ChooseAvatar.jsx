@@ -51,23 +51,33 @@ const avatars = [
 export default function ChooseAvatar() {
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const navigate = useNavigate();
-  const {user} = useAuth()  
+  const {user, setUser} = useAuth()  
 
  
   const handleSubmit = async () => {
     try {
-      const res = await axios.post('http://localhost:3000/api/auth/select-avatar', { avatar:selectedAvatar,id: user._id });
-      console.log('Avatar selected successfully!');
+      const res = await axios.post('http://localhost:3000/api/auth/select-avatar', { 
+        avatar: selectedAvatar, 
+        id: user._id 
+      });
+  
       const data = res.data;
-      if(data.success){
-        console.log(data)
-        navigate('/login'); 
+      if (data.success) {
+        console.log('Avatar selected successfully!');
+        
+        // Update user in context
+        setUser((prevUser) => ({
+          ...prevUser,
+          profilePic: selectedAvatar, // Update avatar in context
+        }));
+  
+        navigate('/profile'); // Redirect to profile instead of login
       }
     } catch (error) {
       console.error('Error saving avatar:', error);
     }
-  }
-  console.log(selectedAvatar)
+  };
+  
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">

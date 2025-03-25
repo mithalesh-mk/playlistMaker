@@ -31,7 +31,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { useAuth } from "@/userContext/AuthProvider"
 import { Link } from "react-router-dom"
 
@@ -39,6 +39,7 @@ export function NavUser() {
   const { isMobile } = useSidebar()
   const {toggleTheme} = useContext(ThemeContext)
   const { user,handleLogout } = useAuth()
+
 
   if(!user) return <div>Loading....</div>
 

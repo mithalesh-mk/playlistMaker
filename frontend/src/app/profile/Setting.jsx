@@ -4,25 +4,36 @@ import { UserRoundPen, Trash2 } from "lucide-react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import PopUp from "./PopUp";
 import axiosInstance from "@/axiosInstance";
+import { useEffect } from "react";
 
 
 function Setting() {
-  const { user, logout } = useAuth();
+  const { user, logout, setUser } = useAuth();
   const { username, email, profilePic } = user;
   const [newusername, setUsername] = useState(username);
   const navigate = useNavigate();
 
   const handleUsernameChange = (e) => setUsername(e.target.value);
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await axiosInstance.put("/auth/change-username", {
         newUsername: newusername,
       });
-      console.log(res.data);
+  
+      if (res.data.success) {
+        setUser((prevUser) => ({
+          ...prevUser,
+          username: newusername, // Update username in context
+        }));
+        
+      } else {
+        console.error("Failed to update username:", res.data.message);
+      }
     } catch (error) {
-      alert("Error updating username");
+      console.error("Failed to update username:", error);
       console.error(error);
     }
   };
