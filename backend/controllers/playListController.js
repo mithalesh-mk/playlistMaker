@@ -262,9 +262,10 @@ exports.updateOrder = async (req, res) => {
 // Update a playlist (name, description, category)
 exports.updatePlaylist = async (req, res) => {
   try {
+    const userId = req.body.userId;
     const { playlistId } = req.params;
-    const { name, description, category, userId } = req.body;
-
+    const { name, description, category } = req.body;
+    console.log(req.body,userId);
     // Find the playlist
     const playlist = await Playlist.findById(playlistId);
     if (!playlist) {

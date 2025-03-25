@@ -36,7 +36,7 @@ const Playlists = () => {
 
   const updatePlaylist = async () => {
     try {
-      const res = await axiosInstance.put(`/playlist/updateplaylist/${editingPlaylist._id}`, {
+      const res = await axiosInstance.put(`/playlist/updatePlaylist/${editingPlaylist._id}`, {
         name: editingPlaylist.name,
         description: editingPlaylist.description,
         category: editingPlaylist.category,
