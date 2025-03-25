@@ -123,7 +123,7 @@ exports.verifyEmail = async (req, res) => {
     pendingUsers.delete(email);
 
     // Generate JWT Token
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 

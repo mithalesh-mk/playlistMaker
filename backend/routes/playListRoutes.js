@@ -10,7 +10,7 @@ router.get("/userplaylists", authMiddleware, playListController.getPlaylist);
 router.get("/allplaylists", authMiddleware, playListController.getAllPlaylists);
 router.post("/:playlistId/like", authMiddleware, playListController.likePlaylist);
 router.post("/:playlistId/dislike", authMiddleware, playListController.dislikePlaylist);
-router.put("/updateOrder/:playlistId", playListController.updateOrder);
-router.put("/updatePlaylist/:playlistId", playListController.updatePlaylist);
+router.put("/updateOrder/:playlistId",authMiddleware, playListController.updateOrder);
+router.put("/updatePlaylist/:playlistId",authMiddleware, playListController.updatePlaylist);
 
 module.exports = router;
