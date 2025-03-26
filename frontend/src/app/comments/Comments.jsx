@@ -83,9 +83,36 @@ const Comments = () => {
   };
 
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [showreplyInput, setShowReplyInput] = useState(null);
+  const [replyText, setReplyText] = useState('');
 
   const handleDropdownToggle = (id) => {
     setActiveDropdown(activeDropdown === id ? null : id);
+  };
+
+  const handleReply = async (commentId) => {
+    if (!replyText) {
+      toast({
+        description: 'Please enter a reply',
+      });
+      return;
+    }
+
+    const addedReply = await axiosInstance.post(`/comment/addreply/${commentId}`, {
+      userId: user._id,
+      replyText,
+    });
+
+    const data = await addedReply.data;
+    if (!data.success) {
+      toast({
+        description: data.message,
+      });
+    } else {
+      fetchComments();
+      setReplyText('');
+      setShowReplyInput(null);
+    }
   };
 
   return (
@@ -136,7 +163,7 @@ const Comments = () => {
       {/* Comments */}
       <div className="w-full">
         {comments && comments.length > 0 ? (
-          comments.map((comment) => (
+          comments.map((comment,index) => (
             <div key={comment._id} className="w-[90%] mx-auto mt-6">
               <div className="flex gap-4 items-start">
                 {/* User Image */}
@@ -157,7 +184,6 @@ const Comments = () => {
                       </p>
                       <div className="flex items-center justify-center space space-x-0">
                         {[...Array(comment?.rating)].map((_, index) => {
-                          
                           return (
                             <span
                               key={index}
@@ -220,9 +246,47 @@ const Comments = () => {
 
                   {/* Reply Button */}
                   <div className="flex gap-6 mt-2">
-                    <button className="text-blue-500 hover:underline text-sm">
+                    {/* Reply Button */}
+                    <button
+                      onClick={() => setShowReplyInput((prev) => (prev === index ? null : index))}
+                      className="text-blue-500 hover:underline text-sm"
+                    >
                       Reply
                     </button>
+                    <button
+                      
+                      className="text-blue-500 hover:underline text-sm"
+                    >
+                      show reply
+                    </button>
+
+                    {/* Replies */}
+                    {comment.replies.length > 0 && comment.replies.map((reply, index) => (
+                      <div key={index} className="flex gap-2 items-center">
+                        <p className="text-gray-500 text-sm">
+                          {reply.userId.username || 'Unknown User'}
+                        </p>
+                        <p className="text-gray-500 text-sm">{reply.replyText}</p>
+                      </div>
+                    ))}
+
+
+                    {/* Reply Input */}
+
+                    {showreplyInput===index && (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          placeholder="Write a reply..."
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          className="bg-gray-700 text-white px-3 py-1 rounded-lg focus:outline-none border border-gray-600 w-[250px]"
+                        />
+                        <button onClick={() => handleReply(comment._id)} className="bg-slate-700 text-white px-4 py-1 rounded-lg hover:bg-slate-900 transition-all">
+                          Post
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

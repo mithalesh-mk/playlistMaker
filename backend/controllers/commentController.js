@@ -118,16 +118,25 @@ exports.deleteComment = async (req, res) => {
   }
 };
 
-//Get All comment
+
+// Get All comments
 exports.getComments = async (req, res) => {
   try {
     const params = req.params.playlistId;
 
     const playlist = await PlayList.findById(params).populate({
       path: 'comments',
-      populate: {
-        path: 'userId',
-      },
+      populate: [
+        {
+          path: 'userId', // Populate user details
+        },
+        {
+          path: 'replies', // Populate replies for each comment
+          populate: {
+            path: 'userId', // Populate user details for each reply
+          }
+        }
+      ]
     });
 
     if (!playlist) {
@@ -139,14 +148,14 @@ exports.getComments = async (req, res) => {
     }
 
     return res.status(200).send({
-      message: 'Comment fetched Successfully',
+      message: 'Comments fetched Successfully',
       data: playlist.comments,
       success: true,
     });
   } catch (error) {
     return res.status(500).send({
-      message: 'Not able to delete comment',
-      data: error,
+      message: 'Not able to fetch comments',
+      data: error.message,
       success: false,
     });
   }
