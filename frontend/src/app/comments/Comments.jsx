@@ -48,6 +48,7 @@ const Comments = () => {
       `/comment/getcomments/${playlistId}`
     );
     const data = await comments.data;
+    console.log(data.data);
     if (!data.success) {
       toast({
         description: data.message,
@@ -61,7 +62,31 @@ const Comments = () => {
     fetchComments();
   }, []);
 
-  console.log(comments)
+  console.log(comments);
+  const formatTimeAgo = (timestamp) => {
+    const now = new Date();
+    const createdAt = new Date(timestamp);
+    const diff = Math.floor((now - createdAt) / 1000); // Difference in seconds
+
+    if (diff < 60) {
+      return `${diff} second${diff !== 1 ? 's' : ''} ago`;
+    } else if (diff < 3600) {
+      const minutes = Math.floor(diff / 60);
+      return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+    } else if (diff < 86400) {
+      const hours = Math.floor(diff / 3600);
+      return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    } else {
+      const days = Math.floor(diff / 86400);
+      return `${days} day${days !== 1 ? 's' : ''} ago`;
+    }
+  };
+
+  const [activeDropdown, setActiveDropdown] = useState(null);
+
+  const handleDropdownToggle = (id) => {
+    setActiveDropdown(activeDropdown === id ? null : id);
+  };
 
   return (
     <div className="bg-muted rounded-3xl mx-auto w-[95%] mt-16 sm:w-[85%] lg:w-[87%] p-6 flex flex-col items-center">
@@ -104,41 +129,109 @@ const Comments = () => {
         </div>
       </div>
       <div className="flex justify-between w-full mt-4">
-        <p className="text-xl font-bold">Comments: 69</p>
+        <p className="text-xl font-bold">Comments: {comments.length}</p>
         <p className="text-xl font-bold">Most Recent </p>
       </div>
 
       {/* Comments */}
-      {comments && comments.length > 0 ? (
-        comments.map((comment) => (
-          <div key={comment._id} className="w-[90%] mx-auto mt-6">
-            <div className="flex gap-4 ">
-              <div>
-                <img
-                  src="https://res.cloudinary.com/dtb51hq4c/image/upload/v1739907671/youtubePlaylist/Avatars/x7w6y5fxjqlu2ymtciqb.png"
-                  alt="user"
-                  className="w-32"
-                />
-              </div>
-              <div className="">
-                <div className="flex gap-4 items-center">
-                  <p className="capitalize font-semibold text-xl">username</p>
-                  <p className="font-semibold text-md">59 minutes ago</p>
+      <div className="w-full">
+        {comments && comments.length > 0 ? (
+          comments.map((comment) => (
+            <div key={comment._id} className="w-[90%] mx-auto mt-6">
+              <div className="flex gap-4 items-start">
+                {/* User Image */}
+                <div className="flex-shrink-0">
+                  <img
+                    src={comment?.userId?.profilePic || '/default-avatar.png'}
+                    alt="user"
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
                 </div>
-                <div className="text-black/80 dark:text-white/80 text-base">
-                  {comment.text}
+
+                {/* Comment Content */}
+                <div className="flex-1">
+                  <div className="flex justify-between items-center">
+                    <div className="flex  gap-4 items-center">
+                      <p className="capitalize font-semibold text-lg">
+                        {comment?.userId?.username || 'Unknown User'}
+                      </p>
+                      <div className="flex items-center justify-center space space-x-0">
+                        {[...Array(comment?.rating)].map((_, index) => {
+                          
+                          return (
+                            <span
+                              key={index}
+                              className={`cursor-pointer text-md 
+                                
+                                  text-yellow-400
+                                  
+                              `}
+                            >
+                              ★
+                            </span>
+                          );
+                        })}
+                      </div>
+                      <p className="text-gray-500 text-sm">
+                        {formatTimeAgo(comment.createdAt)}
+                      </p>
+                    </div>
+
+                    {/* Dropdown */}
+                    <div className="relative">
+                      <button
+                        onClick={() => handleDropdownToggle(comment._id)}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        &#8226;&#8226;&#8226;
+                      </button>
+
+                      {activeDropdown === comment._id && (
+                        <div className="absolute right-0 top-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
+                          <ul className="text-sm text-gray-700 dark:text-gray-300">
+                            <li
+                              className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                              onClick={() => alert('Edit')}
+                            >
+                              Edit
+                            </li>
+                            <li
+                              className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                              onClick={() => alert('Delete')}
+                            >
+                              Delete
+                            </li>
+                            <li
+                              className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                              onClick={() => alert('Report')}
+                            >
+                              Report
+                            </li>
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Comment Text */}
+                  <p className="text-gray-700 dark:text-gray-300 mt-1 text-base">
+                    {comment.text}
+                  </p>
+
+                  {/* Reply Button */}
+                  <div className="flex gap-6 mt-2">
+                    <button className="text-blue-500 hover:underline text-sm">
+                      Reply
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="flex gap-10 items-center ml-[70px]">
-              <p className="text-white/80 text-base cursor-pointer">Reply</p>
-              <p>...</p>
-            </div>
-          </div>
-        ))
-      ) : (
-        <p className="text-lg font-semibold mt-4">No comments yet</p>
-      )}
+          ))
+        ) : (
+          <p className="text-lg font-semibold mt-4">No comments yet</p>
+        )}
+      </div>
     </div>
   );
 };
