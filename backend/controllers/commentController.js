@@ -1,6 +1,6 @@
-const Comment = require("../models/commentModel");
-const PlayList = require("../models/playlistModel");
-const authMiddleware = require("../middleware/authMiddleware");
+const Comment = require('../models/commentModel');
+const PlayList = require('../models/playlistModel');
+const authMiddleware = require('../middleware/authMiddleware');
 
 //Add comment Routes
 exports.addComment = async (req, res) => {
@@ -21,7 +21,7 @@ exports.addComment = async (req, res) => {
 
     if (!playlist) {
       return res.status(400).send({
-        message: "Playlist Not found",
+        message: 'Playlist Not found',
         data: error,
         success: false,
       });
@@ -31,13 +31,13 @@ exports.addComment = async (req, res) => {
     await playlist.save();
 
     return res.status(200).send({
-      message: "Comment uploaded",
+      message: 'Comment uploaded',
       data: null,
       success: true,
     });
   } catch (error) {
     return res.status(500).send({
-      message: "Not able to comment",
+      message: 'Not able to comment',
       data: error,
       success: false,
     });
@@ -54,7 +54,7 @@ exports.addReply = async (req, res) => {
 
     if (!comment) {
       return res.status(404).send({
-        message: "Comment not found",
+        message: 'Comment not found',
         success: false,
       });
     }
@@ -63,13 +63,13 @@ exports.addReply = async (req, res) => {
     await comment.save();
 
     return res.status(200).send({
-      message: "Reply added successfully",
+      message: 'Reply added successfully',
       data: comment.replies,
       success: true,
     });
   } catch (error) {
     return res.status(500).send({
-      message: "Unable to add reply",
+      message: 'Unable to add reply',
       data: error,
       success: false,
     });
@@ -78,75 +78,76 @@ exports.addReply = async (req, res) => {
 
 //delete Comment
 exports.deleteComment = async (req, res) => {
-    try {
-      //Finding playlist where comment is
-      const params = req.params.playlistId;
-      console.log(params);
-      const playlist = await PlayList.findById(params);
-
-      if (!playlist) {
-        return res.status(400).send({
-          message: "Playlist Not found",
-          data: null,
-          success: false,
-        });
-      }
-
-      //Finding comment id for the comment which will be deleted.
-      const idOfComment = req.body.id;
-      playlist.comments = playlist.comments.filter(
-        (id) => id.toString() !== idOfComment
-      );
-
-      await playlist.save();
-
-      //Deleting comment document
-
-      await Comment.findByIdAndDelete(idOfComment);
-
-      return res.status(200).send({
-        message: "Comment deleted Successfully",
-        data: null,
-        success: true,
-      });
-    } catch (error) {
-      return res.status(500).send({
-        message: "Not able to delete comment",
-        data: error,
-        success: false,
-      });
-    }
-  };
-
-//Get All comment
-exports.getComments = async (req, res) => {
   try {
+    //Finding playlist where comment is
     const params = req.params.playlistId;
-
+    console.log(params);
     const playlist = await PlayList.findById(params);
 
     if (!playlist) {
       return res.status(400).send({
-        message: "Playlist Not found",
+        message: 'Playlist Not found',
         data: null,
         success: false,
       });
     }
 
-    const playlistData = await playlist.populate("comments");
+    //Finding comment id for the comment which will be deleted.
+    const idOfComment = req.body.id;
+    playlist.comments = playlist.comments.filter(
+      (id) => id.toString() !== idOfComment
+    );
+
+    await playlist.save();
+
+    //Deleting comment document
+
+    await Comment.findByIdAndDelete(idOfComment);
 
     return res.status(200).send({
-      message: "Comment fetched Successfully",
-      data: playlist.comments,
+      message: 'Comment deleted Successfully',
+      data: null,
       success: true,
     });
   } catch (error) {
     return res.status(500).send({
-      message: "Not able to delete comment",
+      message: 'Not able to delete comment',
       data: error,
       success: false,
     });
   }
 };
 
+//Get All comment
+exports.getComments = async (req, res) => {
+  try {
+    const params = req.params.playlistId;
 
+    const playlist = await PlayList.findById(params).populate({
+      path: 'comments',
+      populate: {
+        path: 'userId',
+      },
+    });
+
+    if (!playlist) {
+      return res.status(400).send({
+        message: 'Playlist Not found',
+        data: null,
+        success: false,
+      });
+    }
+
+    return res.status(200).send({
+      message: 'Comment fetched Successfully',
+      data: playlist.comments,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: 'Not able to delete comment',
+      data: error,
+      success: false,
+    });
+  }
+};

@@ -346,7 +346,7 @@ const Playlist = () => {
   };
 
   return (
-    <div className="flex flex-col w-[95%] max-h-[94vh] sm:w-[85%] lg:w-[80%] rounded-t-lg mx-auto gap-4 border-t-2 border-l-2 border-r-2 p-4">
+    <div className="flex flex-col w-[95%]  sm:w-[85%] lg:w-[80%] rounded-lg mx-auto gap-4 border-2 p-4">
       <div className="flex gap-4 relative flex-col lg:flex-row pb-3 border-b">
         <div className="w-66 sm:w-96 rounded-md">
           <img src="/playlist.jpeg" alt="playlist" />
@@ -448,7 +448,7 @@ const Playlist = () => {
 
       <h1 className="mt-3 font-bold text-4xl">Videos</h1>
       {/* Videos List */}
-      <div className="flex flex-col w-[95%] max-h-[94vh] scrollbar-hide overflow-y-auto sm:w-[85%] lg:w-[80%] mx-auto">
+      <div className="flex flex-col w-[95%]  sm:w-[85%] lg:w-[80%] mx-auto">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -458,7 +458,7 @@ const Playlist = () => {
             items={data.videos.map((v) => v._id)}
             strategy={verticalListSortingStrategy}
           >
-            <ul className="h-[100vh] mt-6 p-4 flex flex-col gap-5 items-center w-[90%] mx-auto">
+            <ul className="mt-6 p-4 flex flex-col gap-5 items-center w-[90%] mx-auto">
               {data.videos.length > 0 ? (
                 data.videos.map((video) => (
                   <SortableVideo key={video._id} video={video} />
@@ -469,7 +469,7 @@ const Playlist = () => {
             </ul>
           </SortableContext>
         </DndContext>
-        <Comments/>
+        {data.videos.length > 0 && <Comments />}
       </div>
       
     </div>
