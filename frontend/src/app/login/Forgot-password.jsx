@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRef, useState } from 'react';
 import { useToast } from "@/hooks/use-toast"
+import { motion } from 'framer-motion';
 
 import axios from 'axios';
 import {
@@ -28,10 +29,18 @@ const ForgotPassword = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const ref = useRef();
+  const [showOtpCard, setShowOtpCard] = useState(false);
+  const [showPasswordCard, setShowPasswordCard] = useState(false);
 
   const { toast } = useToast()
 
   const navigate = useNavigate();
+
+  const fadeVariants = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+    exit: { opacity: 0, x: -50, transition: { duration: 0.3 } },
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,6 +54,7 @@ const ForgotPassword = () => {
         toast({
             description: "OTP sent successfully",
           })
+          setShowOtpCard(true);
         ref.current.click();
       } else {
         setError(resp.data.message);
@@ -76,6 +86,7 @@ const ForgotPassword = () => {
         toast({
             description: "OTP verified successfully",
             })
+        setShowPasswordCard(true);
         ref.current.click();
       } else if (data.message === 'Expired OTP') {
         setError('OTP expired, please try again');
@@ -136,107 +147,120 @@ const ForgotPassword = () => {
           <Card className="overflow-hidden">
             {error && <p className="text-red-500">{error}</p>}
             <CardContent className="grid p-0 md:grid-cols-2 h-[400px]">
-              <Carousel>
-                <CarouselContent>
-                  <CarouselItem>
-                    <form className="p-6 md:p-8" onSubmit={handleSubmit}>
-                      <div className="flex flex-col gap-6">
-                        <div className="flex flex-col items-center text-center">
-                          <h1 className="text-2xl font-bold">
-                            Forget Password
-                          </h1>
-                        </div>
-                        <div className="grid gap-2 mt-12">
-                          <Label htmlFor="email" className="mb-2">
-                            Enter your registered email
-                          </Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            placeholder="m@example.com"
-                            name="email"
-                            onChange={(e) => setEmail(e.target.value)}
-                            value={email}
-                            required
-                          />
-                        </div>
+                  {!showOtpCard && !showPasswordCard && (
+                    <motion.div
+                      key="email-form"
+                      variants={fadeVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      className="w-full h-full"
+                    >
+                        <form className="p-6 md:p-8" onSubmit={handleSubmit}>
+                          <div className="flex flex-col gap-6">
+                            <div className="flex flex-col items-center text-center">
+                              <h1 className="text-2xl font-bold">Forget Password</h1>
+                            </div>
+                            <div className="grid gap-2 mt-12">
+                              <Label htmlFor="email" className="mb-2">
+                                Enter your registered email
+                              </Label>
+                              <Input
+                                id="email"
+                                type="email"
+                                placeholder="m@example.com"
+                                name="email"
+                                onChange={(e) => setEmail(e.target.value)}
+                                value={email}
+                                required
+                              />
+                            </div>
 
-                        <Button
-                          type="submit"
-                          disabled={loading}
-                          className="w-full"
-                        >
-                          Get Otp
-                        </Button>
-                      </div>
-                    </form>
-                  </CarouselItem>
-                  <CarouselItem>
-                    <form className="p-6 md:p-8" onSubmit={handleVerifyOtp}>
-                      <div className="flex flex-col gap-6">
-                        <div className="flex flex-col items-center text-center">
-                          <h1 className="text-2xl font-bold">Enter Otp</h1>
-                        </div>
-                        <div className="grid gap-2 mt-12">
-                          <InputOTP maxLength={6} onChange={(e) => setOtp(e)}>
-                            <InputOTPGroup>
-                              <InputOTPSlot index={0} />
-                              <InputOTPSlot index={1} />
-                              <InputOTPSlot index={2} />
-                            </InputOTPGroup>
-                            <InputOTPSeparator />
-                            <InputOTPGroup>
-                              <InputOTPSlot index={3} />
-                              <InputOTPSlot index={4} />
-                              <InputOTPSlot index={5} />
-                            </InputOTPGroup>
-                          </InputOTP>
-                        </div>
+                            <Button type="submit" disabled={loading} className="w-full">
+                              Get Otp
+                            </Button>
+                          </div>
+                        </form>
+                    </motion.div>
+                  )}
 
-                        <Button
-                          type="submit"
-                          disabled={loading}
-                          className="w-full"
-                        >
-                          Verify Otp
-                        </Button>
-                        {error === 'OTP expired, please try again' && (
-                          <p className="text-red-500 text-center">
-                            OTP expired, please try again
-                          </p>
-                        )}
-                      </div>
-                    </form>
-                  </CarouselItem>
-                  <CarouselItem>
-                    <form className="p-6 md:p-8" onSubmit={handleResetPassword}>
-                      <div className="flex flex-col gap-6">
-                        <div className="flex flex-col items-center text-center">
-                          <h1 className="text-2xl font-bold">
-                            Enter New Password
-                          </h1>
-                        </div>
-                        <div className="grid gap-2 mt-12">
-                          <Input
-                            id="Password"
-                            type="password"
-                            name="password"
-                            onChange={(e) => setPassword(e.target.value)}
-                            value={password}
-                            required
-                          />
-                        </div>
+                  {showOtpCard && !showPasswordCard && (
+                    <motion.div
+                      key="otp-form"
+                      variants={fadeVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      className="w-full h-full"
+                    >
+                        <form className="p-6 md:p-8" onSubmit={handleVerifyOtp}>
+                          <div className="flex flex-col gap-6">
+                            <div className="flex flex-col items-center text-center">
+                              <h1 className="text-2xl font-bold">Enter Otp</h1>
+                            </div>
+                            <div className="grid gap-2 mt-12">
+                              <InputOTP maxLength={6} onChange={(e) => setOtp(e)}>
+                                <InputOTPGroup>
+                                  <InputOTPSlot index={0} />
+                                  <InputOTPSlot index={1} />
+                                  <InputOTPSlot index={2} />
+                                </InputOTPGroup>
+                                <InputOTPSeparator />
+                                <InputOTPGroup>
+                                  <InputOTPSlot index={3} />
+                                  <InputOTPSlot index={4} />
+                                  <InputOTPSlot index={5} />
+                                </InputOTPGroup>
+                              </InputOTP>
+                            </div>
 
-                        <Button type="submit" className="w-full">
-                          Reset Password
-                        </Button>
-                      </div>
-                    </form>
-                  </CarouselItem>
-                </CarouselContent>
-                <CarouselNext ref={ref} className="z-50 hidden" />
-              </Carousel>
+                            <Button type="submit" disabled={loading} className="w-full">
+                              Verify Otp
+                            </Button>
+                            {error === "OTP expired, please try again" && (
+                              <p className="text-red-500 text-center">
+                                OTP expired, please try again
+                              </p>
+                            )}
+                          </div>
+                        </form>
+                    </motion.div>
+                  )}
 
+                  {showPasswordCard && (
+                    <motion.div
+                      key="password-form"
+                      variants={fadeVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      className="w-full h-full"
+                    >
+                      <CarouselItem>
+                        <form className="p-6 md:p-8" onSubmit={handleResetPassword}>
+                          <div className="flex flex-col gap-6">
+                            <div className="flex flex-col items-center text-center">
+                              <h1 className="text-2xl font-bold">Enter New Password</h1>
+                            </div>
+                            <div className="grid gap-2 mt-12">
+                              <Input
+                                id="Password"
+                                type="password"
+                                name="password"
+                                onChange={(e) => setPassword(e.target.value)}
+                                value={password}
+                                required
+                              />
+                            </div>
+
+                            <Button type="submit" className="w-full">
+                              Reset Password
+                            </Button>
+                          </div>
+                        </form>
+                      </CarouselItem>
+                    </motion.div>
+                  )}
               <div className="relative hidden bg-muted md:block">
                 <img
                   src="https://images.pexels.com/photos/3585074/pexels-photo-3585074.jpeg"
