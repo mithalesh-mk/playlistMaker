@@ -11,20 +11,46 @@ export default function Home() {
   const [top2Data, setTop2Data] = useState([]);
   const categoies = ["Education", "Music", "Travel", "Series", "Others"];
 
+  // const getPlaylists = async (category, search, sort) => {
+  //   try {
+  //     const params = {};
+  //     if (category) params.category = category.toLowerCase();
+  //     if (search) params.search = search.toLowerCase();
+  //     if (sort) params.sort = sort.toLowerCase();
+  //     const response = await axiosInstance.get("/playlist/allplaylists", {
+  //       params,
+  //     });
+  //     if (response.data.success) {
+  //       const allPlaylists = response.data.data;
+  //       console.log(response.data.data);
+  //       setTop2Data(allPlaylists.slice(0, 2)); // First 2 items
+  //       setPlaylists(allPlaylists.slice(2)); // Rest of the items
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching playlists:", error);
+  //   }
+  // };
+
+  const fetchPlaylists = async (category, search, sort) => {
+    try {
+      const params = {};
+      if (category) params.category = category.toLowerCase();
+      if (search) params.search = search.toLowerCase();
+      if (sort) params.sort = sort.toLowerCase();
+      setLoading(true);
+      const response = await axiosInstance.get("/playlist/allplaylists", {
+        params,
+      });
+      const allPlaylists = response.data.data;
+      setTop2Data(allPlaylists.slice(0, 2)); // First 2 items
+      setPlaylists(allPlaylists.slice(2)); // Rest of the items
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+    }
+  };
+
   useEffect(() => {
-    const fetchPlaylists = async () => {
-      try {
-        const response = await axiosInstance.get("/playlist/allplaylists");
-        const allPlaylists = response.data.data;
-        setTop2Data(allPlaylists.slice(0, 2)); // First 2 items
-        setPlaylists(allPlaylists.slice(2)); // Rest of the items
-
-        setLoading(false);
-      } catch (error) {
-        setError(error);
-      }
-    };
-
     fetchPlaylists();
   }, []);
   return (
@@ -102,6 +128,9 @@ export default function Home() {
                 <div
                   key={category}
                   className="bg-muted lg:py-3 lg:px-6 px-4 py-2 rounded-full cursor-pointer"
+                  onClick={() => {
+                    fetchPlaylists(category);
+                  }}
                 >
                   <p className="md:text-lg text-base font-semibold uppercase">
                     {category}

@@ -3,6 +3,93 @@ const Playlist = require("../models/playlistModel");
 const mongoose = require("mongoose");
 const shortid = require("shortid");
 
+// Get all playlists
+exports.getAllPlaylists = async (req, res) => {
+  try {
+    const { category, search, sort } = req.query;
+
+    let matchStage = {};
+    let sortStage = {};
+    if (category) {
+      matchStage.category = category; // Apply category filter if provided
+      sortStage.likeCount = -1; // Sort by like count in descending order
+    }
+    if (search) {
+      matchStage.$text = { $search: search }; // Apply text search if provided
+    }
+
+    // Determine the sorting field
+
+    if (sort === "likes") {
+      sortStage.likeCount = -1; // Sort by like count in descending order
+    } else if (sort === "recent") {
+      sortStage.createdAt = -1; // Sort by creation date in descending order
+    }
+    if (search && Object.keys(sortStage).length === 0) {
+      sortStage = { score: { $meta: "textScore" } }; // Sort by relevance if search is applied
+    }
+
+    // If no filters or search are applied, return all playlists sorted by createdAt
+    if (!category && !search && Object.keys(sortStage).length === 0) {
+      sortStage.createdAt = -1; // Default to most recent playlists
+    }
+
+    const playlists = await Playlist.aggregate([
+      { $match: matchStage }, // Apply filters if any
+      {
+        $addFields: {
+          likeCount: { $size: "$likes" }, // Calculate like count
+        },
+      },
+      { $sort: sortStage }, // Apply sorting
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" }, // Flatten user data
+      {
+        $project: {
+          name: 1,
+          user: { _id: 1, username: 1, profilePic: 1 },
+          videos: 1,
+          description: 1,
+          comments: 1,
+          likes: 1,
+          dislikes: 1,
+          shares: 1,
+          category: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+    ]);
+
+    if (!playlists.length) {
+      return res.status(200).send({
+        message: "No playlists found",
+        data: [],
+        success: true,
+      });
+    }
+
+    return res.status(200).send({
+      message: "Playlists retrieved successfully",
+      data: playlists,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: "Unable to get playlists",
+      error: error?.message || "Unknown error",
+      success: false,
+    });
+  }
+};
+
 // Add a new playlist
 exports.addPlaylist = async (req, res) => {
   try {
@@ -54,29 +141,29 @@ exports.getPlaylistByShareableId = async (req, res) => {
 
 // Delete a playlist
 exports.deletePlaylist = async (req, res) => {
-    try {
-      const playlistId = req.params.playlistId;
- 
-      const deletedPlaylist = await Playlist.findByIdAndDelete(playlistId);
-      if (!deletedPlaylist)
-        return res.status(400).send({
-          message: "Play List not found",
-          success: false,
-          data: "",
-        });
-      return res.status(200).send({
-        message: "PlayList Deleted successfully",
-        data: "",
-        success: true,
-      });
-    } catch (error) {
-      return res.status(500).send({
-        message: "PlayList Cannot be deleted",
-        data: error,
+  try {
+    const playlistId = req.params.playlistId;
+
+    const deletedPlaylist = await Playlist.findByIdAndDelete(playlistId);
+    if (!deletedPlaylist)
+      return res.status(400).send({
+        message: "Play List not found",
         success: false,
+        data: "",
       });
-    }
-  };
+    return res.status(200).send({
+      message: "PlayList Deleted successfully",
+      data: "",
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: "PlayList Cannot be deleted",
+      data: error,
+      success: false,
+    });
+  }
+};
 
 //Get playlist details by playlist ID
 exports.getPlaylistDetails = async (req, res) => {
@@ -143,75 +230,6 @@ exports.getPlaylist = async (req, res) => {
   }
 };
 
-// Get all playlists
-exports.getAllPlaylists = async (req, res) => {
-  try {
-    const { category } = req.query; // Get category from query params
-
-    let matchStage = {};
-    if (category) {
-      matchStage.category = category; // Apply category filter if provided
-    }
-
-    const playlists = await Playlist.aggregate([
-      { $match: matchStage }, // Filter by category if provided
-      {
-        $addFields: {
-          likeCount: { $size: "$likes" } // Count likes
-        }
-      },
-      { $sort: { likeCount: -1 } }, // Sort by like count in descending order
-      {
-        $lookup: {
-          from: "users",
-          localField: "user",
-          foreignField: "_id",
-          as: "user"
-        }
-      },
-      { $unwind: "$user" }, // Convert user array to object
-      {
-        $project: {
-          name: 1,
-          user: { _id: 1, username: 1, profilePic: 1 },
-          videos: 1,
-          description: 1,
-          comments: 1,
-          likes: 1,
-          dislikes: 1,
-          shares: 1,
-          category: 1,
-          createdAt: 1,
-          updatedAt: 1
-        }
-      }
-    ]);
-
-    if (playlists.length === 0) {
-      return res.status(200).send({
-        message: "No playlists found",
-        data: [],
-        success: true,
-      });
-    }
-
-    return res.status(200).send({
-      message: "Playlists retrieved successfully",
-      data: playlists,
-      success: true,
-    });
-  } catch (error) {
-    return res.status(500).send({
-      message: "Unable to get playlists",
-      error,
-      success: false,
-    });
-  }
-};
-
-
-
-
 // Like a playlist
 exports.likePlaylist = async (req, res) => {
   try {
@@ -226,7 +244,6 @@ exports.likePlaylist = async (req, res) => {
         success: false,
       });
     }
-
     // Check if the user has already liked the playlist
     if (playlist.likes.includes(userId)) {
       // If the user has liked it, remove the like
@@ -335,7 +352,7 @@ exports.updatePlaylist = async (req, res) => {
     const userId = req.body.userId;
     const { playlistId } = req.params;
     const { name, description, category } = req.body;
-    console.log(req.body,userId);
+    console.log(req.body, userId);
     // Find the playlist
     const playlist = await Playlist.findById(playlistId);
     if (!playlist) {
@@ -373,5 +390,3 @@ exports.updatePlaylist = async (req, res) => {
     });
   }
 };
-
-

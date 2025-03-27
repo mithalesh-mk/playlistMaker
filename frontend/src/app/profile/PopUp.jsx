@@ -1,20 +1,35 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import axiosInstance from "@/axiosInstance";
-import { X } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { X, Eye, EyeOff } from "lucide-react";
 
 const PopupForm = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [renewPassword, setRenewPassword] = useState("");
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showRenewPassword, setShowRenewPassword] = useState(false);
 
-  const togglePopup = () => setIsOpen(!isOpen);
+  const togglePopup = () => {
+    setIsOpen(!isOpen);
+    setOldPassword("");
+    setNewPassword("");
+    setRenewPassword("");
+    setShowOldPassword(false);
+    setShowNewPassword(false);
+    setShowRenewPassword(false);
+  };
+  const { toast } = useToast();
 
   const handleSave = async (e) => {
     e.preventDefault();
     if (newPassword !== renewPassword) {
-      alert("New passwords do not match.");
+      toast({
+        description: "New passwords do not match.",
+      });
       return;
     }
     try {
@@ -23,10 +38,21 @@ const PopupForm = () => {
         newPassword,
         reenterNewPassword: renewPassword,
       });
-      alert("Password changed successfully!");
+      toast({
+        description: "Password changed successfully.",
+      });
+      setOldPassword("");
+      setNewPassword("");
+      setRenewPassword("");
       togglePopup();
     } catch (error) {
-      alert("Error changing password. Please try again.");
+      toast({
+        description: `${error.response.data.message}`,
+      });
+      setOldPassword("");
+      setNewPassword(""); 
+      setRenewPassword("");
+      togglePopup();
     }
   };
 
@@ -55,35 +81,44 @@ const PopupForm = () => {
             </button>
             <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800 dark:text-gray-200">Change Password</h2>
             <form onSubmit={handleSave} className="space-y-4">
-              <div>
+            <div className="relative">
                 <label className="block text-gray-600 dark:text-gray-300">Old Password</label>
                 <input
-                  type="password"
+                  type={showOldPassword ? "text" : "password"}
                   value={oldPassword}
                   onChange={(e) => setOldPassword(e.target.value)}
                   className="w-full p-3 rounded-lg border dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-indigo-400"
                   placeholder="Enter Old Password"
                 />
+                <button type="button" onClick={() => setShowOldPassword(!showOldPassword)} className="absolute top-9 right-3 text-gray-500">
+                  {showOldPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
-              <div>
+              <div className="relative">
                 <label className="block text-gray-600 dark:text-gray-300">New Password</label>
                 <input
-                  type="password"
+                  type={showNewPassword ? "text" : "password"}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   className="w-full p-3 rounded-lg border dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-indigo-400"
                   placeholder="Enter New Password"
                 />
+                <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute top-9 right-3 text-gray-500">
+                  {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
-              <div>
+              <div className="relative">
                 <label className="block text-gray-600 dark:text-gray-300">Confirm Password</label>
                 <input
-                  type="password"
+                  type={showRenewPassword ? "text" : "password"}
                   value={renewPassword}
                   onChange={(e) => setRenewPassword(e.target.value)}
                   className="w-full p-3 rounded-lg border dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-indigo-400"
                   placeholder="Confirm New Password"
                 />
+                <button type="button" onClick={() => setShowRenewPassword(!showRenewPassword)} className="absolute top-9 right-3 text-gray-500">
+                  {showRenewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
               <div className="flex justify-between mt-4">
                 <button
