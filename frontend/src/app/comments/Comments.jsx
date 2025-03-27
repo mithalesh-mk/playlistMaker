@@ -184,7 +184,7 @@ const Comments = () => {
       </div>
 
       {/* Comments */}
-      <div className="w-full overflow-y-scroll scrollbar-hide space-y-6">
+      <div className="w-full overflow-y-scroll scrollbar-hide mt-6 space-y-6">
         {comments && comments.length > 0 ? (
           comments.map((comment, index) => (
             <div
@@ -198,11 +198,13 @@ const Comments = () => {
                   alt="user"
                   className="w-12 h-12 rounded-full object-cover border-2 border-gray-700 shadow-md"
                 />
+                
 
                 {/* Comment Content */}
                 <div className="flex-1">
                   <div className="flex justify-between items-center">
-                    <div className="flex gap-4 items-center">
+                    <div className="flex gap-4">
+                      <div>
                       <p className="capitalize font-semibold text-white text-lg">
                         {comment?.userId?.username || 'Unknown User'}
                       </p>
@@ -215,6 +217,7 @@ const Comments = () => {
                             ★
                           </span>
                         ))}
+                      </div>
                       </div>
                       <p className="text-gray-500 text-sm">
                         {formatTimeAgo(comment.createdAt)}
@@ -286,28 +289,27 @@ const Comments = () => {
 
                   {/* Replies */}
                   {comment.replies.length > 0 && showReplies[comment._id] && (
-  <div className="mt-3 space-y-2">
-    {comment.replies.map((reply, idx) => (
-      <div
-        key={idx}
-        className="ml-6 flex justify-start items-center gap-2 border-l-2 border-gray-700 pl-3"
-      >
-        <img
-          src={reply.userId.profilePic}
-          alt="user"
-          className="w-8 h-8 rounded-full object-cover border-2 border-gray-700 shadow-md"
-        />
-        <p className="text-gray-400 text-sm">
-          <span className="font-semibold text-gray-300">
-            {reply.userId.username || 'Unknown User'}
-          </span>{' '}
-          {reply.replyText}
-        </p>
-      </div>
-    ))}
-  </div>
-)}
-
+                    <div className="mt-3 space-y-2">
+                      {comment.replies.map((reply, idx) => (
+                        <div
+                          key={idx}
+                          className="ml-6 flex justify-start items-center gap-2 border-l-2 border-gray-700 pl-3"
+                        >
+                          <img
+                            src={reply.userId.profilePic}
+                            alt="user"
+                            className="w-8 h-8 rounded-full object-cover border-2 border-gray-700 shadow-md"
+                          />
+                          <p className="text-gray-400 text-sm">
+                            <span className="font-semibold text-gray-300">
+                              {reply.userId.username || 'Unknown User'}
+                            </span>{' '}
+                            {reply.replyText}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Reply Input */}
                   {showreplyInput === index && (
