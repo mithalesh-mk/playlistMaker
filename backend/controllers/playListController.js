@@ -115,13 +115,49 @@ exports.getPlaylist = async (req, res) => {
 // Get all playlists
 exports.getAllPlaylists = async (req, res) => {
   try {
-    const playlists = await Playlist.find().populate(
-      "user",
-      "username profilePic"
-    );
+    const { category } = req.query; // Get category from query params
+
+    let matchStage = {};
+    if (category) {
+      matchStage.category = category; // Apply category filter if provided
+    }
+
+    const playlists = await Playlist.aggregate([
+      { $match: matchStage }, // Filter by category if provided
+      {
+        $addFields: {
+          likeCount: { $size: "$likes" } // Count likes
+        }
+      },
+      { $sort: { likeCount: -1 } }, // Sort by like count in descending order
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" }, // Convert user array to object
+      {
+        $project: {
+          name: 1,
+          user: { _id: 1, username: 1, profilePic: 1 },
+          videos: 1,
+          description: 1,
+          comments: 1,
+          likes: 1,
+          dislikes: 1,
+          shares: 1,
+          category: 1,
+          createdAt: 1,
+          updatedAt: 1
+        }
+      }
+    ]);
 
     if (playlists.length === 0) {
-      return res.status(201).send({
+      return res.status(200).send({
         message: "No playlists found",
         data: [],
         success: true,
@@ -141,6 +177,9 @@ exports.getAllPlaylists = async (req, res) => {
     });
   }
 };
+
+
+
 
 // Like a playlist
 exports.likePlaylist = async (req, res) => {
