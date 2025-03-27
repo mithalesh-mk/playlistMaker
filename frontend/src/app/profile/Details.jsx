@@ -20,7 +20,7 @@ function Details() {
         
         {/* User Info */}
         <div className="flex-1 text-center md:text-left space-y-4">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white uppercase">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             {username}
           </h1>
           <div className="space-y-2">
