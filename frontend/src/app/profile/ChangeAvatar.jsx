@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/userContext/AuthProvider';
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast"
+import { toast } from 'react-toastify';
 
 
 const avatars = [
@@ -55,6 +57,7 @@ export default function ChooseAvatar({isOpenAvatar, setIsOpenAvatar}) {
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const navigate = useNavigate();
   const {user, setUser} = useAuth()
+  const { toast } = useToast()
   
   const togglePopup = () => setIsOpen(!isOpenAvatar);
 
@@ -68,7 +71,9 @@ export default function ChooseAvatar({isOpenAvatar, setIsOpenAvatar}) {
   
       const data = res.data;
       if (data.success) {
-        console.log('Avatar selected successfully!');
+        toast({
+          description: "Avatar updated successfully",
+        });
         
         // Update user in context
         setUser((prevUser) => ({

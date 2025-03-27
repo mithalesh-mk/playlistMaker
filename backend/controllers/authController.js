@@ -405,7 +405,7 @@ exports.changePassword = async (req, res) => {
     if (!isMatch) {
       return res
         .status(400)
-        .send({ message: "Old password is incorrect", success: false });
+        .send({ message: "Current password is incorrect", success: false });
     }
 
     // Check if the new password is the same as the old password
