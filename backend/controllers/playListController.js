@@ -1,16 +1,18 @@
 const authMiddleware = require("../middleware/authMiddleware");
 const Playlist = require("../models/playlistModel");
 const mongoose = require("mongoose");
+const shortid = require("shortid");
 
 // Add a new playlist
 exports.addPlaylist = async (req, res) => {
   try {
-    const newPlayList = new Playlist({ ...req.body, user: req.body.userId });
+    const newPlayList = new Playlist({ ...req.body, user: req.body.userId , shareableId: shortid.generate()});
     await newPlayList.save();
     return res.status(200).send({
       message: "Play List Created successfully",
       success: true,
       data: newPlayList,
+      shareableLink: `${process.env.BASE_URL}/playlists/share/${newPlayList.shareableId}` 
     });
   } catch (error) {
     return res.status(500).send({
@@ -20,6 +22,35 @@ exports.addPlaylist = async (req, res) => {
     });
   }
 };
+exports.getPlaylistByShareableId = async (req, res) => {
+  try {
+    const { shareableId } = req.params;
+    
+    const playlist = await Playlist.findOne({ shareableId })
+      .populate("user", "username profilePic")
+      .populate("videos");
+
+    if (!playlist) {
+      return res.status(404).send({
+        message: "Playlist not found",
+        success: false
+      });
+    }
+
+    return res.status(200).send({
+      message: "Playlist retrieved successfully",
+      success: true,
+      data: playlist
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: "Error retrieving playlist",
+      success: false,
+      error
+    });
+  }
+};
+
 
 // Delete a playlist
 exports.deletePlaylist = async (req, res) => {

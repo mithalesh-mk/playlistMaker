@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const shortid = require("shortid");
 
 const playlistSchema = new mongoose.Schema(
   {
@@ -48,6 +49,7 @@ const playlistSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    shareableId: { type: String, unique: true, default: shortid.generate } // New field
   },
   { timestamps: true }
 );

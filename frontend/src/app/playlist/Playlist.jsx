@@ -40,7 +40,54 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Comments from "../comments/Comments";
+/*
+import { IoShareOutline } from "react-icons/io5";
+import { FaWhatsapp, FaFacebook, FaXTwitter, FaEnvelope, FaLink } from "react-icons/fa6";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
+const ShareButton = ({ shareableLink }) => {
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shareableLink);
+    alert("Link copied to clipboard!");
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <button className="flex items-center gap-1 text-gray-300 hover:text-white">
+          <IoShareOutline size={18} /> Share
+        </button>
+      </DialogTrigger>
+      <DialogContent className="bg-gray-800 text-white">
+        <DialogHeader>
+          <DialogTitle>Share Playlist</DialogTitle>
+        </DialogHeader>
+        <div className="flex gap-3 mt-2">
+          <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(shareableLink)}`} target="_blank" rel="noopener noreferrer">
+            <FaWhatsapp size={24} className="text-green-500" />
+          </a>
+          <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareableLink)}`} target="_blank" rel="noopener noreferrer">
+            <FaFacebook size={24} className="text-blue-600" />
+          </a>
+          <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareableLink)}`} target="_blank" rel="noopener noreferrer">
+            <FaXTwitter size={24} className="text-black" />
+          </a>
+          <a href={`mailto:?subject=Check this playlist&body=${encodeURIComponent(shareableLink)}`} target="_blank" rel="noopener noreferrer">
+            <FaEnvelope size={24} className="text-gray-600" />
+          </a>
+        </div>
+        <div className="flex items-center mt-4 border p-2 rounded-md">
+          <input type="text" value={shareableLink} readOnly className="flex-1 bg-transparent outline-none text-white" />
+          <button onClick={handleCopy} className="ml-2 text-blue-500">
+            <FaLink size={20} />
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+*/
 const Playlist = () => {
   const { playlistId } = useParams();
   const [error, setError] = useState("");

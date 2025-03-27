@@ -12,5 +12,6 @@ router.post("/:playlistId/like", authMiddleware, playListController.likePlaylist
 router.post("/:playlistId/dislike", authMiddleware, playListController.dislikePlaylist);
 router.put("/updateOrder/:playlistId",authMiddleware, playListController.updateOrder);
 router.put("/updatePlaylist/:playlistId",authMiddleware, playListController.updatePlaylist);
+router.get("/share/:shareableId",authMiddleware,playListController.getPlaylistByShareableId);
 
 module.exports = router;
