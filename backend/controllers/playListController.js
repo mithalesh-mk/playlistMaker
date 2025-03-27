@@ -8,15 +8,17 @@ exports.getAllPlaylists = async (req, res) => {
     const { category, search, sort } = req.query;
 
     let matchStage = {};
+    let sortStage = {};
     if (category) {
       matchStage.category = category; // Apply category filter if provided
+      sortStage.likeCount = -1; // Sort by like count in descending order
     }
     if (search) {
       matchStage.$text = { $search: search }; // Apply text search if provided
     }
 
     // Determine the sorting field
-    let sortStage = {};
+
     if (sort === "likes") {
       sortStage.likeCount = -1; // Sort by like count in descending order
     } else if (sort === "recent") {
