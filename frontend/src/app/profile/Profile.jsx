@@ -4,52 +4,54 @@ import Details from "./Details";
 import Setting from "./Setting";
 import { useState } from "react";
 import React from "react";
+import { motion } from "framer-motion";
 
 const Profile = () => {
-  const [profileCurrComponent, setCurComponent] = useState(<Details></Details>);
+  const [profileCurrComponent, setCurComponent] = useState(<Details />);
   const [flag, setFlag] = useState(true);
 
   const changeToDetails = (flag) => {
     setFlag(flag);
-    if (flag) {
-      setCurComponent(<Details></Details>);
-    } else {
-      setCurComponent(<Setting></Setting>);
-    }
+    setCurComponent(flag ? <Details /> : <Setting />);
   };
+
   return (
     <SidebarInset>
-      <section id="profile" className="px-[1rem]">
-        <div className="max-w-[1024px] mx-auto ">
-          <h1 className="text-5xl my-[2rem]">Profile</h1>
-          <div className="flex justify-around">
-            <div
-              className={
-                flag
-                  ? "w-1/2 flex justify-center border-gray-100 border-r border-l border-t text-xl dark:bg-gray-700 bg-gray-200"
-                  : "w-1/2 flex justify-center border-gray-100 border-r border-l border-t text-xl"
-              }
-              onClick={() => {
-                changeToDetails(true);
-              }}
+      <section id="profile" className="px-4 md:px-8">
+        <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 shadow-lg rounded-xl p-6 md:p-10">
+          <h1 className="text-4xl md:text-5xl font-bold text-center text-gray-900 dark:text-white my-6">
+            Profile
+          </h1>
+          
+          <div className="flex justify-center gap-4 mb-4">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`cursor-pointer px-6 py-2 rounded-t-lg text-lg font-semibold transition-all duration-300 shadow-md ${flag ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"}`}
+              onClick={() => changeToDetails(true)}
             >
               Details
-            </div>
-            <div
-              className={
-                flag
-                  ? "w-1/2 flex justify-center border-gray-100 border-r border-l border-t text-xl "
-                  : "w-1/2 flex justify-center border-gray-100 border-r border-l border-t text-xl dark:bg-gray-700 bg-gray-200"
-              }
-              onClick={() => {
-                changeToDetails(false);
-              }}
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`cursor-pointer px-6 py-2 rounded-t-lg text-lg font-semibold transition-all duration-300 shadow-md ${!flag ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"}`}
+              onClick={() => changeToDetails(false)}
             >
               Setting
-            </div>
+            </motion.div>
           </div>
-          <div className="h-1 w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-full mb-4"></div>
-          {profileCurrComponent}
+          
+          <div className="h-1 w-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-full mb-6"></div>
+          
+          <motion.div
+            key={flag ? "details" : "setting"}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {profileCurrComponent}
+          </motion.div>
         </div>
       </section>
     </SidebarInset>
