@@ -195,7 +195,6 @@ exports.likePlaylist = async (req, res) => {
         success: false,
       });
     }
-
     // Check if the user has already liked the playlist
     if (playlist.likes.includes(userId)) {
       // If the user has liked it, remove the like
