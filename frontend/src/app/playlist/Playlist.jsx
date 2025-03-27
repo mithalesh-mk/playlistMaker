@@ -15,19 +15,15 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
+  DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Label } from "@radix-ui/react-dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { SidebarMenuButton } from "@/components/ui/sidebar";
-
 import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@clerk/clerk-react";
 import {
   DndContext,
   closestCenter,
@@ -41,22 +37,19 @@ import {
   SortableContext,
   verticalListSortingStrategy,
   useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import Comments from '../comments/Comments';
-
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import Comments from "../comments/Comments";
 
 const Playlist = () => {
   const { playlistId } = useParams();
   const [error, setError] = useState("");
   const closeRef = useRef(null);
-
   const [link, setLink] = useState("");
   const [isBookmark, setBookmark] = useState(false);
   const [noOfLikes, setNoOfLikes] = useState(0);
   const [noOfDislike, setNoOfDislikes] = useState(0);
   const [newOrder, setNewOrder] = useState([]);
-
   const [data, setData] = useState({
     title: "",
     description: "",
@@ -68,12 +61,10 @@ const Playlist = () => {
     isOwner: false,
   });
 
-  // Fetch Playlist
+  // Fetch Playlist and other functions remain unchanged
   const fetchPlaylist = async () => {
     try {
-      const response = await axiosInstance.get(
-        `/playlist/getplaylist/${playlistId}`
-      );
+      const response = await axiosInstance.get(`/playlist/getplaylist/${playlistId}`);
       const data = response.data;
       setData({
         title: data.name,
@@ -85,7 +76,6 @@ const Playlist = () => {
         videos: data.videos,
         isOwner: data.isOwner,
       });
-
       setNoOfLikes(data.likes.length);
       setNoOfDislikes(data.dislikes.length);
       fetchVideos();
@@ -94,70 +84,45 @@ const Playlist = () => {
     }
   };
 
-  // Fetch Videos
   const fetchVideos = async () => {
     try {
-      const resp = await axiosInstance.get(
-        `/video/getvideo/${playlistId}/videos`
-      );
+      const resp = await axiosInstance.get(`/video/getvideo/${playlistId}/videos`);
       setData((prev) => ({ ...prev, videos: resp.data.data }));
-      console.log(resp.data.data);
     } catch (error) {
       console.error("Error fetching videos:", error);
     }
   };
 
-  //Checking is Current playlist is Bookmark
   const checkBookMark = async () => {
     try {
       const res = await axiosInstance.put(`/bookmark/bookmarks/${playlistId}`);
-      if (!res.data.success) {
-        console.log(res.data.message);
-      }
-      // console.log(res.data.data.isBookMark);
       setBookmark(res.data.data.isBookMark);
     } catch (error) {
       console.log(error);
     }
   };
 
-  //Adding BookMark to current Playlist
   const addToBookMark = async () => {
     try {
       const res = await axiosInstance.post(`/bookmark/bookmarks/${playlistId}`);
-      if (!res.data.success) {
-        alert(res.data.message);
-      } else {
-        setBookmark(res.data.success); //Basically it is setBookmark(true);
-      }
+      if (res.data.success) setBookmark(true);
     } catch (error) {
       console.log(error);
     }
   };
 
-  //Deleting current playlist from Bookmark
   const deleteBookMark = async () => {
     try {
-      const res = await axiosInstance.delete(
-        `/bookmark/bookmarks/${playlistId}`
-      );
-      if (!res.data.success) {
-        alert(res.data.message);
-      } else {
-        setBookmark(false);
-      }
+      const res = await axiosInstance.delete(`/bookmark/bookmarks/${playlistId}`);
+      if (res.data.success) setBookmark(false);
     } catch (error) {
       console.log(error);
     }
   };
 
-  //Function For like
   const functionLike = async () => {
     try {
       const res = await axiosInstance.post(`playlist/${playlistId}/like`);
-      if (!res.data.success) {
-        alert(res.data.data);
-      }
       setNoOfLikes(res.data.data.likes);
       setNoOfDislikes(res.data.data.dislikes);
     } catch (error) {
@@ -165,14 +130,9 @@ const Playlist = () => {
     }
   };
 
-  //Function for Dislike
   const functionDislike = async () => {
     try {
       const res = await axiosInstance.post(`playlist/${playlistId}/dislike`);
-      console.log(res);
-      if (!res.data.success) {
-        alert(res.data.data);
-      }
       setNoOfLikes(res.data.data.likes);
       setNoOfDislikes(res.data.data.dislikes);
     } catch (error) {
@@ -180,17 +140,11 @@ const Playlist = () => {
     }
   };
 
-  //Function to delete Video
-
   const deleteVideo = async (link) => {
     try {
-      const res = await axiosInstance.delete(
-        `/video/deletevideo/${playlistId}`,
-        { data: { url: link } }
-      );
-      if (!res.data.success) {
-        toast({ description: `${res.data.message}` });
-      }
+      const res = await axiosInstance.delete(`/video/deletevideo/${playlistId}`, {
+        data: { url: link },
+      });
       toast({ description: `${res.data.message}` });
       fetchVideos();
     } catch (error) {
@@ -198,43 +152,27 @@ const Playlist = () => {
     }
   };
 
-  useEffect(() => {
-    fetchPlaylist();
-  }, []);
-
-  // Handle Create Video
-  useEffect(() => {
-    checkBookMark();
-  }, [isBookmark]);
-
   const handleCreate = async () => {
     if (!link) {
-      setError("Please fill in all fields");
+      setError("Please enter a video URL");
       return;
     }
-
     try {
-      const resp = await axiosInstance.post(`/video/addvideo/${playlistId}`, {
-        url: link,
-      });
-
+      const resp = await axiosInstance.post(`/video/addvideo/${playlistId}`, { url: link });
       if (resp.data.success) {
         toast({ description: "Video added successfully" });
         fetchVideos();
+        setLink("");
         closeRef.current?.click();
       } else {
         setError("Failed to add video");
       }
     } catch (error) {
-      console.error("Error adding video:", error);
       setError("An error occurred. Please try again.");
     }
   };
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor)
-  );
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
@@ -243,55 +181,35 @@ const Playlist = () => {
     setData((prev) => {
       const oldIndex = prev.videos.findIndex((v) => v._id === active.id);
       const newIndex = prev.videos.findIndex((v) => v._id === over.id);
-
-      if (oldIndex === -1 || newIndex === -1) {
-        console.error("Invalid indices for reordering");
-        return prev;
-      }
-
       const newVideos = arrayMove(prev.videos, oldIndex, newIndex);
-
-      console.log(
-        "New Order:",
-        newVideos.map((v) => v._id)
-      ); // Debugging
-
       setNewOrder(newVideos);
-
       return { ...prev, videos: newVideos };
     });
   };
+
+  const updateVideoOrder = async (newVideos) => {
+    try {
+      const newOrder = newVideos.map((video) => video._id);
+      const response = await axiosInstance.put(`/playlist/updateOrder/${playlistId}`, { newOrder });
+      if (!response.data.success) {
+        toast({ description: "Failed to update order", variant: "destructive" });
+      }
+    } catch (error) {
+      toast({ description: "Failed to update order", variant: "destructive" });
+    }
+  };
+
+  useEffect(() => {
+    fetchPlaylist();
+    checkBookMark();
+  }, []);
 
   useEffect(() => {
     if (newOrder.length === 0) return;
     updateVideoOrder(newOrder);
   }, [newOrder]);
 
-  console.log(data.videos);
-
-  // Function to send updated order to backend
-  const updateVideoOrder = async (newVideos) => {
-    try {
-      const newOrder = newVideos.map((video) => video._id);
-      console.log(newOrder);
-      const response = await axiosInstance.put(
-        `/playlist/updateOrder/${playlistId}`,
-        { newOrder }
-      );
-
-      if (response.data.success === false) {
-        toast({
-          description: "Failed to update order",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Error updating playlist order:", error);
-      toast({ description: "Failed to update order", variant: "destructive" });
-    }
-  };
-
-  const SortableVideo = ({ video }) => {
+  const SortableVideo = ({ video, index }) => {
     const { attributes, listeners, setNodeRef, transform, transition } =
       useSortable({ id: video._id });
     const style = { transform: CSS.Transform.toString(transform), transition };
@@ -300,178 +218,142 @@ const Playlist = () => {
       <li
         ref={setNodeRef}
         style={style}
-        className="w-full p-2 bg-white/10 backdrop-blur-lg border border-white/30 shadow-lg rounded-xl flex text-white relative items-center"
+        className="flex items-center p-2 hover:bg-gray-800 rounded-md transition-colors"
       >
-        {/* Thumbnail */}
-        <div className="w-[150px] overflow-hidden rounded-lg">
+        <span className="text-gray-400 w-8 text-center">{index + 1}</span>
+        <div className="w-24 h-14 flex-shrink-0">
           <img
             src={video.thumbnail}
-            className="w-full h-full object-cover"
-            alt={video.title}
+            className="w-full h-full object-cover rounded-md"
+            alt={video.title
+
+}
           />
         </div>
-
-        {/* Video Details */}
-        <div className="w-[50%] pl-4">
-          <p className="text-md font-semibold">{video.title}</p>
-          <p className="text-sm">{video.views} views</p>
+        <div className="ml-3 flex-1">
+          <p className="text-white text-sm font-medium line-clamp-2">{video.title}</p>
+          <p className="text-gray-400 text-xs">{video.views} views</p>
         </div>
-
-        {/* Drag Handle */}
         {data.isOwner && (
-          <button
-            {...attributes}
-            {...listeners}
-            className="absolute left-[-25px] top-1/2 transform -translate-y-1/2 cursor-grab"
-          >
-            <GripVertical
-              size={24}
-              className="text-gray-300 hover:text-gray-500"
+          <>
+            <button {...attributes} {...listeners} className="text-gray-400 hover:text-white p-2">
+              <GripVertical size={18} />
+            </button>
+            <Trash
+              size={18}
+              className="text-red-500 cursor-pointer hover:text-red-400 ml-2"
+              onClick={() => deleteVideo(video.url)}
             />
-          </button>
-        )}
-
-        {/* Delete Button */}
-        {data.isOwner && (
-          <Trash
-            size={24}
-            className="text-red-500 cursor-pointer absolute right-4"
-            onClick={() => {
-              deleteVideo(video.url);
-            }}
-          />
+          </>
         )}
       </li>
     );
   };
 
   return (
-    <div className="flex flex-col w-[95%]  sm:w-[85%] lg:w-[80%] rounded-lg mx-auto gap-4 border-2 p-4">
-      <div className="flex gap-4 relative flex-col lg:flex-row pb-3 border-b">
-        <div className="w-66 sm:w-96 rounded-md">
-          <img src="/playlist.jpeg" alt="playlist" />
-          <div className="mt-4 flex gap-4 items-center">
-            <p className="flex gap-1 items-center">
-              <span>{noOfLikes}</span>{" "}
-              <ThumbsUp
-                onClick={() => {
-                  functionLike();
-                }}
-                size={18}
-              />
-            </p>
-            <p className="flex gap-1 items-center">
-              <span>{noOfDislike}</span>{" "}
-              <ThumbsDown
-                onClick={() => {
-                  functionDislike();
-                }}
-                size={18}
-              />
-            </p>
-            <p className="flex gap-1 items-center">
-              <span>{data.shares}</span> <Share2 size={18} />
-            </p>
-            <p className="rounded-full bg-slate-800 border border-white/20 px-4 py-[2px]">
-              {data.category}
-            </p>
+    <div className="w-full  bg-dark text-white flex flex-col lg:flex-row gap-4 p-4">
+      {/* Left Section: Thumbnail and Playlist Info */}
+      <div className="lg:w-1/3 w-full flex-shrink-0 lg:sticky lg:top-4 ">
+        <div className={`bg-gray-800 h-[calc(100vh-100px)] rounded-lg p-4 `} 
+        >
+          <img
+            src={data.videos[0]?.thumbnail || "/playlist.jpeg"}
+            alt="playlist"
+            className="w-full h-48 object-cover aspect-video rounded-md mb-4"
+          />
+          <h1 className="text-2xl font-bold mb-2">{data.title}</h1>
+          <p className="text-gray-400 text-sm mb-4 line-clamp-3">{data.description}</p>
+          <div className="flex items-center gap-4 mb-4">
+            <button
+              onClick={functionLike}
+              className="flex items-center gap-1 text-gray-300 hover:text-white"
+            >
+              <ThumbsUp size={18} /> {noOfLikes}
+            </button>
+            <button
+              onClick={functionDislike}
+              className="flex items-center gap-1 text-gray-300 hover:text-white"
+            >
+              <ThumbsDown size={18} /> {noOfDislike}
+            </button>
+            <button className="flex items-center gap-1 text-gray-300 hover:text-white">
+              <Share2 size={18} /> {data.shares}
+            </button>
+            <button
+              onClick={isBookmark ? deleteBookMark : addToBookMark}
+              className="text-gray-300 hover:text-white"
+            >
+              {isBookmark ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+            </button>
           </div>
-        </div>
-        <div>
-          <h1 className="text-4xl font-semibold">{data.title}</h1>
-          <p className="text-[.89rem] text-white/80 font-thin mt-4">
-            {data.description}
-          </p>
-        </div>
-        <PlusCircleIcon className="absolute bottom-5 right-5 block sm:hidden" />
-
-        <Dialog>
-          <DialogTrigger asChild>
-            {data.isOwner && (
-              <Button
-                onClick={() => {
-                  setError(false);
-                  setLink("");
-                }}
-                className="absolute bottom-5 right-5 hidden sm:block"
-              >
-                Add Videos
-              </Button>
-            )}
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Paste Link</DialogTitle>
-              {error && (
-                <DialogDescription className="text-red-500">
-                  {error}
-                </DialogDescription>
-              )}
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Link
-                </Label>
+          <p className="text-gray-400 text-sm mb-4">{data.category}</p>
+          {data.isOwner && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="w-full ">
+                  <PlusCircleIcon size={18} className="mr-2" /> Add Video
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-800 text-white">
+                <DialogHeader>
+                  <DialogTitle>Add a Video</DialogTitle>
+                  {error && <DialogDescription className="text-red-500">{error}</DialogDescription>}
+                </DialogHeader>
                 <Input
-                  id="link"
-                  name="link"
                   value={link}
                   onChange={(e) => setLink(e.target.value)}
-                  className="col-span-3"
+                  placeholder="Paste video URL"
+                  className="bg-gray-700 border-gray-600 text-white"
                 />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button onClick={handleCreate}>Create</Button>
-              <DialogClose ref={closeRef}></DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-        {isBookmark && (
-          <BookmarkCheck
-            className="absolute top-5 right-5"
-            onClick={() => {
-              deleteBookMark();
-            }}
-          />
-        )}
-        {!isBookmark && (
-          <Bookmark
-            className="absolute top-5 right-5"
-            onClick={() => {
-              addToBookMark();
-            }}
-          />
-        )}
+                <DialogFooter>
+                  <Button onClick={handleCreate} className="">
+                    Add
+                  </Button>
+                  <DialogClose ref={closeRef} />
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+          <Dialog>
+              <DialogTrigger asChild>
+                <p className="text-gray-400 text-end text-sm mb-4 hover:text-white hover:underline cursor-pointer mt-4">
+                  comments
+                </p>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-800 text-white">
+                <Comments/>
+                
+              </DialogContent>
+            </Dialog>
+        </div>
       </div>
 
-      <h1 className="mt-3 font-bold text-4xl">Videos</h1>
-      {/* Videos List */}
-      <div className="flex flex-col w-[95%]  sm:w-[85%] lg:w-[80%] mx-auto">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={data.videos.map((v) => v._id)}
-            strategy={verticalListSortingStrategy}
+      {/* Right Section: Video List */}
+      <div className="lg:w-2/3  overflow-hidden w-full overflow-y-auto">
+        <div className=" rounded-lg p-4">
+          <h2 className="text-xl font-semibold mb-4">Videos ({data.videos.length})</h2>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
           >
-            <ul className="mt-6 p-4 flex flex-col gap-5 items-center w-[90%] mx-auto">
-              {data.videos.length > 0 ? (
-                data.videos.map((video) => (
-                  <SortableVideo key={video._id} video={video} />
-                ))
-              ) : (
-                <p>No videos found</p>
-              )}
-            </ul>
-          </SortableContext>
-        </DndContext>
-        {data.videos.length > 0 && <Comments />}
+            <SortableContext
+              items={data.videos.map((v) => v._id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <ul className="space-y-2">
+                {data.videos.length > 0 ? (
+                  data.videos.map((video, index) => (
+                    <SortableVideo key={video._id} video={video} index={index} />
+                  ))
+                ) : (
+                  <p className="text-gray-400 text-center py-4">No videos in this playlist</p>
+                )}
+              </ul>
+            </SortableContext>
+          </DndContext>
+        </div>
       </div>
-      
     </div>
   );
 };

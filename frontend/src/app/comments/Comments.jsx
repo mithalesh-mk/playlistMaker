@@ -6,6 +6,18 @@ import { useAuth } from '@/userContext/AuthProvider';
 import { useParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
+import { Button } from '@/components/ui/button';
+
 const Comments = () => {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState('');
@@ -13,6 +25,14 @@ const Comments = () => {
   const { playlistId } = useParams();
   const { user } = useAuth();
   const { toast } = useToast();
+  const [showReplies, setShowReplies] = useState({});
+
+  const handleShowReplies = (commentId) => {
+    setShowReplies((prev) => ({
+      ...prev,
+      [commentId]: !prev[commentId],
+    }));
+  };
 
   const addComment = async (e) => {
     e.preventDefault();
@@ -98,10 +118,13 @@ const Comments = () => {
       return;
     }
 
-    const addedReply = await axiosInstance.post(`/comment/addreply/${commentId}`, {
-      userId: user._id,
-      replyText,
-    });
+    const addedReply = await axiosInstance.post(
+      `/comment/addreply/${commentId}`,
+      {
+        userId: user._id,
+        replyText,
+      }
+    );
 
     const data = await addedReply.data;
     if (!data.success) {
@@ -116,7 +139,7 @@ const Comments = () => {
   };
 
   return (
-    <div className="bg-muted rounded-3xl mx-auto w-[95%] mt-16 sm:w-[85%] lg:w-[87%] p-6 flex flex-col items-center">
+    <div className="flex flex-col items-center overflow-hidden">
       {/* Comment Input Box */}
       <div className="w-[90%] flex justify-center border-b border-gray-300 mx-7 dark:border-gray-700 pb-6">
         <div className="w-full bg-white flex-col dark:bg-black my-3 relative rounded-2xl p-4 flex items-start space-x-2 shadow-md">
@@ -161,42 +184,37 @@ const Comments = () => {
       </div>
 
       {/* Comments */}
-      <div className="w-full">
+      <div className="w-full overflow-y-scroll scrollbar-hide space-y-6">
         {comments && comments.length > 0 ? (
-          comments.map((comment,index) => (
-            <div key={comment._id} className="w-[90%] mx-auto mt-6">
+          comments.map((comment, index) => (
+            <div
+              key={comment._id}
+              className="bg-gray-900 border border-gray-800 rounded-lg p-4 w-[90%] mx-auto shadow-md hover:shadow-lg transition-all"
+            >
               <div className="flex gap-4 items-start">
                 {/* User Image */}
-                <div className="flex-shrink-0">
-                  <img
-                    src={comment?.userId?.profilePic || '/default-avatar.png'}
-                    alt="user"
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                </div>
+                <img
+                  src={comment?.userId?.profilePic || '/default-avatar.png'}
+                  alt="user"
+                  className="w-12 h-12 rounded-full object-cover border-2 border-gray-700 shadow-md"
+                />
 
                 {/* Comment Content */}
                 <div className="flex-1">
                   <div className="flex justify-between items-center">
-                    <div className="flex  gap-4 items-center">
-                      <p className="capitalize font-semibold text-lg">
+                    <div className="flex gap-4 items-center">
+                      <p className="capitalize font-semibold text-white text-lg">
                         {comment?.userId?.username || 'Unknown User'}
                       </p>
-                      <div className="flex items-center justify-center space space-x-0">
-                        {[...Array(comment?.rating)].map((_, index) => {
-                          return (
-                            <span
-                              key={index}
-                              className={`cursor-pointer text-md 
-                                
-                                  text-yellow-400
-                                  
-                              `}
-                            >
-                              ★
-                            </span>
-                          );
-                        })}
+                      <div className="flex items-center">
+                        {[...Array(comment?.rating)].map((_, i) => (
+                          <span
+                            key={i}
+                            className="cursor-pointer text-md text-yellow-400 hover:scale-110 transition"
+                          >
+                            ★
+                          </span>
+                        ))}
                       </div>
                       <p className="text-gray-500 text-sm">
                         {formatTimeAgo(comment.createdAt)}
@@ -207,28 +225,28 @@ const Comments = () => {
                     <div className="relative">
                       <button
                         onClick={() => handleDropdownToggle(comment._id)}
-                        className="text-gray-400 hover:text-gray-600"
+                        className="text-gray-400 hover:text-gray-200 transition"
                       >
                         &#8226;&#8226;&#8226;
                       </button>
 
                       {activeDropdown === comment._id && (
-                        <div className="absolute right-0 top-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
-                          <ul className="text-sm text-gray-700 dark:text-gray-300">
+                        <div className="absolute right-0 top-6 bg-gray-800 border border-gray-700 rounded-lg shadow-md w-32 z-10 transition-opacity duration-200">
+                          <ul className="text-sm text-gray-300">
                             <li
-                              className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                              className="px-4 py-2 hover:bg-gray-700 cursor-pointer transition"
                               onClick={() => alert('Edit')}
                             >
                               Edit
                             </li>
                             <li
-                              className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                              className="px-4 py-2 hover:bg-gray-700 cursor-pointer transition"
                               onClick={() => alert('Delete')}
                             >
                               Delete
                             </li>
                             <li
-                              className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                              className="px-4 py-2 hover:bg-gray-700 cursor-pointer transition"
                               onClick={() => alert('Report')}
                             >
                               Report
@@ -240,60 +258,83 @@ const Comments = () => {
                   </div>
 
                   {/* Comment Text */}
-                  <p className="text-gray-700 dark:text-gray-300 mt-1 text-base">
+                  <p className="text-gray-300 mt-2 text-base leading-relaxed">
                     {comment.text}
                   </p>
 
-                  {/* Reply Button */}
-                  <div className="flex gap-6 mt-2">
-                    {/* Reply Button */}
+                  {/* Reply Section */}
+                  <div className="flex gap-6 mt-3">
                     <button
-                      onClick={() => setShowReplyInput((prev) => (prev === index ? null : index))}
-                      className="text-blue-500 hover:underline text-sm"
+                      onClick={() =>
+                        setShowReplyInput((prev) =>
+                          prev === index ? null : index
+                        )
+                      }
+                      className="text-blue-400 hover:text-blue-500 transition text-sm"
                     >
                       Reply
                     </button>
                     <button
-                      
-                      className="text-blue-500 hover:underline text-sm"
+                      onClick={() => handleShowReplies(comment._id)}
+                      className="text-blue-400 hover:text-blue-500 transition text-sm"
                     >
-                      show reply
+                      {showReplies[comment._id]
+                        ? 'Hide Replies'
+                        : 'Show Replies'}
                     </button>
-
-                    {/* Replies */}
-                    {comment.replies.length > 0 && comment.replies.map((reply, index) => (
-                      <div key={index} className="flex gap-2 items-center">
-                        <p className="text-gray-500 text-sm">
-                          {reply.userId.username || 'Unknown User'}
-                        </p>
-                        <p className="text-gray-500 text-sm">{reply.replyText}</p>
-                      </div>
-                    ))}
-
-
-                    {/* Reply Input */}
-
-                    {showreplyInput===index && (
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          placeholder="Write a reply..."
-                          value={replyText}
-                          onChange={(e) => setReplyText(e.target.value)}
-                          className="bg-gray-700 text-white px-3 py-1 rounded-lg focus:outline-none border border-gray-600 w-[250px]"
-                        />
-                        <button onClick={() => handleReply(comment._id)} className="bg-slate-700 text-white px-4 py-1 rounded-lg hover:bg-slate-900 transition-all">
-                          Post
-                        </button>
-                      </div>
-                    )}
                   </div>
+
+                  {/* Replies */}
+                  {comment.replies.length > 0 && showReplies[comment._id] && (
+  <div className="mt-3 space-y-2">
+    {comment.replies.map((reply, idx) => (
+      <div
+        key={idx}
+        className="ml-6 flex justify-start items-center gap-2 border-l-2 border-gray-700 pl-3"
+      >
+        <img
+          src={reply.userId.profilePic}
+          alt="user"
+          className="w-8 h-8 rounded-full object-cover border-2 border-gray-700 shadow-md"
+        />
+        <p className="text-gray-400 text-sm">
+          <span className="font-semibold text-gray-300">
+            {reply.userId.username || 'Unknown User'}
+          </span>{' '}
+          {reply.replyText}
+        </p>
+      </div>
+    ))}
+  </div>
+)}
+
+
+                  {/* Reply Input */}
+                  {showreplyInput === index && (
+                    <div className="flex items-center gap-2 mt-3">
+                      <input
+                        type="text"
+                        placeholder="Write a reply..."
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        className="bg-gray-700 text-white px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-400 w-full border border-gray-600"
+                      />
+                      <button
+                        onClick={() => handleReply(comment._id)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                      >
+                        Post
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           ))
         ) : (
-          <p className="text-lg font-semibold mt-4">No comments yet</p>
+          <p className="text-gray-500 font-semibold mt-4 text-center">
+            No comments yet
+          </p>
         )}
       </div>
     </div>
