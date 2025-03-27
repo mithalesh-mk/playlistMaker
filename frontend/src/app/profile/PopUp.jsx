@@ -82,7 +82,7 @@ const PopupForm = () => {
             <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800 dark:text-gray-200">Change Password</h2>
             <form onSubmit={handleSave} className="space-y-4">
             <div className="relative">
-                <label className="block text-gray-600 dark:text-gray-300">Old Password</label>
+                <label className="block text-gray-600 dark:text-gray-300">Current Password</label>
                 <input
                   type={showOldPassword ? "text" : "password"}
                   value={oldPassword}

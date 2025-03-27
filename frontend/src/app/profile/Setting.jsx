@@ -106,8 +106,6 @@ function Setting() {
                   placeholder="Enter new username"
                 />
               </div>
-            
-
             {/* Save Button */}
               <button
                 type="submit"
@@ -117,11 +115,9 @@ function Setting() {
               </button>
               </div>
           </form>
-          
 
           {/* Additional Settings */}
           <div className="flex flex-col md:flex-row items-center gap-4 mt-6">
-            
             <PopUp />
 
             {/* Delete Account Button */}
