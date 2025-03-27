@@ -52,6 +52,9 @@ const playlistSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+//text indexing
+playlistSchema.index({ name: "text", description: "text", category: "text" });
+
 const Playlist = mongoose.model("Playlist", playlistSchema);
 
 module.exports = Playlist;
