@@ -17,11 +17,13 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
+import { IoSend } from 'react-icons/io5';
 
 const Comments = () => {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
+  const [error, setError] = useState(null);
   const { playlistId } = useParams();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -40,6 +42,11 @@ const Comments = () => {
       toast({
         description: 'Please enter a comment and rating',
       });
+      setError('Please enter a comment and rating');  
+      setTimeout(() => { 
+        setError(null);
+      }
+      , 3000);
       return;
     }
 
@@ -115,6 +122,7 @@ const Comments = () => {
       toast({
         description: 'Please enter a reply',
       });
+      
       return;
     }
 
@@ -139,9 +147,9 @@ const Comments = () => {
   };
 
   return (
-    <div className="flex flex-col items-center overflow-hidden">
+    <div className="flex flex-col relative items-center ">
       {/* Comment Input Box */}
-      <div className="w-[90%] flex justify-center border-b border-gray-300 mx-7 dark:border-gray-700 pb-6">
+      <div className="md:w-[90%] w-full flex justify-center border-b border-gray-300 mx-2 md:mx-7 dark:border-gray-700 pb-6">
         <div className="w-full bg-white flex-col dark:bg-black my-3 relative rounded-2xl p-4 flex items-start space-x-2 shadow-md">
           <div className="pl-[20px]">
             <div className="flex space-x-2">
@@ -150,7 +158,7 @@ const Comments = () => {
                 return (
                   <span
                     key={index}
-                    className={`cursor-pointer text-3xl ${
+                    className={`cursor-pointer text-xl md:text-3xl ${
                       starValue <= rating ? 'text-yellow-400' : 'text-gray-400'
                     }`}
                     onClick={() => setRating(starValue)}
@@ -163,7 +171,7 @@ const Comments = () => {
           </div>
           <textarea
             type="text"
-            className="w-[80%] mt-2 bg-white scrollbar-hide  dark:bg-black text-gray-600 dark:text-white/80 px-4 py-2 text-lg rounded-xl focus:outline-none resize-none"
+            className="w-[80%] mt-2 bg-white scrollbar-hide  dark:bg-black text-gray-600 dark:text-white/80 px-4 py-2 text-md md:text-lg rounded-xl focus:outline-none resize-none"
             rows={3}
             onChange={(e) => setComment(e.target.value)}
             value={comment}
@@ -172,10 +180,13 @@ const Comments = () => {
           />
           <button
             onClick={addComment}
-            className="bg-primary absolute bottom-4 right-4 dark:bg-white dark:text-black text-white px-5 py-2 rounded-xl hover:bg-primary/90 transition-all"
+            className="bg-primary absolute bottom-4 right-4 dark:bg-white dark:text-black text-white px-2 py-2 rounded-full hover:bg-primary/90 transition-all"
           >
-            Submit
+            <IoSend />
           </button>
+        {error && (
+          <p className=" absolute -bottom-8 text-red-500 text-sm mt-2">{error}</p>
+        )}
         </div>
       </div>
       <div className="flex justify-between w-full mt-4">
@@ -184,14 +195,14 @@ const Comments = () => {
       </div>
 
       {/* Comments */}
-      <div className="w-full overflow-y-scroll scrollbar-hide mt-6 space-y-6">
+      <div className="w-full overflow-y-scroll overflow-hidden scrollbar-hide mt-6 space-y-6">
         {comments && comments.length > 0 ? (
           comments.map((comment, index) => (
             <div
               key={comment._id}
-              className="bg-gray-900 border border-gray-800 rounded-lg p-4 w-[90%] mx-auto shadow-md hover:shadow-lg transition-all"
+              className="bg-gray-900 border border-gray-800 rounded-lg p-4 md:w-[90%] w-full mx-auto shadow-md hover:shadow-lg transition-all"
             >
-              <div className="flex gap-4 items-start">
+              <div className="flex gap-2 items-start">
                 {/* User Image */}
                 <img
                   src={comment?.userId?.profilePic || '/default-avatar.png'}
