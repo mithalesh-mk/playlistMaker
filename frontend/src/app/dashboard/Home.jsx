@@ -3,12 +3,14 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { PlayIcon, ListCollapse, HeartIcon, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { AiOutlineSearch } from "react-icons/ai";
 
 export default function Home() {
   const [playlists, setPlaylists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [top2Data, setTop2Data] = useState([]);
+  const [search, setSearch] = useState("");
   const categoies = ["Education", "Music", "Travel", "Series", "Others"];
 
   // const getPlaylists = async (category, search, sort) => {
@@ -30,6 +32,10 @@ export default function Home() {
   //     console.error("Error fetching playlists:", error);
   //   }
   // };
+
+  const handlePlaylist = (e) => {
+    setSearch(e.target.value);
+  };
 
   const fetchPlaylists = async (category, search, sort) => {
     try {
@@ -57,6 +63,21 @@ export default function Home() {
     <SidebarInset>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         {/* First two playlist*/}
+        <label className="absolute -top-14 right-4 z-40 text-white/80  flex items-center px-4 py-2">
+          <input
+            type="text"
+            className="dark:bg-black dark:border-white/80 border-gray-300 border-y-2 border-l-2 rounded-s-sm  w-full md:w-[300px] h-9 px-4 dark:text-white/80 dark:placeholder:text-white/80 text-black focus:outline-none focus:border-white/80 focus:ring-0"
+            placeholder="Search Here"
+            value={search}
+            onChange={handlePlaylist}
+          ></input>
+          <button
+            className="hover:text-white/80 border-2 border-gray-300 py-2 px-2 h-9 cursor-pointer dark:bg-white/80 text-black dark:hover:bg-black hover:bg-gray-300  transition-all duration-300 ease-in-out"
+            onClick={() => fetchPlaylists("", search)}
+          >
+            <AiOutlineSearch />
+          </button>
+        </label>
         <div className="grid auto-rows-min gap-4 grid-cols-1 xl:grid-cols-2">
           {top2Data.length > 0 &&
             top2Data.map((playlist) => {
