@@ -37,18 +37,34 @@ import {
   SortableContext,
   verticalListSortingStrategy,
   useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import Comments from "../comments/Comments";
-/*
-import { IoShareOutline } from "react-icons/io5";
-import { FaWhatsapp, FaFacebook, FaXTwitter, FaEnvelope, FaLink } from "react-icons/fa6";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import Comments from '../comments/Comments';
+
+import { IoShareOutline } from 'react-icons/io5';
+import {
+  FaWhatsapp,
+  FaFacebook,
+  FaXTwitter,
+  FaEnvelope,
+  FaLink,
+  FaPlugCirclePlus,
+  FaCirclePlus,
+} from 'react-icons/fa6';
+import {
+  FaDiscord,
+  FaPlus,
+  FaPlusCircle,
+  FaTelegramPlane,
+  FaVideo,
+} from 'react-icons/fa';
+import CommentModal from './CommentModal';
+import { useAuth } from '@/userContext/AuthProvider';
 
 const ShareButton = ({ shareableLink }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(shareableLink);
-    alert("Link copied to clipboard!");
+    alert('Link copied to clipboard!');
   };
 
   return (
@@ -62,22 +78,59 @@ const ShareButton = ({ shareableLink }) => {
         <DialogHeader>
           <DialogTitle>Share Playlist</DialogTitle>
         </DialogHeader>
-        <div className="flex gap-3 mt-2">
-          <a href={`https://api.whatsapp.com/send?text=${encodeURIComponent(shareableLink)}`} target="_blank" rel="noopener noreferrer">
-            <FaWhatsapp size={24} className="text-green-500" />
+        <div className="flex md:gap-8 gap-4 justify-center mt-2 pt-4">
+          <a
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+              shareableLink
+            )}`}
+            className="flex items-center justify-center flex-col"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaWhatsapp className="text-green-500 md:w-12 md:h-12 h-8 w-8" />
+            <p className="text-white/80 text-base md:text-lg">Whatsapp</p>
           </a>
-          <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareableLink)}`} target="_blank" rel="noopener noreferrer">
-            <FaFacebook size={24} className="text-blue-600" />
+          <a
+            href={`https://t.me/share/url?url=${encodeURIComponent(
+              shareableLink
+            )}}`}
+            className="flex items-center justify-center flex-col"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaTelegramPlane className=" text-blue-500 md:w-12 md:h-12 h-8 w-8" />
+            <p className="text-white/80 text-base md:text-lg">Telegram</p>
           </a>
-          <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareableLink)}`} target="_blank" rel="noopener noreferrer">
-            <FaXTwitter size={24} className="text-black" />
+          <a
+            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
+              shareableLink
+            )}`}
+            className="flex items-center justify-center flex-col"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaXTwitter className="text-black md:w-12 md:h-12 h-8 w-8" />
+            <p className="text-white/80 text-base md:text-lg">X</p>
           </a>
-          <a href={`mailto:?subject=Check this playlist&body=${encodeURIComponent(shareableLink)}`} target="_blank" rel="noopener noreferrer">
-            <FaEnvelope size={24} className="text-gray-600" />
+          <a
+            href={`https://discord.com/channels/@me/?text=${encodeURIComponent(
+              shareableLink
+            )}`}
+            className="flex items-center justify-center flex-col"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaDiscord className=" text-indigo-500 md:w-12 md:h-12 h-8 w-8" />
+            <p className="text-white/80 text-base md:text-lg">Discord</p>
           </a>
         </div>
         <div className="flex items-center mt-4 border p-2 rounded-md">
-          <input type="text" value={shareableLink} readOnly className="flex-1 bg-transparent outline-none text-white" />
+          <input
+            type="text"
+            value={shareableLink}
+            readOnly
+            className="flex-1 bg-transparent outline-none text-white"
+          />
           <button onClick={handleCopy} className="ml-2 text-blue-500">
             <FaLink size={20} />
           </button>
@@ -87,7 +140,6 @@ const ShareButton = ({ shareableLink }) => {
   );
 };
 
-*/
 const Playlist = () => {
   const { playlistId } = useParams();
   const [error, setError] = useState('');
@@ -108,6 +160,13 @@ const Playlist = () => {
     isOwner: false,
   });
 
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const { user } = useAuth();
+
   // Fetch Playlist and other functions remain unchanged
   const fetchPlaylist = async () => {
     try {
@@ -120,10 +179,13 @@ const Playlist = () => {
         description: data.description,
         likes: data.likes.length,
         dislikes: data.dislikes.length,
+        likeDetails: data.likes,
+        dislikeDetails: data.dislikes,
         shares: data.shares,
         category: data.category,
         videos: data.videos,
         isOwner: data.isOwner,
+        ownerDetails: data.user,
       });
       setNoOfLikes(data.likes.length);
       setNoOfDislikes(data.dislikes.length);
@@ -133,16 +195,7 @@ const Playlist = () => {
     }
   };
 
-  const fetchVideos = async () => {
-    try {
-      const resp = await axiosInstance.get(
-        `/video/getvideo/${playlistId}/videos`
-      );
-      setData((prev) => ({ ...prev, videos: resp.data.data }));
-    } catch (error) {
-      console.error('Error fetching videos:', error);
-    }
-  };
+  console.log(data);
 
   const checkBookMark = async () => {
     try {
@@ -176,6 +229,7 @@ const Playlist = () => {
   const functionLike = async () => {
     try {
       const res = await axiosInstance.post(`playlist/${playlistId}/like`);
+      fetchPlaylist();
       setNoOfLikes(res.data.data.likes);
       setNoOfDislikes(res.data.data.dislikes);
     } catch (error) {
@@ -183,12 +237,10 @@ const Playlist = () => {
     }
   };
 
-  const [fillLikes, setFillLikes] = useState(false);
-  const [fillDislikes, setFillDislikes] = useState(false);
-
   const functionDislike = async () => {
     try {
       const res = await axiosInstance.post(`playlist/${playlistId}/dislike`);
+      fetchPlaylist();
       setNoOfLikes(res.data.data.likes);
       setNoOfDislikes(res.data.data.dislikes);
     } catch (error) {
@@ -356,130 +408,161 @@ const Playlist = () => {
     );
   };
 
+  console.log(data.likeDetails, 'likeDetails');
+  console.log(data.dislikeDetails, 'dislikeDetails');
 
   return (
     <div className="w-full  bg-dark text-white flex flex-col lg:flex-row gap-4 p-4">
       {/* Left Section: Thumbnail and Playlist Info */}
       <div className="lg:w-1/3 w-full flex-shrink-0 lg:sticky lg:top-4">
-        <div className="bg-gray-900 h-[calc(100vh-100px)] rounded-2xl p-5 shadow-lg">
+        <div className="bg-gray-900 lg:h-[calc(100vh-100px)] rounded-2xl p-5 shadow-lg">
           {/* Thumbnail */}
           <img
             src={data.videos[0]?.thumbnail || '/playlist.jpeg'}
             alt="playlist"
             className="w-full h-48 object-cover aspect-video rounded-xl mb-5 border border-gray-700"
           />
+          {/* Action Buttons */}
 
+          <div className="flex items-center justify-between gap-5">
+            {/* Like Button */}
+            <div className="flex items-center gap-5 mb-6">
+              <button
+                onClick={functionLike}
+                className="flex items-center gap-2 text-gray-400 hover:text-white transition"
+              >
+                {data.likeDetails?.some((like) => like.email === user.email) ? (
+                  <ThumbsUp size={20} fill="white" />
+                ) : (
+                  <ThumbsUp size={20} />
+                )}
+                <span className="text-sm">{noOfLikes}</span>
+              </button>
+               {/* Dislike Button */}
+              <button
+                onClick={functionDislike}
+                className="flex items-center gap-2 text-gray-400 hover:text-white transition"
+              >
+                {data.dislikeDetails?.some((dislike) => dislike.email === user.email) ? (
+                  <ThumbsDown size={20} fill="white" />
+                ) : (
+                  <ThumbsDown size={20} />
+                )}
+                <span className="text-sm">{noOfDislike}</span>
+              </button>
+
+             
+              
+
+              {/* Share Button */}
+
+              <ShareButton
+                shareableLink={`http://localhost:5173/playlists/${playlistId}`}
+              />
+
+              {/* Bookmark Button */}
+              <button
+                onClick={isBookmark ? deleteBookMark : addToBookMark}
+                className="text-gray-400 hover:text-white transition"
+              >
+                {isBookmark ? (
+                  <BookmarkCheck size={20} />
+                ) : (
+                  <Bookmark size={20} />
+                )}
+              </button>
+            </div>
+
+            {/* owner detail */}
+
+            {/* Add Video (if Owner) */}
+            {data.isOwner && (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="">
+                    <FaPlus className="w-6 h-6 text-black" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-gray-800 text-white rounded-xl p-6">
+                  <DialogHeader>
+                    <DialogTitle className="text-lg font-semibold mb-4">
+                      Add a Video
+                    </DialogTitle>
+                    {error && (
+                      <DialogDescription className="text-red-500 mb-2">
+                        {error}
+                      </DialogDescription>
+                    )}
+                  </DialogHeader>
+                  <Input
+                    value={link}
+                    onChange={(e) => setLink(e.target.value)}
+                    placeholder="Paste video URL"
+                    className="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                  />
+                  <DialogFooter className="flex justify-end mt-4 gap-2">
+                    <Button
+                      onClick={handleCreate}
+                      className="bg-green-600 hover:bg-green-700 transition rounded-lg px-4 py-2"
+                    >
+                      Add
+                    </Button>
+                    <DialogClose
+                      ref={closeRef}
+                      className="bg-gray-600 hover:bg-gray-700 transition rounded-lg px-4 py-2"
+                    >
+                      Cancel
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 mb-6">
+            <img
+              src={data.ownerDetails?.profilePic || '/default-avatar.png'}
+              alt="Owner"
+              className="w-8 h-8 rounded-full border border-gray-700"
+            />
+            <p className="text-lg text-gray-400">
+              {data.ownerDetails?.username || 'Unknown Owner'}
+            </p>
+          </div>
           {/* Playlist Info */}
           <h1 className="text-2xl font-bold mb-3 text-white">{data.title}</h1>
+          {/* Category */}
+          <p className="text-gray-400 text-sm mb-6 uppercase">
+            {data.category}
+          </p>
           <p className="text-gray-400 text-sm mb-5 line-clamp-3 leading-relaxed">
             {data.description}
           </p>
-
-          {/* Action Buttons */}
-          <div className="flex items-center gap-5 mb-6">
-            {/* Like Button */}
-            <button
-              onClick={functionLike}
-              className="flex items-center gap-2 text-gray-400 hover:text-white transition"
-            >
-              <ThumbsUp size={20} />
-              <span className="text-sm">{noOfLikes}</span>
-            </button>
-
-            {/* Dislike Button */}
-            <button
-              onClick={functionDislike}
-              className="flex items-center gap-2 text-gray-400 hover:text-white transition"
-            >
-              <ThumbsDown size={20} />
-              <span className="text-sm">{noOfDislike}</span>
-            </button>
-
-            {/* Share Button */}
-            <button className="flex items-center gap-2 text-gray-400 hover:text-white transition">
-              <Share2 size={20} />
-              <span className="text-sm">{data.shares}</span>
-            </button>
-
-            {/* Bookmark Button */}
-            <button
-              onClick={isBookmark ? deleteBookMark : addToBookMark}
-              className="text-gray-400 hover:text-white transition"
-            >
-              {isBookmark ? (
-                <BookmarkCheck size={20} />
-              ) : (
-                <Bookmark size={20} />
-              )}
-            </button>
-          </div>
-
-          {/* Category */}
-          <p className="text-gray-400 text-sm mb-6">{data.category}</p>
-
-          {/* Add Video (if Owner) */}
-          {data.isOwner && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 transition rounded-lg shadow-md">
-                  <PlusCircleIcon size={20} className="mr-2" /> Add Video
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-gray-800 text-white rounded-xl p-6">
-                <DialogHeader>
-                  <DialogTitle className="text-lg font-semibold mb-4">
-                    Add a Video
-                  </DialogTitle>
-                  {error && (
-                    <DialogDescription className="text-red-500 mb-2">
-                      {error}
-                    </DialogDescription>
-                  )}
-                </DialogHeader>
-                <Input
-                  value={link}
-                  onChange={(e) => setLink(e.target.value)}
-                  placeholder="Paste video URL"
-                  className="bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-                />
-                <DialogFooter className="flex justify-end mt-4 gap-2">
-                  <Button
-                    onClick={handleCreate}
-                    className="bg-green-600 hover:bg-green-700 transition rounded-lg px-4 py-2"
-                  >
-                    Add
-                  </Button>
-                  <DialogClose
-                    ref={closeRef}
-                    className="bg-gray-600 hover:bg-gray-700 transition rounded-lg px-4 py-2"
-                  >
-                    Cancel
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          )}
-
-          {/* Comments */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <p className="text-gray-400 text-end text-sm hover:text-white hover:underline cursor-pointer mt-4">
-                View Comments
-              </p>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-800 text-white rounded-xl p-6">
-              <Comments />
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
 
       {/* Right Section: Video List */}
-      <div className="lg:w-2/3  overflow-hidden w-full overflow-y-auto">
+      <div className="lg:w-2/3  overflow-hidden w-full  overflow-y-auto">
         <div className=" rounded-lg p-4">
-          <h2 className="text-xl font-semibold mb-4">
-            Videos ({data.videos.length})
-          </h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold mb-4">
+              Videos ({data.videos.length})
+            </h2>
+          </div>
+
+          {/*Comments */}
+          <p
+            className="text-gray-400 text-end text-sm hover:text-white hover:underline cursor-pointer mb-4"
+            onClick={handleOpen}
+          >
+            View Comments
+          </p>
+
+          <CommentModal
+            open={open}
+            setOpen={setOpen}
+            handleClose={handleClose}
+          />
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
