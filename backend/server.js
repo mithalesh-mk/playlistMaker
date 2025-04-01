@@ -8,16 +8,20 @@ const commentRouter = require("./routes/commentRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
 const cors = require("cors");
 require("dotenv").config();
-
-var cookieParser = require("cookie-parser");
+const passport = require('passport')
+require('./config/passport');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-app.use(cors());
-app.use(cookieParser());
+app.use(cors({
+  origin: "*",
+  credentials: true
+}));
+
+app.use(passport.initialize())
 
 app.use("/api/auth", authRoutes);
 app.use("/api/playlist", playlistRoutes);
