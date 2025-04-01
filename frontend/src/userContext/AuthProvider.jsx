@@ -7,6 +7,7 @@ const UserContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
   const handleLogout = () => {
     if (window.location.pathname !== "/login") {
       localStorage.removeItem("auth_token");
@@ -17,49 +18,51 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const verifyUser = async () => {
-      const token = localStorage.getItem("auth_token"); // ✅ Retrieve token
+      const token = new URLSearchParams(window.location.search).get("token");
 
-      if (!token) {
-        setLoading(false);
-        handleLogout();
-        return;
+      if (token) {
+        localStorage.setItem("auth_token", token);
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
 
-      console.log("token", token);
+      const savedToken = localStorage.getItem("auth_token");
+
+      if (!savedToken) {
+        setLoading(false);
+        return; // Don't call handleLogout() here to avoid unnecessary redirects
+      }
+
       try {
+      
         const response = await axiosInstance.get("/auth/verify");
 
         if (response.data.success) {
-          console.log("response", response.data);
+          console.log("User verified:", response.data);
           setUser(response.data.user);
         } else {
-          setLoading(false);
           handleLogout();
-          return;
         }
       } catch (error) {
-        setLoading(false);
         console.log("Verification failed:", error);
         handleLogout();
-        return;
+      } finally {
+        setLoading(false); // ✅ Always set loading to false at the end
       }
-           setLoading(false);
-        };
-        verifyUser();
-    }, []);
+    };
 
+    verifyUser();
+  }, []);
 
   if (loading) return <AnimatedLoader />;
 
   const handleLogin = (token, userData) => {
-    localStorage.setItem("auth_token", token); // ✅ Store JWT in Local Storage
+    localStorage.setItem("auth_token", token);
+    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`; // ✅ Set header on login
     setUser(userData);
   };
 
   return (
-    <UserContext.Provider
-      value={{ user, setUser, loading, handleLogin, handleLogout }}
-    >
+    <UserContext.Provider value={{ user, setUser, loading, handleLogin, handleLogout }}>
       {children}
     </UserContext.Provider>
   );
