@@ -236,7 +236,6 @@ const ForgotPassword = () => {
                       exit="exit"
                       className="w-full h-full"
                     >
-                      <CarouselItem>
                         <form className="p-6 md:p-8" onSubmit={handleResetPassword}>
                           <div className="flex flex-col gap-6">
                             <div className="flex flex-col items-center text-center">
@@ -258,7 +257,6 @@ const ForgotPassword = () => {
                             </Button>
                           </div>
                         </form>
-                      </CarouselItem>
                     </motion.div>
                   )}
               <div className="relative hidden bg-muted md:block">
