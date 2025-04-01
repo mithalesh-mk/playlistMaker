@@ -179,7 +179,6 @@ exports.verify = async (req, res) => {
   try {
     // Check if userId is present
     const userId = req.body.userId;
-
     if (!userId) {
       return res.status(400).json({
         message: "User ID is missing from the request.",
@@ -189,7 +188,7 @@ exports.verify = async (req, res) => {
 
     // Find the user by ID and exclude the password
     const user = await User.findById(userId).select("-password");
-
+    
     if (!user) {
       return res.status(404).json({
         message: "User not found.",
