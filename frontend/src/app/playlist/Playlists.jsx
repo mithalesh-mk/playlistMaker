@@ -170,7 +170,7 @@ const Playlists = () => {
                   </h2>
                     <div>
                       <label className="block text-gray-600 dark:text-gray-300">
-                        Enter your UserName i.e "{playlist.name}" to confirm:
+                        Enter your playlist name i.e "{playlist.name}" to confirm:
                       </label>
                       <input
                         type="text"
