@@ -11,6 +11,7 @@ import {
   Trash,
   GripVertical,
 } from 'lucide-react';
+import { BiSolidDislike,BiSolidLike } from "react-icons/bi";
 import {
   Dialog,
   DialogContent,
@@ -432,9 +433,9 @@ const Playlist = () => {
                 className="flex items-center gap-2 text-gray-400 hover:text-white transition"
               >
                 {data.likeDetails?.some((like) => like.email === user.email) ? (
-                  <ThumbsUp size={20} fill="white" />
+                  <BiSolidLike size={20} fill="#1983fc" />
                 ) : (
-                  <ThumbsUp size={20} />
+                  <BiSolidLike   size={20} />
                 )}
                 <span className="text-sm">{noOfLikes}</span>
               </button>
@@ -444,9 +445,9 @@ const Playlist = () => {
                 className="flex items-center gap-2 text-gray-400 hover:text-white transition"
               >
                 {data.dislikeDetails?.some((dislike) => dislike.email === user.email) ? (
-                  <ThumbsDown size={20} fill="white" />
+                  <BiSolidDislike size={20} fill="#1983fc" />
                 ) : (
-                  <ThumbsDown size={20} />
+                  <BiSolidDislike  size={20} />
                 )}
                 <span className="text-sm">{noOfDislike}</span>
               </button>
