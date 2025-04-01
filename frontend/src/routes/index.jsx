@@ -12,22 +12,87 @@ import BookMarks from "@/app/bookmark/BookMarks";
 import Playlist from "@/app/playlist/Playlist";
 import ForgotPassword from "@/app/login/Forgot-password";
 import Feedback from "@/app/feedback/Feedback";
+import Search from "@/app/search/Search";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
-      { path: '', element: <Sidebar><ProtectedRoute><Home /></ProtectedRoute></Sidebar> },  // Default route for the root path
-      { path: "/login", element: <Login /> },  // About page will render Login component
-      { path: '/signup', element: < Singup/> },  // About page will render SignupForm component
-      {path: '/profile', element: <Sidebar><ProtectedRoute><Profile /></ProtectedRoute></Sidebar>},
-      {path: '/choose-avatar', element: <ChooseAvatar/>},
-      {path: '/playlists', element: <Sidebar><ProtectedRoute><Playlists /></ProtectedRoute></Sidebar>},
-      {path: '/bookmarks', element: <Sidebar><ProtectedRoute><BookMarks /></ProtectedRoute></Sidebar>},
-      {path: '/playlists/:playlistId', element: <Sidebar><ProtectedRoute><Playlist /></ProtectedRoute></Sidebar>},
-      {path: '/forgot-password', element: <ForgotPassword/>},
-      {path : "/feedback" , element : <Sidebar><ProtectedRoute><Feedback/></ProtectedRoute></Sidebar>}, 
+      {
+        path: "",
+        element: (
+          <Sidebar>
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          </Sidebar>
+        ),
+      }, // Default route for the root path
+      { path: "/login", element: <Login /> }, // About page will render Login component
+      { path: "/signup", element: <Singup /> }, // About page will render SignupForm component
+      {
+        path: "/profile",
+        element: (
+          <Sidebar>
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          </Sidebar>
+        ),
+      },
+      { path: "/choose-avatar", element: <ChooseAvatar /> },
+      {
+        path: "/playlists",
+        element: (
+          <Sidebar>
+            <ProtectedRoute>
+              <Playlists />
+            </ProtectedRoute>
+          </Sidebar>
+        ),
+      },
+      {
+        path: "/bookmarks",
+        element: (
+          <Sidebar>
+            <ProtectedRoute>
+              <BookMarks />
+            </ProtectedRoute>
+          </Sidebar>
+        ),
+      },
+      {
+        path: "/playlists/:playlistId",
+        element: (
+          <Sidebar>
+            <ProtectedRoute>
+              <Playlist />
+            </ProtectedRoute>
+          </Sidebar>
+        ),
+      },
+      { path: "/forgot-password", element: <ForgotPassword /> },
+      {
+        path: "/feedback",
+        element: (
+          <Sidebar>
+            <ProtectedRoute>
+              <Feedback />
+            </ProtectedRoute>
+          </Sidebar>
+        ),
+      },
+      {
+        path: "/search",
+        element: (
+          <Sidebar>
+            <ProtectedRoute>
+              <Search />
+            </ProtectedRoute>
+          </Sidebar>
+        ),
+      },
     ],
   },
 ]);
