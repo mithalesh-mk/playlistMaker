@@ -217,7 +217,7 @@ exports.verify = async (req, res) => {
 // Select avatar
 exports.selectAvatar = async (req, res) => {
   const { avatar, id } = req.body;
-  console.log(avatar);
+  // console.log(avatar);
 
   // Save the avatar to the user in the database
   const user = await User.findOneAndUpdate(
@@ -248,7 +248,7 @@ exports.forgotPassword = async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpires = Date.now() + 10 * 60 * 1000;
 
-    console.log("Generated OTP:", otp);
+    // console.log("Generated OTP:", otp);
 
     // Store OTP in database
     const updatedUser = await User.findOneAndUpdate(
@@ -257,7 +257,7 @@ exports.forgotPassword = async (req, res) => {
       { new: true }
     );
 
-    console.log("Updated User:", updatedUser); // Debugging
+    // console.log("Updated User:", updatedUser); // Debugging
 
     if (!updatedUser.otp) {
       console.log("❌ OTP was not stored properly!");
@@ -302,14 +302,14 @@ exports.verifyOTP = async (req, res) => {
         .send({ message: "User not found", success: false });
     }
 
-    console.log("Entered OTP:", otp);
-    console.log("Stored OTP:", user.otp);
-    console.log(
-      "OTP Expiry Time:",
-      user.otpExpires,
-      "Current Time:",
-      Date.now()
-    );
+    // console.log("Entered OTP:", otp);
+    // console.log("Stored OTP:", user.otp);
+    // console.log(
+    //   "OTP Expiry Time:",
+    //   user.otpExpires,
+    //   "Current Time:",
+    //   Date.now()
+    // );
 
     if (!user.otp || user.otp !== otp) {
       return res.status(401).send({ message: "Invalid OTP", success: false });
@@ -340,14 +340,14 @@ exports.resetPassword = async (req, res) => {
         .send({ message: "User not found", success: false });
     }
 
-    console.log("Entered OTP:", otp);
-    console.log("Stored OTP:", user.otp);
-    console.log(
-      "OTP Expiry Time:",
-      user.otpExpires,
-      "Current Time:",
-      Date.now()
-    );
+    // console.log("Entered OTP:", otp);
+    // console.log("Stored OTP:", user.otp);
+    // console.log(
+    //   "OTP Expiry Time:",
+    //   user.otpExpires,
+    //   "Current Time:",
+    //   Date.now()
+    // );
 
     // Check if OTP is valid and not expired
     if (!user.otp || user.otp !== otp) {
