@@ -331,17 +331,18 @@ exports.dislikePlaylist = async (req, res) => {
         (id) => id.toString() !== userId
       );
       
+    
+    } else {
+      // If the user has liked it, remove the like
+      playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
+      // Add the dislike
+      playlist.dislikes.push(userId);
       await Notification.findOneAndDelete({
         user: playlist.user,
         sender: userId,
         playlist: playlist._id,
         type: 'like',
       });
-    } else {
-      // If the user has liked it, remove the like
-      playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
-      // Add the dislike
-      playlist.dislikes.push(userId);
 
       // **Send notification only if it's a new dislike and not by the owner**
       // if (playlist.user.toString() !== userId) {
