@@ -2,7 +2,7 @@ import axiosInstance from "@/axiosInstance";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { PlayIcon, ListCollapse, HeartIcon, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 
 export default function Home() {
@@ -12,6 +12,7 @@ export default function Home() {
   const [top2Data, setTop2Data] = useState([]);
   const [search, setSearch] = useState("");
   const categoies = ["Education", "Music", "Travel", "Series", "Others"];
+  const navigate = useNavigate();
 
   // const getPlaylists = async (category, search, sort) => {
   //   try {
@@ -70,10 +71,17 @@ export default function Home() {
             placeholder="Search Here"
             value={search}
             onChange={handlePlaylist}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                navigate(`/search?query=${search}`);
+              }
+            }}
           ></input>
           <button
             className="hover:text-white/80 border-2 border-gray-300 py-2 px-2 h-9 cursor-pointer dark:bg-white/80 text-black dark:hover:bg-black hover:bg-gray-300  transition-all duration-300 ease-in-out"
-            onClick={() => fetchPlaylists("", search)}
+            onClick={() => {
+              navigate(`/search?query=${search}`);
+            }}
           >
             <AiOutlineSearch />
           </button>

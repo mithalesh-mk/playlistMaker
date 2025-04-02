@@ -16,6 +16,7 @@ const BookMarks = lazy(() => import("@/app/bookmark/BookMarks"));
 const Playlist = lazy(() => import("@/app/playlist/Playlist"));
 const ForgotPassword = lazy(() => import("@/app/login/Forgot-password"));
 const Feedback = lazy(() => import("@/app/feedback/Feedback"));
+import Search from "@/app/search/Search";
 
 const router = createBrowserRouter([
   {
@@ -93,6 +94,17 @@ const router = createBrowserRouter([
             <ProtectedRoute>
               <Suspense fallback={<div>Loading...</div>}>
                 <Feedback />
+              </Suspense>
+            </ProtectedRoute>
+          </Sidebar>
+        ) },
+          { 
+        path: "/search", 
+        element: (
+          <Sidebar>
+            <ProtectedRoute>
+              <Suspense fallback={<div>Loading...</div>}>
+                <Search />
               </Suspense>
             </ProtectedRoute>
           </Sidebar>

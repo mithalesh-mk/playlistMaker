@@ -11,8 +11,8 @@ const http = require("http");
 const { initializeSocket } = require("./socket");
 const cors = require("cors");
 require("dotenv").config();
-
-var cookieParser = require("cookie-parser");
+const passport = require('passport')
+require('./config/passport');
 
 const app = express();
 const server = http.createServer(app);
@@ -21,8 +21,12 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-app.use(cors());
-app.use(cookieParser());
+app.use(cors({
+  origin: "*",
+  credentials: true
+}));
+
+app.use(passport.initialize())
 
 
 // Initialize Socket.io
