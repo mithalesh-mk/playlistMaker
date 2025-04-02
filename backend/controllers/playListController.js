@@ -186,7 +186,6 @@ exports.getPlaylistDetails = async (req, res) => {
       .populate('likes', 'email username')
       .populate('dislikes', 'email username')
       
-    console.log(playlist);
     if (!playlist) {
       return res.status(404).json({ error: 'Playlist not found' });
     }
@@ -247,7 +246,7 @@ exports.likePlaylist = async (req, res) => {
     const playlistId = req.params.playlistId;
     const userId = req.body.userId;
 
-    const playlist = await Playlist.findById(playlistId)
+    const playlist = await Playlist.findById(playlistId);
 
     if (!playlist) {
       return res.status(404).send({
@@ -255,35 +254,42 @@ exports.likePlaylist = async (req, res) => {
         success: false,
       });
     }
-    // Check if the user has already liked the playlist
+
     if (playlist.likes.includes(userId)) {
-      // If the user has liked it, remove the like
+      // **User is unliking the playlist, so remove like**
       playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
+
+      // **Delete the notification if it exists**
+      await Notification.findOneAndDelete({
+        user: playlist.user,
+        sender: userId,
+        playlist: playlist._id,
+        type: 'like',
+      });
     } else {
-      // If the user has disliked it, remove the dislike
+      // **User is liking the playlist**
       playlist.dislikes = playlist.dislikes.filter(
         (id) => id.toString() !== userId
       );
-      // Add the like
+
       playlist.likes.push(userId);
 
-       // **Send notification only if it's a new like and not by the owner**
-       if(playlist.user.toString() !== userId) {
+      // **Send notification only if it's a new like and not by the owner**
+      if (playlist.user.toString() !== userId) {
         const notificationData = {
           user: playlist.user,
           sender: userId,
           playlist: playlist._id,
           type: 'like',
         };
-       // console.log(notificationData);
+        console.log('notification', notificationData);
         const notification = new Notification(notificationData);
         await notification.save();
         sendNotification(playlist.user.toString(), notificationData);
+      }
     }
-  }
-    await playlist.save();
 
-    console.log(playlist.likes, playlist.dislikes);
+    await playlist.save();
 
     res.status(200).send({
       message: 'Playlist like updated successfully',
@@ -330,18 +336,17 @@ exports.dislikePlaylist = async (req, res) => {
       playlist.dislikes.push(userId);
 
       // **Send notification only if it's a new dislike and not by the owner**
-      if (playlist.user.toString() !== userId) {
-        const notificationData = {
-          user: playlist.user,
-          sender: userId,
-          playlist: playlist._id,
-          type: 'dislike',
-        };
-        console.log(notificationData);
-        const notification = new Notification(notificationData);
-        await notification.save();
-        sendNotification(playlist.user.toString(), notificationData);
-      }
+      // if (playlist.user.toString() !== userId) {
+      //   const notificationData = {
+      //     user: playlist.user,
+      //     sender: userId,
+      //     playlist: playlist._id,
+      //     type: 'dislike',
+      //   };
+      //   const notification = new Notification(notificationData);
+      //   await notification.save();
+      //   sendNotification(playlist.user.toString(), notificationData);
+      // }
     }
 
     await playlist.save();
@@ -392,7 +397,6 @@ exports.updatePlaylist = async (req, res) => {
     const userId = req.body.userId;
     const { playlistId } = req.params;
     const { name, description, category } = req.body;
-    console.log(req.body, userId);
     // Find the playlist
     const playlist = await Playlist.findById(playlistId);
     if (!playlist) {

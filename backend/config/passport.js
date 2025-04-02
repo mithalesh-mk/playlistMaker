@@ -28,7 +28,7 @@ passport.use(
           
           });
         }
-        console.log("User found or created:", user);
+        
 
         return done(null, user);
       } catch (error) {
