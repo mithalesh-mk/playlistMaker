@@ -282,6 +282,7 @@ exports.likePlaylist = async (req, res) => {
           sender: userId,
           playlist: playlist._id,
           type: 'like',
+          message: `liked your playlist ${playlist.name}`,
         };
         console.log('notification', notificationData);
         const notification = new Notification(notificationData);

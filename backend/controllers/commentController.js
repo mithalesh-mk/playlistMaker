@@ -33,13 +33,14 @@ exports.addComment = async (req, res) => {
     await playlist.save();
 
     //Sending notification to the owner of the playlist
-    if(playlist.userId.toString() !== req.body.userId) {
+    if(playlist.user.toString() !== req.body.userId) {
       const notificationData = {
-        user: playlist.userId,
+        user: playlist.user,
         sender: req.body.userId,
         playlist: params,
         comment: comment._id,
         type: 'comment',
+        message: `commented on your playlist ${playlist.name}`,
       };
 
       const notification = new Notification(notificationData);
@@ -87,6 +88,7 @@ exports.addReply = async (req, res) => {
         playlist: comment.playlist,
         comment: comment._id,
         type: 'reply',
+        message: `replied to your comment`,
       };
       const notification = new Notification(notificationData);
       await notification.save();

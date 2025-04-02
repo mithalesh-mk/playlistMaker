@@ -31,14 +31,17 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useAuth } from "@/userContext/AuthProvider"
 import { Link } from "react-router-dom"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const {toggleTheme} = useContext(ThemeContext)
-  const { user,handleLogout } = useAuth()
+  const { user,handleLogout,notifications } = useAuth()
+  const [count, setCount] = useState(0) 
+
+
 
 
   if(!user) return <div>Loading....</div>
@@ -95,7 +98,7 @@ export function NavUser() {
               <Link to={'/notifications'}>
               <DropdownMenuItem>
                 <Bell />
-                Notifications
+                <p className={`${count>0?'bg-red-600': "bg-yellow-700"}`}>Notifications {count}</p>
               </DropdownMenuItem>
               </Link>
             </DropdownMenuGroup>
