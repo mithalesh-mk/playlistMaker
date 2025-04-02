@@ -330,6 +330,13 @@ exports.dislikePlaylist = async (req, res) => {
       playlist.dislikes = playlist.dislikes.filter(
         (id) => id.toString() !== userId
       );
+
+      await Notification.findOneAndDelete({
+        user: playlist.user,
+        sender: userId,
+        playlist: playlist._id,
+        type: 'like',
+      });
     } else {
       // If the user has liked it, remove the like
       playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
