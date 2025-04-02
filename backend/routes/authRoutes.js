@@ -34,8 +34,7 @@ router.get('/google/callback',
     // ✅ The user will be available here from the authentication process
     const user = req.user;
 
-    // Log the user to check their information
-    console.log(user);
+   
 
     // ✅ Generate JWT token after successful login
     const token = jwt.sign(
