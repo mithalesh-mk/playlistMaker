@@ -6,12 +6,17 @@ const bookMarkRoutes = require("./routes/bookmarkRoutes");
 const videoRoutes = require("./routes/videoRoutes");
 const commentRouter = require("./routes/commentRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
+const notificationRoutes = require("./routes/notificationRouter");
+const http = require("http");
+const { initializeSocket } = require("./socket");
 const cors = require("cors");
 require("dotenv").config();
 
 var cookieParser = require("cookie-parser");
 
 const app = express();
+const server = http.createServer(app);
+
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -19,12 +24,18 @@ app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
+
+// Initialize Socket.io
+initializeSocket(server);
+
+
 app.use("/api/auth", authRoutes);
 app.use("/api/playlist", playlistRoutes);
 app.use("/api/bookmark", bookMarkRoutes);
 app.use("/api/video", videoRoutes);
 app.use("/api/comment", commentRouter);
 app.use("/api", feedbackRoutes);
+app.use("/api", notificationRoutes);
 
 // Connect to MongoDB
 connectDB();

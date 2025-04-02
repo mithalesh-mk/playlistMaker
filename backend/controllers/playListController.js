@@ -2,6 +2,8 @@ const authMiddleware = require('../middleware/authMiddleware');
 const Playlist = require('../models/playlistModel');
 const mongoose = require('mongoose');
 const shortid = require('shortid');
+const Notification = require('../models/notificationModel');
+const { sendNotification } = require('../socket');
 
 // Get all playlists
 exports.getAllPlaylists = async (req, res) => {
@@ -264,8 +266,21 @@ exports.likePlaylist = async (req, res) => {
       );
       // Add the like
       playlist.likes.push(userId);
-    }
 
+       // **Send notification only if it's a new like and not by the owner**
+       if(playlist.user.toString() !== userId) {
+        const notificationData = {
+          user: playlist.user,
+          sender: userId,
+          playlist: playlist._id,
+          type: 'like',
+        };
+       // console.log(notificationData);
+        const notification = new Notification(notificationData);
+        await notification.save();
+        sendNotification(playlist.user.toString(), notificationData);
+    }
+  }
     await playlist.save();
 
     console.log(playlist.likes, playlist.dislikes);
@@ -313,6 +328,20 @@ exports.dislikePlaylist = async (req, res) => {
       playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
       // Add the dislike
       playlist.dislikes.push(userId);
+
+      // **Send notification only if it's a new dislike and not by the owner**
+      if (playlist.user.toString() !== userId) {
+        const notificationData = {
+          user: playlist.user,
+          sender: userId,
+          playlist: playlist._id,
+          type: 'dislike',
+        };
+        console.log(notificationData);
+        const notification = new Notification(notificationData);
+        await notification.save();
+        sendNotification(playlist.user.toString(), notificationData);
+      }
     }
 
     await playlist.save();

@@ -1,6 +1,8 @@
 const Comment = require('../models/commentModel');
 const PlayList = require('../models/playlistModel');
 const authMiddleware = require('../middleware/authMiddleware');
+const Notification = require('../models/notificationModel');
+const { sendNotification } = require('../socket');
 
 //Add comment Routes
 exports.addComment = async (req, res) => {
@@ -29,6 +31,21 @@ exports.addComment = async (req, res) => {
 
     playlist.comments.push(comment._id);
     await playlist.save();
+
+    //Sending notification to the owner of the playlist
+    if(playlist.userId.toString() !== req.body.userId) {
+      const notificationData = {
+        user: playlist.userId,
+        sender: req.body.userId,
+        playlist: params,
+        comment: comment._id,
+        type: 'comment',
+      };
+
+      const notification = new Notification(notificationData);
+      await notification.save();
+      sendNotification(playlist.user.toString(), notificationData);
+    }
 
     return res.status(200).send({
       message: 'Comment uploaded',
@@ -61,6 +78,20 @@ exports.addReply = async (req, res) => {
 
     comment.replies.push({ userId, replyText });
     await comment.save();
+
+    // Sending notification to the owner of the comment
+    if(comment.userId.toString() !== userId) {
+      const notificationData = {
+        user: comment.userId,
+        sender: userId,
+        playlist: comment.playlist,
+        comment: comment._id,
+        type: 'reply',
+      };
+      const notification = new Notification(notificationData);
+      await notification.save();
+      sendNotification(comment.userId.toString(), notificationData);
+    }
 
     return res.status(200).send({
       message: 'Reply added successfully',
