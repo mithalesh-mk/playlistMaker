@@ -1,30 +1,31 @@
-import { createBrowserRouter } from "react-router-dom";
-import { lazy, Suspense } from "react";
-import App from "../App";
-import ProtectedRoute from "@/ProtecedRoute";
-import Sidebar from "@/app/dashboard/Sidebar";
-import PlaylistLoading from "@/app/playlist/playlistLoading";
+import { createBrowserRouter } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import App from '../App';
+import ProtectedRoute from '@/ProtecedRoute';
+import Sidebar from '@/app/dashboard/Sidebar';
+import PlaylistLoading from '@/app/playlist/playlistLoading';
 
 // Lazy-loaded Components
-const Login = lazy(() => import("../app/login/Login"));
-const Home = lazy(() => import("../app/dashboard/Home"));
-const Signup = lazy(() => import("@/app/signup/Signup"));
-const Profile = lazy(() => import("@/app/profile/Profile"));
-const ChooseAvatar = lazy(() => import("@/app/avatar/ChooseAvatar"));
-const Playlists = lazy(() => import("@/app/playlist/Playlists"));
-const BookMarks = lazy(() => import("@/app/bookmark/BookMarks"));
-const Playlist = lazy(() => import("@/app/playlist/Playlist"));
-const ForgotPassword = lazy(() => import("@/app/login/Forgot-password"));
-const Feedback = lazy(() => import("@/app/feedback/Feedback"));
-import Search from "@/app/search/Search";
+const Login = lazy(() => import('../app/login/Login'));
+const Home = lazy(() => import('../app/dashboard/Home'));
+const Signup = lazy(() => import('@/app/signup/Signup'));
+const Profile = lazy(() => import('@/app/profile/Profile'));
+const ChooseAvatar = lazy(() => import('@/app/avatar/ChooseAvatar'));
+const Playlists = lazy(() => import('@/app/playlist/Playlists'));
+const BookMarks = lazy(() => import('@/app/bookmark/BookMarks'));
+const Playlist = lazy(() => import('@/app/playlist/Playlist'));
+const ForgotPassword = lazy(() => import('@/app/login/Forgot-password'));
+const Feedback = lazy(() => import('@/app/feedback/Feedback'));
+import Search from '@/app/search/Search';
+const Notification = lazy(() => import('@/app/Notification'));
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <App />,
     children: [
-      { 
-        path: "", 
+      {
+        path: '',
         element: (
           <Sidebar>
             <ProtectedRoute>
@@ -33,12 +34,26 @@ const router = createBrowserRouter([
               </Suspense>
             </ProtectedRoute>
           </Sidebar>
-        ) 
+        ),
       },
-      { path: "/login", element: <Suspense fallback={<div>Loading...</div>}><Login /></Suspense> },
-      { path: "/signup", element: <Suspense fallback={<div>Loading...</div>}><Signup /></Suspense> },
-      { 
-        path: "/profile", 
+      {
+        path: '/login',
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Login />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/signup',
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Signup />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/profile',
         element: (
           <Sidebar>
             <ProtectedRoute>
@@ -47,11 +62,18 @@ const router = createBrowserRouter([
               </Suspense>
             </ProtectedRoute>
           </Sidebar>
-        ) 
+        ),
       },
-      { path: "/choose-avatar", element: <Suspense fallback={<div>Loading...</div>}><ChooseAvatar /></Suspense> },
-      { 
-        path: "/playlists", 
+      {
+        path: '/choose-avatar',
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <ChooseAvatar />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/playlists',
         element: (
           <Sidebar>
             <ProtectedRoute>
@@ -60,10 +82,10 @@ const router = createBrowserRouter([
               </Suspense>
             </ProtectedRoute>
           </Sidebar>
-        ) 
+        ),
       },
-      { 
-        path: "/bookmarks", 
+      {
+        path: '/bookmarks',
         element: (
           <Sidebar>
             <ProtectedRoute>
@@ -72,23 +94,38 @@ const router = createBrowserRouter([
               </Suspense>
             </ProtectedRoute>
           </Sidebar>
-        ) 
+        ),
       },
-      { 
-        path: "/playlists/:playlistId", 
+      {
+        path: '/playlists/:playlistId',
         element: (
           <Sidebar>
-              <ProtectedRoute>
+            <ProtectedRoute>
               <Suspense fallback={<PlaylistLoading />}>
                 <Playlist />
-          </Suspense>
-              </ProtectedRoute>
-            </Sidebar>
-        ) 
+              </Suspense>
+            </ProtectedRoute>
+          </Sidebar>
+        ),
       },
-      { path: "/forgot-password", element: <Suspense fallback={<div>Loading...</div>}><ForgotPassword /></Suspense> },
-      { 
-        path: "/feedback", 
+      {
+        path: '/forgot-password',
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <ForgotPassword />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/notifications',
+        element: (
+          <Suspense fallback={<div>Loading...</div>}>
+            <Notification />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/feedback',
         element: (
           <Sidebar>
             <ProtectedRoute>
@@ -97,9 +134,10 @@ const router = createBrowserRouter([
               </Suspense>
             </ProtectedRoute>
           </Sidebar>
-        ) },
-          { 
-        path: "/search", 
+        ),
+      },
+      {
+        path: '/search',
         element: (
           <Sidebar>
             <ProtectedRoute>
@@ -108,7 +146,7 @@ const router = createBrowserRouter([
               </Suspense>
             </ProtectedRoute>
           </Sidebar>
-        ) 
+        ),
       },
     ],
   },
