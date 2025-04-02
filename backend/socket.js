@@ -36,10 +36,8 @@ const initializeSocket = (server) => {
 };
 
 // Function to send real-time notifications
-const sendNotification = async (userId, notificationData) => {
+const sendNotification = async (userId, notification) => {
   try {
-    const notification = new Notification(notificationData);
-    await notification.save();
 
     const recipientSocketId = onlineUsers.get(userId.toString());
     if (recipientSocketId && io) {

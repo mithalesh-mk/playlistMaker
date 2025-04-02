@@ -260,6 +260,7 @@ exports.likePlaylist = async (req, res) => {
       playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
 
       // **Delete the notification if it exists**
+      console.log('Deleting notification for unlike');
       await Notification.findOneAndDelete({
         user: playlist.user,
         sender: userId,
@@ -285,7 +286,7 @@ exports.likePlaylist = async (req, res) => {
         console.log('notification', notificationData);
         const notification = new Notification(notificationData);
         await notification.save();
-        sendNotification(playlist.user.toString(), notificationData);
+        sendNotification(playlist.user.toString(), notification);
       }
     }
 
