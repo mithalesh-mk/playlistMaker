@@ -330,7 +330,7 @@ exports.dislikePlaylist = async (req, res) => {
       playlist.dislikes = playlist.dislikes.filter(
         (id) => id.toString() !== userId
       );
-
+      
       await Notification.findOneAndDelete({
         user: playlist.user,
         sender: userId,
