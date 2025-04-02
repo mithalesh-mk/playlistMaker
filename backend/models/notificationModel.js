@@ -7,6 +7,7 @@ const NotificationSchema = new mongoose.Schema(
     playlist: { type: mongoose.Schema.Types.ObjectId, ref: "Playlist", required: false }, 
     comment: { type: mongoose.Schema.Types.ObjectId, ref: "Comment", required: false }, 
     type: { type: String, required: true }, 
+    message: {type: String, required: true},
     isRead: { type: Boolean, default: false },
   },
   { timestamps: true }

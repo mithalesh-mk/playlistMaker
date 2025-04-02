@@ -5,8 +5,8 @@ import { useAuth } from "@/userContext/AuthProvider";
 import axiosInstance from "@/axiosInstance";
 
 const NotificationComponent = () => {
+  
   const [notifications, setNotifications] = useState([]);
-
 
   // Fetch notifications when component mounts
   useEffect(() => {
@@ -40,11 +40,11 @@ const NotificationComponent = () => {
     <div>
       <h3>Notifications</h3>
       <ul>
-        {/* {notifications.length> 0 && notifications.map((notif) => (
-          <li key={notif._id}>
-            <strong>{notif.sender}</strong> {notif.message}
+        {notifications.length> 0 && notifications.map((notif) => (
+          <li key={notif}>
+            <strong>{notif.sender.username}</strong> {" "} {notif.message}
           </li>
-        ))} */}
+        ))}
       </ul>
     </div>
   );
