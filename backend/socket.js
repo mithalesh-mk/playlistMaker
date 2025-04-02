@@ -1,14 +1,14 @@
 const { Server } = require("socket.io");
+const socketIo = require('socket.io');
 const Notification = require("./models/notificationModel");
 
 let io;
 let onlineUsers = new Map();
 
 const initializeSocket = (server) => {
-  io = new Server(server, {
+  io = socketIo(server, {
     cors: {
-      origin: "*", 
-      
+      origin: "*",
     }
   });
 

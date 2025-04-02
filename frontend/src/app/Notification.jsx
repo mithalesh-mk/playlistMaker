@@ -14,6 +14,8 @@ const Notifications = () => {
     };
   }, []);
 
+  console.log("Notifications:", notifications); // Log notifications to console 
+
   return (
     <div>
       <h3>Notifications</h3>

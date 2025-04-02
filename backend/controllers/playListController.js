@@ -343,18 +343,7 @@ exports.dislikePlaylist = async (req, res) => {
       // Add the dislike
       playlist.dislikes.push(userId);
 
-      // **Send notification only if it's a new dislike and not by the owner**
-      // if (playlist.user.toString() !== userId) {
-      //   const notificationData = {
-      //     user: playlist.user,
-      //     sender: userId,
-      //     playlist: playlist._id,
-      //     type: 'dislike',
-      //   };
-      //   const notification = new Notification(notificationData);
-      //   await notification.save();
-      //   sendNotification(playlist.user.toString(), notificationData);
-      // }
+      
     }
 
     await playlist.save();
