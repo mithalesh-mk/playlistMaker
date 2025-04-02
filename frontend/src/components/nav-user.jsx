@@ -92,10 +92,12 @@ export function NavUser() {
                 <SunMoon />
                 Theme
               </DropdownMenuItem>
+              <Link to={'/notifications'}>
               <DropdownMenuItem>
                 <Bell />
                 Notifications
               </DropdownMenuItem>
+              </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
