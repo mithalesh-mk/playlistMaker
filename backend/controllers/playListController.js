@@ -286,7 +286,7 @@ exports.likePlaylist = async (req, res) => {
         console.log('notification', notificationData);
         const notification = new Notification(notificationData);
         await notification.save();
-        sendNotification(playlist.user.toString(), notification);
+        sendNotification(playlist.user, notification);
       }
     }
 

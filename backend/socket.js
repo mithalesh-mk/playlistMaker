@@ -37,11 +37,12 @@ const initializeSocket = (server) => {
 
 // Function to send real-time notifications
 const sendNotification = async (userId, notification) => {
-  try {
-
+  try { 
+    const notificationData = await Notification.findById(notification._id);
     const recipientSocketId = onlineUsers.get(userId.toString());
+    console.log("Recipient socket ID:", recipientSocketId);
     if (recipientSocketId && io) {
-      io.to(recipientSocketId).emit("newNotification", notification);
+      io.to(recipientSocketId).emit("newNotification", notificationData);
     }
   } catch (error) {
     console.error("Error sending notification:", error);

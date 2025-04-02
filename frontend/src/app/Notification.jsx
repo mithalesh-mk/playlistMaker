@@ -1,29 +1,53 @@
 import { useEffect, useState } from "react";
-import socket from "../socket";
+import socket from "../socket"; // Your socket instance
+import axios from "axios";
+import { useAuth } from "@/userContext/AuthProvider";
+import axiosInstance from "@/axiosInstance";
 
-const Notifications = () => {
+const NotificationComponent = () => {
   const [notifications, setNotifications] = useState([]);
 
+
+  // Fetch notifications when component mounts
   useEffect(() => {
-    socket.on("newNotification", (notification) => {
-      setNotifications((prev) => [notification, ...prev]); // Add new notification to state
+    fetchNotifications();
+  }, []);
+
+  // Fetch notifications from backend
+  const fetchNotifications = async () => {
+    try {
+      const response = await axiosInstance.get(`http://localhost:3000/api/notifications`);
+      setNotifications(response.data.data);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  // Listen for new notifications in real-time
+  useEffect(() => {
+    socket.on("newNotification", (newNotification) => {
+      setNotifications((prevNotifications) => [newNotification, ...prevNotifications]);
     });
 
     return () => {
-      socket.off("newNotification"); // Clean up event listener on unmount
+      socket.off("newNotification");
     };
   }, []);
 
-  console.log("Notifications:", notifications); // Log notifications to console 
+  console.log('notifications', notifications)
 
   return (
     <div>
       <h3>Notifications</h3>
-      {notifications.map((notif, index) => (
-        <div key={index}>{notif.type} from {notif.sender}</div>
-      ))}
+      <ul>
+        {/* {notifications.length> 0 && notifications.map((notif) => (
+          <li key={notif._id}>
+            <strong>{notif.sender}</strong> {notif.message}
+          </li>
+        ))} */}
+      </ul>
     </div>
   );
 };
 
-export default Notifications;
+export default NotificationComponent;
