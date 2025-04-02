@@ -49,24 +49,7 @@ export default function Search() {
   return (
     <SidebarInset>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <form
-          onSubmit={handleSearchSubmit}
-          className="absolute -top-14 right-4 z-40 text-white/80 flex items-center px-4 py-2"
-        >
-          <input
-            type="text"
-            className="dark:bg-black dark:border-white/80 border-gray-300 border-y-2 border-l-2 rounded-s-sm w-full md:w-[300px] h-9 px-4 dark:text-white/80 dark:placeholder:text-white/80 text-black focus:outline-none focus:border-white/80 focus:ring-0"
-            placeholder="Search Here"
-            value={search}
-            onChange={handlePlaylist}
-          />
-          <button
-            type="submit"
-            className="hover:text-white/80 border-2 border-gray-300 py-2 px-2 h-9 cursor-pointer dark:bg-white/80 text-black dark:hover:bg-black hover:bg-gray-300 transition-all duration-300 ease-in-out"
-          >
-            <AiOutlineSearch />
-          </button>
-        </form>
+      
 
         <div>
           <p className="md:text-4xl text-2xl font-semibold">Search Result</p>
