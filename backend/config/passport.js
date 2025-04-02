@@ -25,8 +25,10 @@ passport.use(
             email: profile.emails[0].value,
             password: undefined, 
             profilePic: profile.photos[0]?.value || "",
+          
           });
         }
+        console.log("User found or created:", user);
 
         return done(null, user);
       } catch (error) {
