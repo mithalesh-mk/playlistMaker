@@ -40,7 +40,6 @@ const sendNotification = async (userId, notification) => {
   try { 
     const notificationData = await Notification.findById(notification._id);
     const recipientSocketId = onlineUsers.get(userId.toString());
-    console.log("Recipient socket ID:", recipientSocketId);
     if (recipientSocketId && io) {
       io.to(recipientSocketId).emit("newNotification", notificationData);
     }

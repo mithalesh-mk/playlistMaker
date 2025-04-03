@@ -38,10 +38,24 @@ import { Link } from "react-router-dom"
 export function NavUser() {
   const { isMobile } = useSidebar()
   const {toggleTheme} = useContext(ThemeContext)
-  const { user,handleLogout,notifications } = useAuth()
+  const { user,handleLogout } = useAuth()
   const [count, setCount] = useState(0) 
 
+  const {notifications} = useAuth()
+  useEffect(() => {
+    
+    if(notifications.length>0) {
+      notifications.map((notification) => {
+        console.log(notification.isRead)  
+        if(notification.isRead === false) {
+          setCount(count + 1)
+        }
+      })
+      
+    }
+  },[notifications])
 
+  
 
 
   if(!user) return <div>Loading....</div>
@@ -58,6 +72,7 @@ export function NavUser() {
                 <img src={user.profilePic} alt={user.username}/>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
+                {count>0 && <div className="h-2 w-2 rounded-full bg-red-600  absolute left-8 top-1 z-50"></div>}
                 <span className="truncate font-semibold">{user.username}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
@@ -77,6 +92,7 @@ export function NavUser() {
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.username}</span>
                   <span className="truncate text-xs">{user.email}</span>
+                
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -98,7 +114,8 @@ export function NavUser() {
               <Link to={'/notifications'}>
               <DropdownMenuItem>
                 <Bell />
-                <p className={`${count>0?'bg-red-600': "bg-yellow-700"}`}>Notifications {count}</p>
+                <p >Notifications</p>
+                {count>0 && <div className="h-2 w-2 rounded-full bg-red-600  absolute left-2 top-1 z-50"></div>}
               </DropdownMenuItem>
               </Link>
             </DropdownMenuGroup>

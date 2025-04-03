@@ -20,6 +20,11 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { useAuth } from "@/userContext/AuthProvider"
+import { useEffect } from "react"
+
+import socket from "../socket"; // Your socket instance
+import axiosInstance from "@/axiosInstance"
 
 // This is sample data.
 const data = {
@@ -77,6 +82,14 @@ const data = {
 export function AppSidebar({
   ...props
 }) {
+
+  const {notifications,setNotifications} = useAuth()
+
+  // Fetch notifications when component mounts
+  
+
+
+  
   return (
     (<Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

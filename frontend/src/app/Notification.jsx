@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import socket from "../socket"; // Your socket instance
 import axios from "axios";
 import { useAuth } from "@/userContext/AuthProvider";
@@ -6,36 +6,31 @@ import axiosInstance from "@/axiosInstance";
 
 const NotificationComponent = () => {
   
-  const [notifications, setNotifications] = useState([]);
-
-  // Fetch notifications when component mounts
+  const { user, notifications,setNotifications } = useAuth(); // Assuming you have a way to get the current user and notifications
+  console.log(user)
   useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  // Fetch notifications from backend
-  const fetchNotifications = async () => {
-    try {
-      const response = await axiosInstance.get(`http://localhost:3000/api/notifications`);
-      setNotifications(response.data.data);
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
+    const markRead = async (notificationId) => {
+      try {
+        await axiosInstance.patch(`/notifications/${notificationId}`);
+        setNotifications((prevNotifications) =>
+          prevNotifications.map((notif) =>
+            notif._id === notificationId ? { ...notif, isRead: true } : notif
+          )
+        );
+        console.log("Notification marked as read:", notificationId);
+      } catch (error) {
+        console.error("Error marking notification as read:", error);
+      }
     }
-  };
+    notifications.map((notification => {
+      if(notification.isRead === false) {
+        markRead(notification._id)
+      }
+    })
+    )
+  },[])
 
-  // Listen for new notifications in real-time
-  useEffect(() => {
-    socket.on("newNotification", (newNotification) => {
-      setNotifications((prevNotifications) => [newNotification, ...prevNotifications]);
-    });
-
-    return () => {
-      socket.off("newNotification");
-    };
-  }, []);
-
-  console.log('notifications', notifications)
-
+    
   return (
     <div>
       <h3>Notifications</h3>
