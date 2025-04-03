@@ -3,6 +3,8 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const playListController = require("../controllers/playListController");
 
+const { upload } = require("../config/cloudinaryConfig");
+
 router.post("/addplaylist", authMiddleware, playListController.addPlaylist);
 router.delete(
   "/deleteplaylist/:playlistId",
@@ -41,6 +43,8 @@ router.get(
   authMiddleware,
   playListController.getPlaylistByShareableId
 );
+router.put("/updatePlaylist/:playlistId",authMiddleware,upload.single('image'), playListController.updatePlaylist);
 router.get("/random", authMiddleware, playListController.getTenPlaylists);
+
 
 module.exports = router;
