@@ -409,8 +409,7 @@ const Playlist = () => {
     );
   };
 
-  console.log(data.likeDetails, 'likeDetails');
-  console.log(data.dislikeDetails, 'dislikeDetails');
+  console.log(data.ownerDetails)
 
   return (
     <div className="w-full  bg-dark text-white flex flex-col lg:flex-row gap-4 p-4">
@@ -522,7 +521,7 @@ const Playlist = () => {
 
           <div className="flex items-center gap-2 mb-6">
             <img
-              src={data.ownerDetails?.profilePic || '/default-avatar.png'}
+              src={data.ownerDetails?.profilePic || data.ownerDetails?.username}
               alt="Owner"
               className="w-8 h-8 rounded-full border border-gray-700"
             />

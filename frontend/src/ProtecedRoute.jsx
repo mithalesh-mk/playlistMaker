@@ -5,7 +5,6 @@ const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth(); // No need to destructure `handleLogout` here
 
   const token = localStorage.getItem("auth_token");
-  console.log("user:", user, "token:", token);
 
   if (loading) return <p>Loading...</p>;
 

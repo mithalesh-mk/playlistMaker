@@ -9,6 +9,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [notifications, setNotifications] = useState([]);
+
   const handleLogout = () => {
     if (window.location.pathname !== '/login') {
       localStorage.removeItem('auth_token');
@@ -57,6 +59,33 @@ export const AuthProvider = ({ children }) => {
     verifyUser();
   }, []);
 
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  // Fetch notifications from backend
+  const fetchNotifications = async () => {
+    try {
+      const response = await axiosInstance.get(`http://localhost:3000/api/notifications`);
+      setNotifications(response.data.data);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  // Listen for new notifications in real-time
+  useEffect(() => {
+    socket.emit('join', user?._id); // Join the socket room with the user's ID
+    socket.on("newNotification", (newNotification) => {
+      setNotifications((prevNotifications) => [newNotification, ...prevNotifications]);
+    });
+
+    return () => {
+      socket.off("newNotification");
+    };
+  }, [notifications]);
+
   if (loading) return <AnimatedLoader />;
 
   const handleLogin = (token, userData) => {
@@ -73,7 +102,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ user, setUser, loading, handleLogin, handleLogout }}
+      value={{ user, setUser, loading, handleLogin, handleLogout,notifications, setNotifications }}
     >
       {children}
     </UserContext.Provider>
