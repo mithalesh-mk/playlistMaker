@@ -4,6 +4,7 @@ import App from '../App';
 import ProtectedRoute from '@/ProtecedRoute';
 import Sidebar from '@/app/dashboard/Sidebar';
 import PlaylistLoading from '@/app/playlist/playlistLoading';
+import Help from '@/app/help/Help';
 
 // Lazy-loaded Components
 const Login = lazy(() => import('../app/login/Login'));
@@ -148,6 +149,18 @@ const router = createBrowserRouter([
           </Sidebar>
         ),
       },
+      {
+        path: '/help',
+        element: (
+          <Sidebar>
+            <ProtectedRoute>
+              <Suspense fallback={<div>Loading...</div>}>
+                <Help />
+              </Suspense>
+            </ProtectedRoute>
+          </Sidebar>
+        ),
+      }
     ],
   },
 ]);

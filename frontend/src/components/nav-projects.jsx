@@ -85,15 +85,18 @@ export function NavProjects({ projects }) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
-        <SidebarMenuItem className="mt-8">
+            <SidebarMenuItem className="mt-8 "> 
+
           <SidebarMenuButton tooltip={'FeedBack'}>
             {MessageSquareQuote && <MessageSquareQuote />}
             <Link to={'/feedback'}><span>{'FeedBack'}</span></Link>
           </SidebarMenuButton>
+            <Link Link to={'/help'}> 
           <SidebarMenuButton tooltip={'Help'}>
             {MessageCircleQuestion && <MessageCircleQuestion />}
             <span>{'Help'}</span>
           </SidebarMenuButton>
+          </Link>
 
           <Dialog>
             <DialogTrigger asChild>
