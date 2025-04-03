@@ -396,6 +396,8 @@ exports.updatePlaylist = async (req, res) => {
     const userId = req.body.userId;
     const { playlistId } = req.params;
     const { name, description, category } = req.body;
+    
+    
     // Find the playlist
     const playlist = await Playlist.findById(playlistId);
     if (!playlist) {
@@ -404,7 +406,9 @@ exports.updatePlaylist = async (req, res) => {
         success: false,
       });
     }
-
+    const image = req.file?.path || playlist.thumbnail; // Use existing thumbnail if not provided
+    console.log('image', image);  
+    console.log(playlist.user.toString(), userId);
     // Check if the requesting user is the owner of the playlist
     if (playlist.user.toString() !== userId) {
       return res.status(403).send({
@@ -414,6 +418,8 @@ exports.updatePlaylist = async (req, res) => {
     }
 
     // Update playlist fields
+    playlist.thumbnail = image; // Update thumbnail if provided
+    // Only update fields if they are provided in the request body
     if (name) playlist.name = name;
     if (description) playlist.description = description;
     if (category) playlist.category = category;

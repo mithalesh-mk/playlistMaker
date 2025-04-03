@@ -49,6 +49,10 @@ const playlistSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    thumbnail: {
+      type: String,
+      default: null, // Default thumbnail URL
+    },
     shareableId: { type: String, unique: true, default: shortid.generate } // New field
   },
   { timestamps: true }
