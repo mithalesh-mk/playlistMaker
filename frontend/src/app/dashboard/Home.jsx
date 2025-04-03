@@ -15,9 +15,12 @@ export default function Home() {
   const fetchPlaylists = async (category) => {
     try {
       const params = category ? { category: category.toLowerCase() } : {};
-      const response = await axiosInstance.get("/playlist/allplaylists", { params });
+      const res = await axiosInstance.get("/playlist/random");
+      const response = await axiosInstance.get("/playlist/allplaylists", {
+        params,
+      });
       const allPlaylists = response.data.data;
-      setFeaturedPlaylists(allPlaylists); // Top 5 featured playlists
+      setFeaturedPlaylists(res.data.data); // Top 5 featured playlists
       setPlaylists(allPlaylists);
     } catch (error) {
       console.error("Error fetching playlists:", error);
@@ -33,18 +36,23 @@ export default function Home() {
   return (
     <SidebarInset>
       <div className="flex flex-col gap-6 p-6 bg-[#0f0f0f] min-h-screen text-white">
-        
         {/* Featured Playlist */}
         <div className="flex flex-col items-center justify-between">
-          <h2 className="text-3xl font-bold text-gray-200">Featured Playlists</h2>
+          <h2 className="text-3xl font-bold text-gray-200">
+            Featured Playlists
+          </h2>
           <FeaturedList featuredPlaylists={featuredPlaylists} />
         </div>
-        
-
 
         {/* Explore Categories */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <h2 className="text-3xl font-bold text-gray-200">Explore by Categories</h2>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-3xl font-bold text-gray-200">
+            Explore by Categories
+          </h2>
           <div className="flex flex-wrap gap-3 mt-4">
             {categories.map((category) => (
               <motion.button
@@ -60,10 +68,14 @@ export default function Home() {
           </div>
         </motion.div>
 
-         {/* Other Playlists */}
-         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Other Playlists */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {playlists.map((playlist, index) => (
-            <PlaylistCard key={playlist._id} playlist={playlist} index={index} />
+            <PlaylistCard
+              key={playlist._id}
+              playlist={playlist}
+              index={index}
+            />
           ))}
         </div>
       </div>
@@ -74,12 +86,13 @@ export default function Home() {
 function PlaylistCard({ playlist, large }) {
   const [hovered, setHovered] = useState(null);
   return (
-    
     <div className="flex flex-col gap-4">
-      <Link to={`/playlists/${playlist._id}`} className="group relative" 
+      <Link
+        to={`/playlists/${playlist._id}`}
+        className="group relative"
         onMouseEnter={() => setHovered(playlist._id)}
-        onMouseLeave={() => setHovered(null)
-      }>
+        onMouseLeave={() => setHovered(null)}
+      >
         <div
           className={`relative rounded-lg overflow-hidden shadow-lg transition-transform duration-300 ${
             large ? "h-[350px]" : "h-[250px]"
@@ -118,7 +131,9 @@ function PlaylistCard({ playlist, large }) {
               <p className="text-xs text-gray-400">{playlist.user?.username}</p>
             </div>
           </div>
-          <p className="text-sm text-gray-300 line-clamp-2">{playlist.description}</p>
+          <p className="text-sm text-gray-300 line-clamp-2">
+            {playlist.description}
+          </p>
           <div className="flex items-center gap-4 text-gray-400 text-xs">
             <span>{playlist.likes.length} Likes</span>
             <span>{playlist.videos.length} Videos</span>
