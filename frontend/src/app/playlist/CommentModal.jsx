@@ -8,30 +8,34 @@ export default function CommentModal({ open, setOpen, handleOpen, handleClose })
 
   return (
     <>
-      
-      
-      <Dialog 
-        open={open} 
-        onClose={handleClose} 
-        maxWidth="sm" 
-        fullWidth 
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        maxWidth="sm"
+        fullWidth
         fullScreen={fullScreen}
-        disableScrollLock // Prevents body scrolling when modal is open
+        disableScrollLock={true}
         sx={{
           '& .MuiDialog-paper': {
             backgroundColor: '#1f2937',
             color: '#ffffff',
             borderRadius: '12px',
+            padding: '6px',
             height: '90vh',
             width: '100%',
-          }
+          },
         }}
       >
-        <DialogContent className="scrollbar-hide">
-          <FaX 
-            className="float-end cursor-pointer hover:text-gray-400 transition-all duration-200" 
-            onClick={handleClose} 
-            size={18} 
+        <DialogContent
+          sx={{
+            overflow: 'hidden', // Disable scrolling
+            padding: 0, // Optional: Remove default padding if needed
+          }}
+        >
+          <FaX
+            className="float-end cursor-pointer hover:text-gray-400 transition-all duration-200"
+            onClick={handleClose}
+            size={18}
             aria-label="Close"
           />
           <Comments />
@@ -40,4 +44,3 @@ export default function CommentModal({ open, setOpen, handleOpen, handleClose })
     </>
   );
 }
-
