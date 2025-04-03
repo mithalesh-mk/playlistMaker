@@ -174,36 +174,36 @@ exports.deletePlaylist = async (req, res) => {
 exports.getPlaylistDetails = async (req, res) => {
   try {
     const { id } = req.params;
+
     // Validate ID before querying
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: 'Invalid playlist ID' });
+      return res.status(400).json({ error: "Invalid playlist ID" });
     }
 
     // Fetch playlist by ID
-    let playlist = await Playlist.findById(id)
-      .populate('user', 'username profilePic')
-      .populate('videos')
-      .populate('likes', 'email username')
-      .populate('dislikes', 'email username')
-      
-    if (!playlist) {
-      return res.status(404).json({ error: 'Playlist not found' });
-    }
-    let Owner = true;
+    const playlist = await Playlist.findById(id)
+      .populate("user", "username profilePic")
+      .populate("videos")
+      .populate("likes", "email username")
+      .populate("dislikes", "email username");
 
-    if (playlist.user.toString() !== req.body.userId) {
-      Owner = false;
+    if (!playlist) {
+      return res.status(404).json({ error: "Playlist not found" });
     }
-    // playlist = {
-    //   ...playlist,
-    //   isOwner: Owner,
-    // };
+
+    let isOwner = false;
+    if (playlist.user && playlist.user._id.toString() === req.body.userId) {
+      isOwner = true;
+    }
+
+    // Convert to object and add `isOwner` property
     const playlistObj = playlist.toObject();
-    playlistObj.isOwner = Owner;
+    playlistObj.isOwner = isOwner;
 
     return res.json(playlistObj);
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
