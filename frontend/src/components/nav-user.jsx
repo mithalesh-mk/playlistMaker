@@ -107,10 +107,6 @@ export function NavUser() {
             </DropdownMenuGroup>
             
             <DropdownMenuGroup>
-             <DropdownMenuItem onClick={toggleTheme}>
-                <SunMoon />
-                Theme
-              </DropdownMenuItem>
               <Link to={'/notifications'}>
               <DropdownMenuItem>
                 <Bell />

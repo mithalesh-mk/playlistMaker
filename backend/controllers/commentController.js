@@ -109,48 +109,86 @@ exports.addReply = async (req, res) => {
   }
 };
 
-//delete Comment
+
 exports.deleteComment = async (req, res) => {
   try {
-    //Finding playlist where comment is
-    const params = req.params.playlistId;
-    console.log(params);
-    const playlist = await PlayList.findById(params);
+    // Extract playlistId from params (assuming route is like /comment/delete/:playlistId)
+    const { playlistId,id } = req.params;
+    console.log('Playlist ID:', playlistId);
 
-    if (!playlist) {
+    // Validate playlistId
+    if (!playlistId) {
       return res.status(400).send({
-        message: 'Playlist Not found',
+        message: 'Playlist ID is required',
         data: null,
         success: false,
       });
     }
 
-    //Finding comment id for the comment which will be deleted.
-    const idOfComment = req.body.id;
-    playlist.comments = playlist.comments.filter(
-      (id) => id.toString() !== idOfComment
-    );
+    // Find the playlist
+    const playlist = await PlayList.findById(playlistId);
+    if (!playlist) {
+      return res.status(404).send({
+        message: 'Playlist not found',
+        data: null,
+        success: false,
+      });
+    }
 
+    // Extract comment ID from body
+    
+
+    if (!id) {
+      return res.status(400).send({
+        message: 'Comment ID is required',
+        data: null,
+        success: false,
+      });
+    }
+
+    // Check if comment exists in playlist.comments (assuming it's an array of IDs)
+    const commentExists = playlist.comments.some(
+      (commentId) => commentId.toString() === id
+    );
+    if (!commentExists) {
+      return res.status(404).send({
+        message: 'Comment not found in this playlist',
+        data: null,
+        success: false,
+      });
+    }
+
+    // Remove comment from playlist.comments
+    playlist.comments = playlist.comments.filter(
+      (commentId) => commentId.toString() !== id
+    );
     await playlist.save();
 
-    //Deleting comment document
 
-    await Comment.findByIdAndDelete(idOfComment);
+    // Delete the comment document
+    const deletedComment = await Comment.findByIdAndDelete(id);
+    if (!deletedComment) {
+      return res.status(404).send({
+        message: 'Comment not found in database',
+        data: null,
+        success: false,
+      });
+    }
 
     return res.status(200).send({
-      message: 'Comment deleted Successfully',
+      message: 'Comment deleted successfully',
       data: null,
       success: true,
     });
   } catch (error) {
+    console.error('Error deleting comment:', error);
     return res.status(500).send({
-      message: 'Not able to delete comment',
-      data: error,
+      message: 'Unable to delete comment',
+      data: error.message,
       success: false,
     });
   }
 };
-
 
 // Get All comments
 exports.getComments = async (req, res) => {
@@ -193,3 +231,99 @@ exports.getComments = async (req, res) => {
     });
   }
 };
+
+exports.editComment = async (req, res) => {
+  try {
+    const { commentId } = req.params; // Extract commentId from request parameters
+    const { text, rating } = req.body; // Extract new text and rating from request body
+
+    // Find the comment by ID and update it
+    const updatedComment = await Comment.findByIdAndUpdate(
+      commentId,
+      { text, rating },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedComment) {
+      return res.status(404).send({
+        message: 'Comment not found',
+        data: null,
+        success: false,
+      });
+    }
+
+    return res.status(200).send({
+      message: 'Comment updated successfully',
+      data: updatedComment,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: 'Unable to update comment',
+      data: error.message,
+      success: false,
+    });
+  }
+}
+
+
+exports.sortComments = async (req, res) => {
+  try {
+    const {playlistId} = req.params;
+    const {sort} = req.query; // Get sort parameter from query string
+    // Find the playlist by ID
+    const playlist = await PlayList.findById(playlistId).populate({
+      path: 'comments',
+      populate: [
+        {
+          path: 'userId', // Populate user details
+        },
+        {
+          path: 'replies', // Populate replies for each comment
+          populate: {
+            path: 'userId', // Populate user details for each reply
+          }
+        }
+      ]
+    });
+    if (!playlist) {
+      return res.status(404).send({
+        message: 'Playlist not found',
+        data: null,
+        success: false,
+      });
+    }
+    let sortedComments = playlist.comments;
+    // Sort comments by rating in descending order
+    if(sort === 'rating') {
+      sortedComments = playlist.comments.sort((a, b) => {
+        return b.rating - a.rating; // Sort in descending order
+      });
+    }
+    else if(sort === 'date') {
+      sortedComments = playlist.comments.sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt); // Sort in ascending order
+      });
+    }
+    else {
+      return res.status(400).send({
+        message: 'Invalid sort parameter',
+        data: null,
+        success: false,
+      });
+    }
+    // Send the sorted comments as a response
+    return res.status(200).send({
+      message: 'Comments sorted successfully',
+      data: sortedComments,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: 'Unable to sort comments',
+      data: error.message,
+      success: false,
+    });
+    
+  }
+}
