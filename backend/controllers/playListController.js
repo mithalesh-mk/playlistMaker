@@ -1,9 +1,9 @@
-const authMiddleware = require('../middleware/authMiddleware');
-const Playlist = require('../models/playlistModel');
-const mongoose = require('mongoose');
-const shortid = require('shortid');
-const Notification = require('../models/notificationModel');
-const { sendNotification } = require('../socket');
+const authMiddleware = require("../middleware/authMiddleware");
+const Playlist = require("../models/playlistModel");
+const mongoose = require("mongoose");
+const shortid = require("shortid");
+const Notification = require("../models/notificationModel");
+const { sendNotification } = require("../socket");
 
 // Get all playlists
 exports.getAllPlaylists = async (req, res) => {
@@ -22,13 +22,13 @@ exports.getAllPlaylists = async (req, res) => {
 
     // Determine the sorting field
 
-    if (sort === 'likes') {
+    if (sort === "likes") {
       sortStage.likeCount = -1; // Sort by like count in descending order
-    } else if (sort === 'recent') {
+    } else if (sort === "recent") {
       sortStage.createdAt = -1; // Sort by creation date in descending order
     }
     if (search && Object.keys(sortStage).length === 0) {
-      sortStage = { score: { $meta: 'textScore' } }; // Sort by relevance if search is applied
+      sortStage = { score: { $meta: "textScore" } }; // Sort by relevance if search is applied
     }
 
     // If no filters or search are applied, return all playlists sorted by createdAt
@@ -40,19 +40,19 @@ exports.getAllPlaylists = async (req, res) => {
       { $match: matchStage }, // Apply filters if any
       {
         $addFields: {
-          likeCount: { $size: '$likes' }, // Calculate like count
+          likeCount: { $size: "$likes" }, // Calculate like count
         },
       },
       { $sort: sortStage }, // Apply sorting
       {
         $lookup: {
-          from: 'users',
-          localField: 'user',
-          foreignField: '_id',
-          as: 'user',
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
         },
       },
-      { $unwind: '$user' }, // Flatten user data
+      { $unwind: "$user" }, // Flatten user data
       {
         $project: {
           name: 1,
@@ -72,21 +72,21 @@ exports.getAllPlaylists = async (req, res) => {
 
     if (!playlists.length) {
       return res.status(200).send({
-        message: 'No playlists found',
+        message: "No playlists found",
         data: [],
         success: true,
       });
     }
 
     return res.status(200).send({
-      message: 'Playlists retrieved successfully',
+      message: "Playlists retrieved successfully",
       data: playlists,
       success: true,
     });
   } catch (error) {
     return res.status(500).send({
-      message: 'Unable to get playlists',
-      error: error?.message || 'Unknown error',
+      message: "Unable to get playlists",
+      error: error?.message || "Unknown error",
       success: false,
     });
   }
@@ -102,14 +102,14 @@ exports.addPlaylist = async (req, res) => {
     });
     await newPlayList.save();
     return res.status(200).send({
-      message: 'Play List Created successfully',
+      message: "Play List Created successfully",
       success: true,
       data: newPlayList,
       shareableLink: `${process.env.BASE_URL}/playlists/share/${newPlayList.shareableId}`,
     });
   } catch (error) {
     return res.status(500).send({
-      message: 'PlayList creation failed',
+      message: "PlayList creation failed",
       data: error,
       success: false,
     });
@@ -120,24 +120,24 @@ exports.getPlaylistByShareableId = async (req, res) => {
     const { shareableId } = req.params;
 
     const playlist = await Playlist.findOne({ shareableId })
-      .populate('user', 'username profilePic')
-      .populate('videos');
+      .populate("user", "username profilePic")
+      .populate("videos");
 
     if (!playlist) {
       return res.status(404).send({
-        message: 'Playlist not found',
+        message: "Playlist not found",
         success: false,
       });
     }
 
     return res.status(200).send({
-      message: 'Playlist retrieved successfully',
+      message: "Playlist retrieved successfully",
       success: true,
       data: playlist,
     });
   } catch (error) {
     return res.status(500).send({
-      message: 'Error retrieving playlist',
+      message: "Error retrieving playlist",
       success: false,
       error,
     });
@@ -152,18 +152,18 @@ exports.deletePlaylist = async (req, res) => {
     const deletedPlaylist = await Playlist.findByIdAndDelete(playlistId);
     if (!deletedPlaylist)
       return res.status(400).send({
-        message: 'Play List not found',
+        message: "Play List not found",
         success: false,
-        data: '',
+        data: "",
       });
     return res.status(200).send({
-      message: 'PlayList Deleted successfully',
-      data: '',
+      message: "PlayList Deleted successfully",
+      data: "",
       success: true,
     });
   } catch (error) {
     return res.status(500).send({
-      message: 'PlayList Cannot be deleted',
+      message: "PlayList Cannot be deleted",
       data: error,
       success: false,
     });
@@ -214,26 +214,26 @@ exports.getPlaylist = async (req, res) => {
 
     // Find all playlists with populated likes and dislikes
     const playlists = await Playlist.find({ user: userId })
-      .populate('likes', 'username') // Populate likes with user names
-      .populate('dislikes', 'username') // Populate dislikes with user names
-      .populate('user', 'username profilePic');
+      .populate("likes", "username") // Populate likes with user names
+      .populate("dislikes", "username") // Populate dislikes with user names
+      .populate("user", "username profilePic");
 
     if (playlists.length === 0) {
       return res.status(201).send({
-        message: 'No playlists found for this user',
+        message: "No playlists found for this user",
         data: [],
         success: true,
       });
     }
 
     return res.status(200).send({
-      message: 'Playlists retrieved successfully',
+      message: "Playlists retrieved successfully",
       data: playlists,
       success: true,
     });
   } catch (error) {
     return res.status(500).send({
-      message: 'Unable to get playlists',
+      message: "Unable to get playlists",
       error,
       success: false,
     });
@@ -250,7 +250,7 @@ exports.likePlaylist = async (req, res) => {
 
     if (!playlist) {
       return res.status(404).send({
-        message: 'Playlist not found',
+        message: "Playlist not found",
         success: false,
       });
     }
@@ -260,12 +260,12 @@ exports.likePlaylist = async (req, res) => {
       playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
 
       // **Delete the notification if it exists**
-      console.log('Deleting notification for unlike');
+      console.log("Deleting notification for unlike");
       await Notification.findOneAndDelete({
         user: playlist.user,
         sender: userId,
         playlist: playlist._id,
-        type: 'like',
+        type: "like",
       });
     } else {
       // **User is liking the playlist**
@@ -281,10 +281,10 @@ exports.likePlaylist = async (req, res) => {
           user: playlist.user,
           sender: userId,
           playlist: playlist._id,
-          type: 'like',
+          type: "like",
           message: `liked your playlist ${playlist.name}`,
         };
-        console.log('notification', notificationData);
+        console.log("notification", notificationData);
         const notification = new Notification(notificationData);
         await notification.save();
         sendNotification(playlist.user, notification);
@@ -294,7 +294,7 @@ exports.likePlaylist = async (req, res) => {
     await playlist.save();
 
     res.status(200).send({
-      message: 'Playlist like updated successfully',
+      message: "Playlist like updated successfully",
       success: true,
       data: {
         likes: playlist.likes.length,
@@ -303,7 +303,7 @@ exports.likePlaylist = async (req, res) => {
     });
   } catch (error) {
     res.status(500).send({
-      message: 'Error updating like',
+      message: "Error updating like",
       success: false,
       data: error,
     });
@@ -320,7 +320,7 @@ exports.dislikePlaylist = async (req, res) => {
 
     if (!playlist) {
       return res.status(404).send({
-        message: 'Playlist not found',
+        message: "Playlist not found",
         success: false,
       });
     }
@@ -331,8 +331,6 @@ exports.dislikePlaylist = async (req, res) => {
       playlist.dislikes = playlist.dislikes.filter(
         (id) => id.toString() !== userId
       );
-      
-    
     } else {
       // If the user has liked it, remove the like
       playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
@@ -342,16 +340,14 @@ exports.dislikePlaylist = async (req, res) => {
         user: playlist.user,
         sender: userId,
         playlist: playlist._id,
-        type: 'like',
+        type: "like",
       });
-
-      
     }
 
     await playlist.save();
 
     res.status(200).send({
-      message: 'Playlist dislike updated successfully',
+      message: "Playlist dislike updated successfully",
       success: true,
       data: {
         likes: playlist.likes.length,
@@ -360,7 +356,7 @@ exports.dislikePlaylist = async (req, res) => {
     });
   } catch (error) {
     res.status(500).send({
-      message: 'Error updating dislike',
+      message: "Error updating dislike",
       success: false,
       data: error,
     });
@@ -377,16 +373,16 @@ exports.updateOrder = async (req, res) => {
     if (!updatedPlaylist) {
       return res
         .status(404)
-        .json({ success: false, message: 'Playlist not found' });
+        .json({ success: false, message: "Playlist not found" });
     }
 
     res.json({
       success: true,
-      message: 'Playlist order updated',
+      message: "Playlist order updated",
       updatedOrder: updatedPlaylist.videos,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error updating order' });
+    res.status(500).json({ success: false, message: "Error updating order" });
   }
 };
 
@@ -400,7 +396,7 @@ exports.updatePlaylist = async (req, res) => {
     const playlist = await Playlist.findById(playlistId);
     if (!playlist) {
       return res.status(404).send({
-        message: 'Playlist not found',
+        message: "Playlist not found",
         success: false,
       });
     }
@@ -408,7 +404,7 @@ exports.updatePlaylist = async (req, res) => {
     // Check if the requesting user is the owner of the playlist
     if (playlist.user.toString() !== userId) {
       return res.status(403).send({
-        message: 'Unauthorized to edit this playlist',
+        message: "Unauthorized to edit this playlist",
         success: false,
       });
     }
@@ -421,15 +417,37 @@ exports.updatePlaylist = async (req, res) => {
     await playlist.save();
 
     return res.status(200).send({
-      message: 'Playlist updated successfully',
+      message: "Playlist updated successfully",
       success: true,
       data: playlist,
     });
   } catch (error) {
     return res.status(500).send({
-      message: 'Error updating playlist',
+      message: "Error updating playlist",
       success: false,
       data: error,
+    });
+  }
+};
+
+exports.getTenPlaylists = async (req, res) => {
+  try {
+    let playlists = await Playlist.aggregate([{ $sample: { size: 10 } }]);
+    playlists = await Playlist.populate(playlists, {
+      path: "user",
+      select: "username profilePic",
+    });
+
+    return res.status(201).send({
+      message: "Fetched Successfully",
+      data: playlists,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: "Unable to get playlists",
+      error: error?.message || "Unknown error",
+      success: false,
     });
   }
 };
