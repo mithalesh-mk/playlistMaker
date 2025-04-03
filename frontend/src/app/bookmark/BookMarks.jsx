@@ -78,40 +78,40 @@ const BookMarks = () => {
   }
 
   return (
-    <div className="min-h-screen py-12 px-4">
-      <h1 className="text-center text-3xl font-bold text-white mb-10">Your Bookmarks</h1>
-      <div className="flex flex-col gap-6">
+    <div className="min-h-screen py-12 px-6 text-white">
+      <h1 className="text-center text-4xl font-extrabold mb-12 tracking-wide">Your Bookmarks</h1>
+      <div className="flex flex-col gap-6 max-w-3xl mx-auto">
         {playlists.map((playlist, index) => (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
             key={playlist._id}
-            className="relative cursor-pointer sm:w-[85%] lg:w-[80%] xl:w-[60%] flex gap-6 mx-auto border p-4 rounded-xl bg-gray-800 bg-opacity-30 backdrop-blur-md border-gray-600 shadow-lg hover:shadow-xl hover:scale-[1.03] transition-transform"
+            className="relative cursor-pointer border border-gray-700 p-5 rounded-2xl bg-gray-800 bg-opacity-40 backdrop-blur-md shadow-2xl hover:shadow-xl hover:scale-105 transition-transform flex items-center gap-5"
             onMouseEnter={() => setHovered(playlist._id)}
             onMouseLeave={() => setHovered(null)}
           >
-            <Link to={`/playlists/${playlist._id}`} className="w-full flex gap-6">
-              <div className="rounded-lg w-[160px] h-[100px] overflow-hidden">
+            <Link to={`/playlists/${playlist._id}`} className="flex gap-5 flex-1 items-center">
+              <div className="rounded-lg w-[130px] h-[100px] overflow-hidden shadow-md">
                 <img
                   src="/playlist.jpeg"
                   alt={playlist?.name || "Playlist"}
-                  className="w-full h-full object-cover rounded-md"
+                  className="w-full h-full object-cover rounded-lg"
                 />
               </div>
-              <div className="flex flex-col justify-center">
-                <h2 className="text-xl font-semibold text-white">{playlist.name}</h2>
-                <p className="text-sm text-gray-400 line-clamp-2">{playlist.description}</p>
-                <p className="text-sm text-gray-500">Videos: {playlist.videos.length}</p>
+              <div className="flex flex-col flex-1">
+                <h2 className="text-xl font-bold text-white truncate">{playlist.name}</h2>
+                <p className="text-sm text-gray-300 line-clamp-2">{playlist.description}</p>
+                <p className="text-sm text-gray-400 mt-1">🎬 {playlist.videos.length} Videos</p>
               </div>
             </Link>
 
             {/* Remove Button (Trash Icon) */}
             <button
-              className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition"
+              className="text-gray-400 hover:text-red-500 transition transform hover:scale-110"
               onClick={() => handleRemove(playlist._id, playlist.name)}
             >
-              <Trash2 size={20} />
+              <Trash2 size={22} />
             </button>
 
             {/* Hover Popup */}
@@ -120,12 +120,12 @@ const BookMarks = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className="absolute top-[-110px] transform -translate-x-1/2 w-[280px] bg-gray-900 bg-opacity-80 backdrop-blur-md p-4 rounded-lg shadow-lg text-white text-sm"
+                className="absolute top-[-120px] left-1/2 transform -translate-x-1/2 w-[300px] bg-gray-900 bg-opacity-90 backdrop-blur-md p-4 rounded-lg shadow-lg text-white text-sm"
               >
-                <h3 className="text-lg font-semibold mb-2">{playlist.name}</h3>
+                <h3 className="text-lg font-bold mb-2">{playlist.name}</h3>
                 <p className="text-gray-400">{playlist.description}</p>
-                <div className="flex justify-between mt-2 text-gray-300">
-                  <span>Videos: {playlist.videos.length}</span>
+                <div className="flex justify-between mt-2 text-gray-300 text-sm">
+                  <span>🎬 {playlist.videos.length} Videos</span>
                   <span>👍 {playlist.likes || 0} Likes</span>
                 </div>
               </motion.div>
