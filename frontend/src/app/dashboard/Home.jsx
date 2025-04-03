@@ -28,6 +28,8 @@ export default function Home() {
     fetchPlaylists();
   }, []);
 
+  console.log("Playlists:", playlists);
+
   // Auto-switch featured playlist every 2 seconds
 
   return (
@@ -86,7 +88,7 @@ function PlaylistCard({ playlist, large }) {
           } group-hover:scale-105`}
         >
           <img
-            src={playlist.cover || "playlist.jpeg"}
+            src={playlist.thumbnail || "playlist.jpeg"}
             alt="Playlist Cover"
             className="w-full h-full object-cover"
           />

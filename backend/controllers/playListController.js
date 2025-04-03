@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const shortid = require('shortid');
 const Notification = require('../models/notificationModel');
 const { sendNotification } = require('../socket');
+const { cloudinary } = require('../config/cloudinaryConfig');
 
 // Get all playlists
 exports.getAllPlaylists = async (req, res) => {
@@ -60,6 +61,7 @@ exports.getAllPlaylists = async (req, res) => {
           videos: 1,
           description: 1,
           comments: 1,
+          thumbnail: 1,
           likes: 1,
           dislikes: 1,
           shares: 1,
@@ -393,33 +395,53 @@ exports.updateOrder = async (req, res) => {
 // Update a playlist (name, description, category)
 exports.updatePlaylist = async (req, res) => {
   try {
-    const userId = req.body.userId;
     const { playlistId } = req.params;
-    const { name, description, category } = req.body;
-    
-    
+    const { name, description, category, userId } = req.body;
+
+    // console.log(req.body, req.file);
+
     // Find the playlist
     const playlist = await Playlist.findById(playlistId);
     if (!playlist) {
       return res.status(404).send({
-        message: 'Playlist not found',
-        success: false,
-      });
-    }
-    const image = req.file?.path || playlist.thumbnail; // Use existing thumbnail if not provided
-    console.log('image', image);  
-    console.log(playlist.user.toString(), userId);
-    // Check if the requesting user is the owner of the playlist
-    if (playlist.user.toString() !== userId) {
-      return res.status(403).send({
-        message: 'Unauthorized to edit this playlist',
+        message: "Playlist not found",
         success: false,
       });
     }
 
+    let image = playlist.thumbnail; // Keep existing thumbnail if not provided
+
+    // Check if the requesting user is the owner of the playlist
+    if (playlist.user.toString() !== userId) {
+      return res.status(403).send({
+        message: "Unauthorized to edit this playlist",
+        success: false,
+      });
+    }
+
+    if (req.file) {
+      // **Delete previous Cloudinary image**
+      if (playlist.thumbnail) {
+        try {
+          const publicId = playlist.thumbnail
+            .split("/")
+            .slice(-2)
+            .join("/")
+            .split(".")[0]; // Extract correct public ID
+            console.log("Public ID:", publicId);
+
+          await cloudinary.uploader.destroy(publicId);
+          console.log("Previous image deleted:", publicId);
+        } catch (err) {
+          console.error("Error deleting previous image:", err);
+        }
+      }
+
+      image = req.file.path; // Use new uploaded image
+    }
+
     // Update playlist fields
-    playlist.thumbnail = image; // Update thumbnail if provided
-    // Only update fields if they are provided in the request body
+    playlist.thumbnail = image;
     if (name) playlist.name = name;
     if (description) playlist.description = description;
     if (category) playlist.category = category;
@@ -427,13 +449,14 @@ exports.updatePlaylist = async (req, res) => {
     await playlist.save();
 
     return res.status(200).send({
-      message: 'Playlist updated successfully',
+      message: "Playlist updated successfully",
       success: true,
       data: playlist,
     });
   } catch (error) {
+    console.error("Server Error:", error);
     return res.status(500).send({
-      message: 'Error updating playlist',
+      message: "Error updating playlist",
       success: false,
       data: error,
     });
