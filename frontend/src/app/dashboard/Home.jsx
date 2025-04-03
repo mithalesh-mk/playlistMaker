@@ -4,6 +4,7 @@ import { HeartIcon, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import FeaturedList from "./FeaturedList";
 
 export default function Home() {
   const [playlists, setPlaylists] = useState([]);
@@ -16,9 +17,8 @@ export default function Home() {
       const params = category ? { category: category.toLowerCase() } : {};
       const response = await axiosInstance.get("/playlist/allplaylists", { params });
       const allPlaylists = response.data.data;
-      setFeaturedPlaylists(allPlaylists.slice(0, 3)); // Top 5 featured playlists
+      setFeaturedPlaylists(allPlaylists); // Top 5 featured playlists
       setPlaylists(allPlaylists);
-      console.log(allPlaylists);
     } catch (error) {
       console.error("Error fetching playlists:", error);
     }
@@ -29,90 +29,17 @@ export default function Home() {
   }, []);
 
   // Auto-switch featured playlist every 2 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentFeaturedIndex((prevIndex) => (prevIndex + 1) % featuredPlaylists.length);
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, [featuredPlaylists]);
 
   return (
     <SidebarInset>
       <div className="flex flex-col gap-6 p-6 bg-[#0f0f0f] min-h-screen text-white">
-
+        
         {/* Featured Playlist */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-center justify-between">
           <h2 className="text-3xl font-bold text-gray-200">Featured Playlists</h2>
+          <FeaturedList featuredPlaylists={featuredPlaylists} />
         </div>
-        <div className="relative h-auto w-full flex items-center justify-center overflow-hidden p-4">
-          <AnimatePresence mode="wait">
-            {featuredPlaylists.length > 0 && (
-              <Link
-                to={`/playlists/${featuredPlaylists[currentFeaturedIndex]._id}`}
-                className="group relative w-full max-w-4xl"
-              >
-                <motion.div
-                  key={featuredPlaylists[currentFeaturedIndex]._id}
-                  initial={{ opacity: 1, x: 50 }}
-                  animate={{ opacity: 1, x: 1 }}
-                  exit={{ opacity: 1, x: -50 }}
-                  transition={{ duration: 1.5 }}
-                  className="flex flex-col md:flex-row w-full bg-gray-900 rounded-lg overflow-hidden shadow-lg"
-                >
-                  {/* Cover Image */}
-                  <div className="w-full md:w-1/2 h-52 md:h-auto">
-                    <img
-                      src={featuredPlaylists[currentFeaturedIndex].cover || 'playlist.jpeg'}
-                      alt="Playlist Cover"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-
-                  {/* Playlist Details */}
-                  <div className="w-full md:w-1/2 p-6 flex flex-col justify-between">
-                    <div>
-                      <p className="text-lg font-bold">{featuredPlaylists[currentFeaturedIndex].name}</p>
-                      <hr className="my-2 border-gray-700" />
-                      <div className="flex items-center gap-3 mt-2">
-                        <img
-                          src={featuredPlaylists[currentFeaturedIndex].user?.profilePic}
-                          className="w-10 h-10 rounded-full border border-gray-700"
-                          alt="User"
-                        />
-                        <p className="text-sm text-gray-400">{featuredPlaylists[currentFeaturedIndex].user?.username}</p>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 mt-2 mb-3">
-                        <span className="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded-full">
-                          {featuredPlaylists[currentFeaturedIndex].category}
-                        </span>
-                        <span className="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded-full">
-                          Created: {new Date(featuredPlaylists[currentFeaturedIndex].createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-
-                      <p className="text-sm text-gray-300 mt-2 line-clamp-3">{featuredPlaylists[currentFeaturedIndex].description}</p>
-                    </div>
-
-                    <div className="flex items-center gap-4 text-gray-400 text-xs mt-3">
-                      <span>{featuredPlaylists[currentFeaturedIndex].likes?.length} Likes</span>
-                      <span>{featuredPlaylists[currentFeaturedIndex].videos?.length} Videos</span>
-                    </div>
-
-                    <div className="flex gap-2 mt-4">
-                      <button className="p-2 bg-white bg-opacity-20 rounded-full backdrop-blur-md hover:bg-opacity-40">
-                        <HeartIcon className="w-6 h-6 text-white" />
-                      </button>
-                      <button className="p-2 bg-white bg-opacity-20 rounded-full backdrop-blur-md hover:bg-opacity-40">
-                        <Share2 className="w-6 h-6 text-white" />
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              </Link>
-            )}
-          </AnimatePresence>
-        </div>
+        
 
 
         {/* Explore Categories */}
@@ -147,6 +74,7 @@ export default function Home() {
 function PlaylistCard({ playlist, large }) {
   const [hovered, setHovered] = useState(null);
   return (
+    
     <div className="flex flex-col gap-4">
       <Link to={`/playlists/${playlist._id}`} className="group relative" 
         onMouseEnter={() => setHovered(playlist._id)}
