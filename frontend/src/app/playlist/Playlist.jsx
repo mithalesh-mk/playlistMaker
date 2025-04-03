@@ -11,7 +11,7 @@ import {
   Trash,
   GripVertical,
 } from 'lucide-react';
-import { BiSolidDislike,BiSolidLike } from "react-icons/bi";
+import { BiSolidDislike, BiSolidLike } from 'react-icons/bi';
 import {
   Dialog,
   DialogContent,
@@ -168,6 +168,20 @@ const Playlist = () => {
 
   const { user } = useAuth();
 
+  const fetchVideos = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/video/getvideo/${playlistId}/videos`
+      );
+      const data = response.data;
+      console.log(data, 'alpha');
+      setData((prev) => ({ ...prev, videos: data.data }));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
   // Fetch Playlist and other functions remain unchanged
   const fetchPlaylist = async () => {
     try {
@@ -175,6 +189,7 @@ const Playlist = () => {
         `/playlist/getplaylist/${playlistId}`
       );
       const data = response.data;
+      console.log(data, 'beta');
       setData({
         title: data.name,
         description: data.description,
@@ -238,6 +253,8 @@ const Playlist = () => {
     }
   };
 
+  
+
   const functionDislike = async () => {
     try {
       const res = await axiosInstance.post(`playlist/${playlistId}/dislike`);
@@ -259,6 +276,7 @@ const Playlist = () => {
       );
       toast({ description: `${res.data.message}` });
       fetchVideos();
+      setShowDelete((prev) => ({ ...prev, [link]: false }));
     } catch (error) {
       console.log(error);
     }
@@ -409,7 +427,7 @@ const Playlist = () => {
     );
   };
 
-  console.log(data.ownerDetails)
+  console.log(data.isOwner);
 
   return (
     <div className="w-full  bg-dark text-white flex flex-col lg:flex-row gap-4 p-4">
@@ -418,7 +436,7 @@ const Playlist = () => {
         <div className="bg-gray-900 lg:h-[calc(100vh-100px)] rounded-2xl p-5 shadow-lg">
           {/* Thumbnail */}
           <img
-            src={data.videos[0]?.thumbnail || '/playlist.jpeg'}
+            src={data?.videos[0]?.thumbnail || '/playlist.jpeg'}
             alt="playlist"
             className="w-full h-48 object-cover aspect-video rounded-xl mb-5 border border-gray-700"
           />
@@ -434,25 +452,24 @@ const Playlist = () => {
                 {data.likeDetails?.some((like) => like.email === user.email) ? (
                   <BiSolidLike size={20} fill="#1983fc" />
                 ) : (
-                  <BiSolidLike   size={20} />
+                  <BiSolidLike size={20} />
                 )}
                 <span className="text-sm">{noOfLikes}</span>
               </button>
-               {/* Dislike Button */}
+              {/* Dislike Button */}
               <button
                 onClick={functionDislike}
                 className="flex items-center gap-2 text-gray-400 hover:text-white transition"
               >
-                {data.dislikeDetails?.some((dislike) => dislike.email === user.email) ? (
+                {data.dislikeDetails?.some(
+                  (dislike) => dislike.email === user.email
+                ) ? (
                   <BiSolidDislike size={20} fill="#1983fc" />
                 ) : (
-                  <BiSolidDislike  size={20} />
+                  <BiSolidDislike size={20} />
                 )}
                 <span className="text-sm">{noOfDislike}</span>
               </button>
-
-             
-              
 
               {/* Share Button */}
 
