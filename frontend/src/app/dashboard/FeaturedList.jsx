@@ -63,7 +63,7 @@ const Carousel = ({ featuredPlaylists = [] }) => {
                 {/* Playlist Cover Image */}
                 <div className="w-full sm:w-1/2">
                   <img
-                    src={playlist.cover || "playlist.jpeg"}
+                    src={playlist.thumbnail || "playlist.jpeg"}
                     alt="Playlist Cover"
                     className="w-full h-full object-cover"
                   />

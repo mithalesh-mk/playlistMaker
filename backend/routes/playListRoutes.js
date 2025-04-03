@@ -3,7 +3,7 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const playListController = require("../controllers/playListController");
 
-const { upload } = require("../config/cloudinaryConfig");
+const { upload, uploadErrorHandler } = require("../config/cloudinaryConfig");
 
 router.post("/addplaylist", authMiddleware, playListController.addPlaylist);
 router.delete(
@@ -18,6 +18,7 @@ router.get(
 );
 router.get("/userplaylists", authMiddleware, playListController.getPlaylist);
 router.get("/allplaylists", authMiddleware, playListController.getAllPlaylists);
+
 router.post(
   "/:playlistId/like",
   authMiddleware,

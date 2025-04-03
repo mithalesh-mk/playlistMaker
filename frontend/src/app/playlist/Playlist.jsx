@@ -200,7 +200,8 @@ const Playlist = () => {
         shares: data.shares,
         category: data.category,
         videos: data.videos,
-        isOwner: data.isOwner,
+        isOwner: data.isOwner, 
+        thumbnail: data.thumbnail,
         ownerDetails: data.user,
       });
       setNoOfLikes(data.likes.length);
@@ -430,15 +431,15 @@ const Playlist = () => {
   console.log(data.isOwner);
 
   return (
-    <div className="w-full  bg-dark text-white flex flex-col lg:flex-row gap-4 p-4">
+    <div className="w-full  bg-dark text-white flex flex-col xl:flex-row gap-4 p-4">
       {/* Left Section: Thumbnail and Playlist Info */}
-      <div className="lg:w-1/3 w-full flex-shrink-0 lg:sticky lg:top-4">
-        <div className="bg-gray-900 lg:h-[calc(100vh-100px)] rounded-2xl p-5 shadow-lg">
+      <div className="xl:w-1/3 w-full flex-shrink-0 xl:sticky md:top-4">
+        <div className="bg-gray-900 xl:h-[calc(100vh-100px)] rounded-2xl p-5 shadow-lg">
           {/* Thumbnail */}
           <img
-            src={data?.videos[0]?.thumbnail || '/playlist.jpeg'}
+            src={data?.thumbnail || data?.videos[0]?.thumbnail || './default.jpg'}
             alt="playlist"
-            className="w-full h-48 object-cover aspect-video rounded-xl mb-5 border border-gray-700"
+            className="w-full h-auto object-cover aspect-video rounded-xl mb-5 border border-gray-700"
           />
           {/* Action Buttons */}
 
@@ -559,7 +560,7 @@ const Playlist = () => {
       </div>
 
       {/* Right Section: Video List */}
-      <div className="lg:w-2/3  overflow-hidden w-full  overflow-y-auto">
+      <div className="xl:w-2/3  overflow-hidden w-full  overflow-y-auto">
         <div className=" rounded-lg p-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold mb-4">
