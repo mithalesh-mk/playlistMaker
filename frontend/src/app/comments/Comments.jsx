@@ -242,6 +242,13 @@ const Comments = () => {
             onChange={(e) => setComment(e.target.value)}
             value={comment}
             maxLength={300}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault(); // Prevents new line on Enter key
+                addComment(e);
+              }
+            }}
+
             placeholder="Add a comment..."
           />
           <button
@@ -408,6 +415,11 @@ const Comments = () => {
                         value={editText}
                         onChange={(e) => setEditText(e.target.value)}
                         maxLength={300}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault(); // Prevents new line on Enter key
+                            handleReply(comment._id);
+                          }}}
                         placeholder="Edit your comment..."
                       />
                       <button
@@ -441,14 +453,14 @@ const Comments = () => {
                     >
                       Reply
                     </button>
-                    <button
+                    {comment.replies.length>0 && <button
                       onClick={() => handleShowReplies(comment._id)}
                       className="text-blue-400 hover:text-blue-500 transition text-sm"
                     >
-                      {showReplies[comment._id]
+                      {showReplies[comment._id] 
                         ? 'Hide Replies'
                         : 'Show Replies'}
-                    </button>
+                    </button>}
                   </div>
 
                   {/* Replies */}
@@ -486,6 +498,11 @@ const Comments = () => {
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         className="bg-gray-700 text-white px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-400 w-full border border-gray-600"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleReply(comment._id);
+                          }
+                        }}
                       />
                       <button
                         onClick={() => handleReply(comment._id)}
