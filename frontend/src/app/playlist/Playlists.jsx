@@ -86,19 +86,19 @@ const Playlists = () => {
       }
       const formData = new FormData();
       if (file) formData.append('image', file);
+      console.log(editingPlaylist)
       formData.append('name', editingPlaylist.name);
       formData.append('description', editingPlaylist.description);
       formData.append('category', editingPlaylist.category);
       formData.append('userId', editingPlaylist.user._id);
 
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
       const res = await axiosInstance.put(
         `/playlist/updatePlaylist/${editingPlaylist._id}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
+        formData
       );
       if (!res.data.success) {
         setLoading(false);
@@ -149,7 +149,6 @@ const Playlists = () => {
   useEffect(() => {
     fetchPlaylists();
   }, []);
-  console.log(playlists);
 
   return (
     <div className="flex flex-row gap-6 mt-10 px-4 md:px-8">

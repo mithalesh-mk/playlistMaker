@@ -396,7 +396,7 @@ exports.updatePlaylist = async (req, res) => {
     const { playlistId } = req.params;
     const { name, description, category, userId } = req.body;
 
-    // console.log(req.body, req.file);
+    console.log(req.body,'body', req.file);
 
     // Find the playlist
     const playlist = await Playlist.findById(playlistId);

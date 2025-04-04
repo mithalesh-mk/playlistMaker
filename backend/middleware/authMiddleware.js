@@ -24,7 +24,6 @@ module.exports = (req, res, next) => {
 
     // Verifying the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded)
 
     // Attaching the decoded userId to req.user for further use
     req.body.userId = decoded.userId;

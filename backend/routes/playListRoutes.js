@@ -34,17 +34,13 @@ router.put(
   authMiddleware,
   playListController.updateOrder
 );
-router.put(
-  "/updatePlaylist/:playlistId",
-  authMiddleware,
-  playListController.updatePlaylist
-);
+
 router.get(
   "/share/:shareableId",
   authMiddleware,
   playListController.getPlaylistByShareableId
 );
-router.put("/updatePlaylist/:playlistId",authMiddleware,upload.single('image'), playListController.updatePlaylist);
+router.put("/updatePlaylist/:playlistId",authMiddleware, upload.single('image'),uploadErrorHandler, playListController.updatePlaylist);
 router.get("/random", authMiddleware, playListController.getTenPlaylists);
 
 
