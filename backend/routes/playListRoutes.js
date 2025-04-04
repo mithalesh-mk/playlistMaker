@@ -34,16 +34,14 @@ router.put(
   authMiddleware,
   playListController.updateOrder
 );
-router.put(
-  "/updatePlaylist/:playlistId",
-  authMiddleware,
-  playListController.updatePlaylist
-);
+
 router.get(
   "/share/:shareableId",
   authMiddleware,
   playListController.getPlaylistByShareableId
 );
+router.put("/updatePlaylist/:playlistId",authMiddleware, upload.single('image'),uploadErrorHandler, playListController.updatePlaylist);
+
 
 router.post(
   "/:playlistId/like",
@@ -60,12 +58,7 @@ router.put(
   authMiddleware,
   playListController.updateOrder
 );
-router.put(
-  "/updatePlaylist/:playlistId",
-  authMiddleware,
-  upload.single("image"),
-  playListController.updatePlaylist
-);
+
 router.get(
   "/share/:shareableId",
   authMiddleware,
