@@ -65,7 +65,7 @@ export default function HelpCenter() {
   }, [image]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-6 bg-black text-white">
+    <div className="h-full xl:h-[calc(100vh-70px)] flex flex-col items-center p-6 text-white">
       {/* Header */}
       <motion.h1 
         className="text-3xl font-bold mb-6 text-center" 
