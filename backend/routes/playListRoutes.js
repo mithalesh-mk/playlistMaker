@@ -43,7 +43,22 @@ router.get(
   authMiddleware,
   playListController.getPlaylistByShareableId
 );
-router.get("/random", authMiddleware, playListController.getTenPlaylists);
+
+router.post(
+  "/:playlistId/like",
+  authMiddleware,
+  playListController.likePlaylist
+);
+router.post(
+  "/:playlistId/dislike",
+  authMiddleware,
+  playListController.dislikePlaylist
+);
+router.put(
+  "/updateOrder/:playlistId",
+  authMiddleware,
+  playListController.updateOrder
+);
 router.put(
   "/updatePlaylist/:playlistId",
   authMiddleware,
@@ -55,5 +70,6 @@ router.get(
   authMiddleware,
   playListController.getPlaylistByShareableId
 );
+router.get("/random", authMiddleware, playListController.getTenPlaylists);
 
 module.exports = router;
