@@ -1,99 +1,86 @@
-import * as React from "react"
+import * as React from "react";
 import {
-  ListVideo ,
-  BookmarkPlus ,
-  GraduationCap ,
-  Music ,
-  Plane ,
-  Clapperboard ,
+  ListVideo,
+  BookmarkPlus,
+  GraduationCap,
+  Music,
+  Plane,
+  Clapperboard,
   ListCollapse,
-} from "lucide-react"
+} from "lucide-react";
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { NavMain } from "@/components/nav-main";
+import { NavProjects } from "@/components/nav-projects";
+import { NavUser } from "@/components/nav-user";
+import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { useAuth } from "@/userContext/AuthProvider"
-import { useEffect } from "react"
+} from "@/components/ui/sidebar";
+import { useAuth } from "@/userContext/AuthProvider";
+import { useEffect } from "react";
 
 import socket from "../socket"; // Your socket instance
-import axiosInstance from "@/axiosInstance"
+import axiosInstance from "@/axiosInstance";
 
 // This is sample data.
 const data = {
-  
   navMain: [
     {
       title: "My Playlist",
       url: "playlists",
-      icon: ListVideo ,
+      icon: ListVideo,
       isActive: true,
-      items: [
-        
-
-      ],
+      items: [],
     },
     {
       title: "Bookmarks",
       url: "bookmarks",
-      icon: BookmarkPlus ,
-      items: [
-        
-      ],
+      icon: BookmarkPlus,
+      items: [],
     },
-    
   ],
   projects: [
     {
       name: "Education",
-      url: "#",
-      icon: GraduationCap ,
+      url: "/search?category=education",
+      icon: GraduationCap,
     },
     {
       name: "Music",
-      url: "#",
-      icon: Music ,
+      url: "/search?category=music",
+      icon: Music,
     },
     {
       name: "Travel",
-      url: "#",
-      icon: Plane ,
+      url: "/search?category=travel",
+      icon: Plane,
     },
     {
       name: "Series",
-      url: "#",
-      icon: Clapperboard ,
+      url: "/search?category=series",
+      icon: Clapperboard,
     },
     {
       name: "Others",
-      url: "#",
-      icon: ListCollapse ,
+      url: "/search?category=others",
+      icon: ListCollapse,
     },
   ],
-}
+};
 
-export function AppSidebar({
-  ...props
-}) {
-
-  const {notifications,setNotifications} = useAuth()
+export function AppSidebar({ ...props }) {
+  const { notifications, setNotifications } = useAuth();
 
   // Fetch notifications when component mounts
-  
 
-
-  
   return (
-    (<Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher/>
+        <TeamSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
@@ -103,6 +90,6 @@ export function AppSidebar({
         <NavUser />
       </SidebarFooter>
       <SidebarRail />
-    </Sidebar>)
+    </Sidebar>
   );
 }

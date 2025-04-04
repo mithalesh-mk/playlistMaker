@@ -5,13 +5,13 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
-import { Bell } from 'lucide-react';  
-import Notification from '../Notification';
-import { BellDot } from 'lucide-react';
-import { useAuth } from "@/userContext/AuthProvider"
+import { Bell } from "lucide-react";
+import Notification from "../Notification";
+import { BellDot } from "lucide-react";
+import { useAuth } from "@/userContext/AuthProvider";
 
 export default function Sidebar({ children }) {
   const location = useLocation();
@@ -19,25 +19,29 @@ export default function Sidebar({ children }) {
   const [search, setSearch] = useState("");
   const [count, setCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const [onClose , setOnClose] = useState(false);
+  const [onClose, setOnClose] = useState(false);
+  const [searchParams] = useSearchParams();
+  const categoryParam = searchParams.get("category") || "";
 
   const handlePlaylist = (e) => {
     setSearch(e.target.value);
   };
+  // const handleNavigat=() =>
+  // {
 
-    const {notifications} = useAuth()
-    useEffect(() => {
-      
-      if(notifications.length>0) {
-        notifications.map((notification) => {
-          console.log(notification.isRead)  
-          if(notification.isRead === false) {
-            setCount(count + 1)
-          }
-        })
-        
-      }
-    },[notifications])
+  // }
+
+  const { notifications } = useAuth();
+  useEffect(() => {
+    if (notifications.length > 0) {
+      notifications.map((notification) => {
+        console.log(notification.isRead);
+        if (notification.isRead === false) {
+          setCount(count + 1);
+        }
+      });
+    }
+  }, [notifications]);
 
   return (
     <SidebarProvider>
@@ -62,26 +66,35 @@ export default function Sidebar({ children }) {
               />
               <button
                 className="absolute -right-0 transform p-2 rounded-full bg-blue-500 hover:bg-blue-600 transition-all duration-300 ease-in-out shadow-md hover:scale-105"
-                onClick={() => navigate(`/search?query=${search}`)}
+                onClick={() => {
+                  if (categoryParam === "") {
+                    navigate(`/search?query=${search}`);
+                  } else {
+                    navigate(
+                      `/search?category=${categoryParam}&query=${search}`
+                    );
+                  }
+                }}
               >
                 <AiOutlineSearch className="text-white text-xl sm:text-lg" />
               </button>
             </div>
           </div>
           <div className="flex items-center gap-2 cursor-pointer">
-            {
-              count > 0? (
-                <BellDot size={24} className="text-red-500" onClick={()=>setIsOpen(true)}/>
-              ) : (
-                <Bell size={24} onClick={()=>setIsOpen(true)}/>
-              )
-            }
+            {count > 0 ? (
+              <BellDot
+                size={24}
+                className="text-red-500"
+                onClick={() => setIsOpen(true)}
+              />
+            ) : (
+              <Bell size={24} onClick={() => setIsOpen(true)} />
+            )}
           </div>
-      <Notification isOpen={isOpen} onClose={()=>setIsOpen(false)} />
+          <Notification isOpen={isOpen} onClose={() => setIsOpen(false)} />
         </header>
         {children}
       </SidebarInset>
-
     </SidebarProvider>
   );
 }

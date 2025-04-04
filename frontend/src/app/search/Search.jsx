@@ -2,12 +2,13 @@ import axiosInstance from "@/axiosInstance";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { PlayIcon, ListCollapse, HeartIcon, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchParam = searchParams.get("query") || "";
+  const categoryParam = searchParams.get("category") || "";
   const [search, setSearch] = useState(searchParam);
   const [playlists, setPlaylists] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,9 +25,11 @@ export default function Search() {
       if (search) params.search = search.toLowerCase();
       if (sort) params.sort = sort.toLowerCase();
       setLoading(true);
+      console.log(params);
       const response = await axiosInstance.get("/playlist/allplaylists", {
         params,
       });
+      console.log(response.data.data);
       setPlaylists(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -35,9 +38,11 @@ export default function Search() {
   };
 
   // ✅ Query param change hote hi fetchPlaylists() chale
+  console.log(searchParam);
+  console.log(categoryParam);
   useEffect(() => {
-    fetchPlaylists("", searchParam);
-  }, [searchParam]);
+    fetchPlaylists(categoryParam, searchParam);
+  }, [searchParams]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -49,8 +54,6 @@ export default function Search() {
   return (
     <SidebarInset>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-      
-
         <div>
           <p className="md:text-4xl text-2xl font-semibold">Search Result</p>
         </div>
