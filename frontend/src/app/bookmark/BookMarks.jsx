@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Loader2, Trash2 } from "lucide-react"; // Import Trash icon
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BookmarkCheck } from 'lucide-react';
 
 const BookMarks = () => {
   const [playlists, setPlaylists] = useState([]);
@@ -74,7 +75,12 @@ const BookMarks = () => {
   }
 
   if (playlists.length === 0) {
-    return <h1 className="text-center text-2xl mt-20 text-gray-300">No Playlists Found</h1>;
+    return (
+      <div className="flex flex-col justify-center items-center h-[100vh] xl:h-[calc(100vh-100px)]">
+        <BookmarkCheck className="text-gray-700" size={400} />
+        <p className="text-gray-200 text-lg mt-5">No playlists in bookmarks</p>
+      </div>
+    )
   }
 
   return (

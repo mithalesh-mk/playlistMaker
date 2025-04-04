@@ -65,7 +65,7 @@ export default function HelpCenter() {
   }, [image]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-6 bg-black text-white">
+    <div className="h-full xl:h-[calc(100vh-70px)] flex flex-col items-center p-6 text-white">
       {/* Header */}
       <motion.h1 
         className="text-3xl font-bold mb-6 text-center" 
@@ -146,7 +146,7 @@ export default function HelpCenter() {
       {/* Help Community Form */}
       <AnimatePresence>
         {showCommunityForm && (
-          <motion.div className="fixed inset-0 flex items-center justify-center z-50 p-2 bg-black/50 backdrop-blur-md" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div className="sm:overflow-auto fixed inset-0 flex items-center justify-center z-50 p-2 bg-black/50 backdrop-blur-md" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.div className="bg-gray-900 p-6 rounded-xl shadow-lg w-96 relative border border-gray-800" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} transition={{ duration: 0.3 }}>
               <button className="absolute top-4 right-4 text-white" onClick={() => setShowCommunityForm(false)}>
                 <X size={24} />
@@ -176,7 +176,7 @@ export default function HelpCenter() {
             {/* Troubleshooting Modal */}
             <AnimatePresence>
         {showTroubleshooting && (
-          <motion.div className="fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50 backdrop-blur-md" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div className="sm:overflow-auto fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/50 backdrop-blur-md" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.div className="bg-gray-900 p-8 rounded-xl shadow-lg w-[450px] relative border border-gray-800" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} transition={{ duration: 0.3 }}>
               <button className="absolute top-4 right-4 text-white" onClick={() => setShowTroubleshooting(false)}>
                 <X size={24} />
@@ -292,7 +292,7 @@ export default function HelpCenter() {
       exit={{ opacity: 0 }}
     >
       <motion.div 
-        className="bg-gray-900 p-8 rounded-xl shadow-lg w-[450px] relative border border-gray-800" 
+        className="bg-gray-900 p-8 lg:h-auto h-[80vh] overflow-auto scrollbar-hide rounded-xl shadow-lg w-[450px] relative border border-gray-800" 
         initial={{ y: 50, opacity: 0 }} 
         animate={{ y: 0, opacity: 1 }} 
         exit={{ y: 50, opacity: 0 }} 
