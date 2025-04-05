@@ -88,7 +88,8 @@ const Comments = () => {
   const formatTimeAgo = (timestamp) => {
     const now = new Date();
     const createdAt = new Date(timestamp);
-    const diff = Math.floor((now - createdAt) / 1000);
+    const diff = Math.max(0, Math.floor((now - createdAt) / 1000)); // <- clamp here
+  
     if (diff < 60) return `${diff} second${diff !== 1 ? 's' : ''} ago`;
     else if (diff < 3600) {
       const minutes = Math.floor(diff / 60);
@@ -101,6 +102,7 @@ const Comments = () => {
       return `${days} day${days !== 1 ? 's' : ''} ago`;
     }
   };
+  
 
   const handleDropdownToggle = (id) => {
     setActiveDropdown(activeDropdown === id ? null : id);
@@ -211,6 +213,8 @@ const Comments = () => {
       
     }
   }
+
+  console.log(comments);
 
   return (
     <div className="flex flex-col overflow-hidden relative items-center h-full">
@@ -366,12 +370,14 @@ const Comments = () => {
 
                     {/* Dropdown */}
                     <div className="relative">
-                      <button
+                      {comment.userId._id === user._id && (
+                        <button
                         onClick={() => handleDropdownToggle(comment._id)}
                         className="text-gray-400 hover:text-gray-200 transition"
                       >
                         •••
                       </button>
+                      )}
 
                       {activeDropdown === comment._id && (
                         <div className="absolute right-0 top-6 bg-gray-800 border border-gray-700 rounded-lg shadow-md w-32 z-10 transition-opacity duration-200">
@@ -394,12 +400,7 @@ const Comments = () => {
                             >
                               Delete
                             </li>
-                            <li
-                              className="px-4 py-2 hover:bg-gray-700 cursor-pointer transition"
-                              onClick={() => alert('Report')}
-                            >
-                              Report
-                            </li>
+                           
                           </ul>
                         </div>
                       )}
