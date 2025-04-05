@@ -222,6 +222,10 @@ const Playlist = () => {
     }
   };
 
+  useEffect(() => {
+    fetchPlaylist();
+  }, [playlistId]);
+
   console.log(data);
 
   const checkBookMark = async () => {
