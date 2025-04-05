@@ -396,15 +396,22 @@ const Playlist = () => {
       transition,
     };
 
-    if(loading) {
-      return <PlaylistLoading/>
-    }
+    
     return (
       <li
         ref={setNodeRef}
         style={style}
         className="flex items-center p-2 relative hover:bg-gray-800 rounded-md transition-colors"
       >
+        {data.isOwner && (
+          <button
+          {...attributes}
+          {...listeners}
+          className="text-gray-400 hover:text-white p-2"
+        >
+          <GripVertical size={18} />
+        </button>
+        )}
         <Link to={video.url} className="flex items-center w-full">
           <span className="text-gray-400 w-8 text-center">{index + 1}</span>
           <div className="w-24 h-14 flex-shrink-0">
@@ -425,13 +432,7 @@ const Playlist = () => {
 
         {data.isOwner && (
           <>
-            <button
-              {...attributes}
-              {...listeners}
-              className="text-gray-400 hover:text-white p-2"
-            >
-              <GripVertical size={18} />
-            </button>
+            
             <Trash
               size={18}
               className="text-red-500 cursor-pointer hover:text-red-400 ml-2"
