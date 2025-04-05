@@ -61,9 +61,8 @@ import {
 } from 'react-icons/fa';
 import CommentModal from './CommentModal';
 import { useAuth } from '@/userContext/AuthProvider';
+import PlaylistLoading from './playlistLoading';
 import { Heart } from 'lucide-react';
-
-
 const ShareButton = ({ shareableLink }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(shareableLink);
@@ -164,6 +163,8 @@ const Playlist = () => {
   });
 
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -172,14 +173,17 @@ const Playlist = () => {
 
   const fetchVideos = async () => {
     try {
+      setLoading(true);
       const response = await axiosInstance.get(
         `/video/getvideo/${playlistId}/videos`
       );
       const data = response.data;
       console.log(data, 'alpha');
       setData((prev) => ({ ...prev, videos: data.data }));
+      setLoading(false);
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
 
@@ -187,11 +191,13 @@ const Playlist = () => {
   // Fetch Playlist and other functions remain unchanged
   const fetchPlaylist = async () => {
     try {
+      setLoading(true);
       const response = await axiosInstance.get(
         `/playlist/getplaylist/${playlistId}`
       );
       const data = response.data;
       console.log(data, 'beta');
+
       setData({
         title: data.name,
         description: data.description,
@@ -209,11 +215,14 @@ const Playlist = () => {
       setNoOfLikes(data.likes.length);
       setNoOfDislikes(data.dislikes.length);
       fetchVideos();
+      setLoading(false);
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
 
+  console.log(data);
 
   const checkBookMark = async () => {
     try {
@@ -387,6 +396,9 @@ const Playlist = () => {
       transition,
     };
 
+    if(loading) {
+      return <PlaylistLoading/>
+    }
     return (
       <li
         ref={setNodeRef}
@@ -398,7 +410,8 @@ const Playlist = () => {
           <div className="w-24 h-14 flex-shrink-0">
             <img
               src={video.thumbnail}
-              className="w-full h-full object-cover rounded-md"
+              onLoad={() => setLoaded(true)}
+              className={`w-full h-full object-cover rounded-md transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
               alt={video.title}
             />
           </div>

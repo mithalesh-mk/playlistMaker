@@ -147,6 +147,8 @@ function PlaylistCard({ playlist, large }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
+          onMouseEnter={() => setHovered(playlist._id)}
+          onMouseLeave={() => setHovered(null)}
           className="absolute transform -translate-x-1/2 w-[280px] bg-gray-900 bg-opacity-80 backdrop-blur-md p-4 rounded-lg shadow-lg text-white text-sm"
         >
           <h3 className="text-lg font-semibold mb-2">{playlist.name}</h3>
