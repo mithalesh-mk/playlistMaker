@@ -42,7 +42,7 @@ const Playlists = () => {
   const { toast } = useToast();
   const [editingPlaylist, setEditingPlaylist] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isOpenDelete, setIsOpenDelete] = useState(false);
+  const [isOpenDelete, setIsOpenDelete] = useState(null);
   const [playlistNameChecker, setPlaylistNameChecker] = useState('');
   const [file, setFile] = useState(null);
 
@@ -175,7 +175,7 @@ const Playlists = () => {
           <div className="text-red-500 text-center font-semibold">{error}</div>
         )}
 
-        {playlists.map((playlist) => (
+        {playlists.map((playlist,index) => (
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-5 rounded-2xl shadow-2xl w-full sm:w-80 transition-all duration-300 border border-gray-700">
             <div className="flex justify-end  items-end gap-5 mb-4">
               <button
@@ -190,7 +190,10 @@ const Playlists = () => {
               <button
                 className="text-gray-400 hover:text-red-700 transition-all"
                 onClick={() => {
-                  setIsOpenDelete(true);
+                  setIsOpenDelete((prev) => 
+                      prev===index ? null: index
+                    
+                  )
                 }}
               >
                 <Trash size={20} />
@@ -238,7 +241,7 @@ const Playlists = () => {
               </div>
             </Link>
 
-            {isOpenDelete && (
+            {isOpenDelete===index && (
               <div className="fixed inset-0 m-3 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -247,7 +250,7 @@ const Playlists = () => {
                   className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg max-w-md w-full relative"
                 >
                   <button
-                    onClick={() => setIsOpenDelete(!isOpenDelete)}
+                    onClick={() => setIsOpenDelete((prev)=>prev===index?null:index)}
                     className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-gray-300"
                   >
                     <X size={24} />
