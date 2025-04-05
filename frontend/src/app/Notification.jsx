@@ -1,10 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CircleSmall, X } from "lucide-react";
 import { useAuth } from "@/userContext/AuthProvider";
 import axiosInstance from "@/axiosInstance";
+import { useNavigate } from 'react-router-dom';
+
 
 const NotificationComponent = ({ isOpen, onClose }) => {
   const { notifications, setNotifications } = useAuth();
+  const [playlists, setPlaylists] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const markRead = async (notificationId) => {
@@ -15,6 +19,8 @@ const NotificationComponent = ({ isOpen, onClose }) => {
             notif._id === notificationId ? { ...notif, isRead: true } : notif
           )
         );
+
+
       } catch (error) {
         console.error("Error marking notification as read:", error);
       }
@@ -26,6 +32,9 @@ const NotificationComponent = ({ isOpen, onClose }) => {
       }
     });
   }, [notifications]);
+
+  console.log(notifications);
+  console.log(playlists);
 
   return (
     <div
@@ -63,6 +72,10 @@ const NotificationComponent = ({ isOpen, onClose }) => {
             notifications.map((notif, index) => (
               <li
                 key={index}
+                onClick={() => {
+                  navigate(`/playlists/${notif.playlist._id}`)
+                  onClose();
+                  }}
                 className="p-4 flex items-start gap-3 bg-gray-800/50 rounded-xl 
                 hover:bg-gray-700/70 transition-all duration-200 border border-gray-700/30
                 hover:border-gray-600/50 group animate-in fade-in slide-in-from-top-2"
