@@ -19,6 +19,7 @@ router.put("/change-username", authMiddleware, authController.changeUsername);
 router.put("/change-profile-picture", authMiddleware, authController.changeProfilePicture);
 router.post("/select-avatar", authController.selectAvatar);
 router.delete("/delete-account", authMiddleware, authController.deleteUser);
+router.post("/resendOtp", authController.resendOtp );
 
 
 // oauth

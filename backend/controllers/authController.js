@@ -64,52 +64,44 @@ exports.register = async (req, res) => {
 };
 
 //Verify OTP & Register
+
 exports.verifyEmail = async (req, res) => {
   try {
-    const { otp } = req.body;
-    if (!otp) {
+    const { otp, email } = req.body;
+    if (!otp || !email) {
       return res
         .status(400)
-        .json({ message: "OTP and password are required", success: false });
+        .json({ message: "OTP and email are required", success: false });
     }
 
-    // Find user entry by OTP
-    let userEntry = [...pendingUsers.values()].find(
-      (entry) => entry.otp === otp
-    );
+    const userEntry = pendingUsers.get(email);
 
-    if (!userEntry) {
+
+    if (!userEntry || userEntry.otp !== otp) {
       return res
         .status(400)
         .json({ message: "Invalid OTP. Try again.", success: false });
     }
 
-    const { username, email, password, otpExpires } = userEntry;
+    const { username, password, otpExpires } = userEntry;
 
-    // Check if OTP is expired
     if (Date.now() > otpExpires) {
-      pendingUsers.delete(email);
       return res
         .status(401)
         .json({ message: "OTP expired. Request a new one.", success: false });
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Check if user already exists
     let existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res
-        .status(400)
-        .json({
-          message: "User already registered. Please log in.",
-          success: false,
-        });
+      return res.status(400).json({
+        message: "User already registered. Please log in.",
+        success: false,
+      });
     }
 
-    // Create new user
     const newUser = new User({
       username,
       email,
@@ -119,27 +111,79 @@ exports.verifyEmail = async (req, res) => {
 
     await newUser.save();
 
-    // Remove user from pending list after successful registration
-    pendingUsers.delete(email);
+   pendingUsers.delete(email);
 
-    // Generate JWT Token
     const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
-    res
-      .status(200)
-      .json({
-        message: "Registration successful",
-        token,
-        user: newUser,
-        success: true,
-      });
+    res.status(200).json({
+      message: "Registration successful",
+      token,
+      user: newUser,
+      success: true,
+    });
   } catch (error) {
     console.error("Error verifying OTP:", error);
     res.status(500).json({ message: "Server error", success: false });
   }
 };
+
+exports.resendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const userEntry = pendingUsers.get(email);
+    const { username, password} = userEntry;
+
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email is required" });
+    } 
+    console.log(email);
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins
+    console.log("Generated OTP:", otp);
+
+  
+    // Upsert OTP for the email
+    pendingUsers.set(email, {username,email, password, otp, otpExpires });
+
+
+    await OTP.findOneAndUpdate(
+      { email },
+      { email, otp, otpExpires },
+      { upsert: true, new: true }
+    );
+
+    // Send Email
+    const emailBody = `
+    <div style="max-width: 500px; margin: 50px auto; background: #1e1e1e; padding: 40px; border-radius: 12px; box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1); text-align: center;">
+        <h2 style="color: #ffffff; font-size: 26px; margin-bottom: 15px; font-weight: 600;">Resend OTP</h2>
+        <p style="color: #bbbbbb; font-size: 16px; line-height: 1.6;">Here is your new OTP to verify your email address:</p>
+        <div style="font-size: 34px; font-weight: bold; color: #ffffff; padding: 15px 30px; background: #393939; display: inline-block; border-radius: 8px; margin-top: 10px;">
+            <span style="display: inline-block; letter-spacing:10px; margin-left: 10px">${otp}</span>
+        </div>
+        <div>
+          <p style="color: #aaaaaa; font-size: 14px; margin-top: 20px;">This OTP is valid for 10 minutes. Please do not share it with anyone.</p>
+          <p style="color: #888888; font-size: 12px;">If you did not request this OTP, please ignore this email.</p>
+          <hr style="border: 0; height: 1px; background: #333; margin: 25px 0;">
+          <img src="https://res.cloudinary.com/dhzeynyhc/image/upload/v1740514032/Vessel_logo_nt0ofw.png" width="85" height="85" alt="Logo">
+        </div>   
+    </div>
+    `;
+
+    await sendEmail(email, "Resend OTP Verification", emailBody);
+
+    res.status(200).json({ success: true, message: "OTP resent to email" });
+
+  } catch (error) {
+    console.error("❌ Error resending OTP:", error);
+    res.status(500).json({ success: false, message: "Error resending OTP" });
+  }
+};
+
+
 
 //Log in user
 exports.login = async (req, res) => {
@@ -289,7 +333,6 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-// Verify OTP
 exports.verifyOTP = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -552,3 +595,7 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: "Server error", success: false });
   }
 };
+
+
+
+

@@ -27,6 +27,9 @@ import { useAuth } from "@/userContext/AuthProvider";
 const SignupForm = () => {
   const [error, setError] = useState("");
   const [otp, setOtp] = useState("");
+  const [timer, setTimer] = useState(60);
+  const [isResendEnabled, setIsResendEnabled] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const ref = useRef();
   const [showCarousel, setShowCarousel] = useState(false);
@@ -50,6 +53,19 @@ const SignupForm = () => {
   useEffect(() => {
     if (user) navigate("/");
   }, [navigate]);
+  // Handle OTP resend timer
+  useEffect(() => {
+    let countdown;
+
+    if (showCarousel && timer > 0) {
+      countdown = setTimeout(() => setTimer((prev) => prev - 1), 1000);
+    } else if (timer === 0) {
+      setIsResendEnabled(true);
+    }
+
+    return () => clearTimeout(countdown);
+  }, [timer, showCarousel]);
+
 
   const handleChange = (e) => {
     setInput({
@@ -71,8 +87,10 @@ const SignupForm = () => {
           description: "OTP sent successfully",
         });
         setShowCarousel(true);
+        setTimer(120); // 🔁 reset timer each time OTP card shows
+        setIsResendEnabled(false); // disable resend
         setTimeout(() => ref.current?.click(), 100);
-        
+
       } else {
         setError(resp.data.message);
         toast({
@@ -91,6 +109,32 @@ const SignupForm = () => {
       setLoading(false);
     }
   };
+  const handleResendOtp = async () => {
+    try {
+      if (!input.email) {
+        toast({ description: "Please enter a valid email." });
+        return;
+      }
+  
+ 
+  
+      const resp = await axios.post("http://localhost:3000/api/auth/resendOtp", {
+        email: input.email,
+      });
+  
+      if (resp.data.success) {
+        toast({ description: "OTP resent successfully!" });
+        setTimer(120);
+        setIsResendEnabled(false);
+      } else {
+        toast({ description: resp.data.message || "Failed to resend OTP" });
+      }
+    } catch (error) {
+      toast({ description: "Something went wrong while resending OTP." });
+    } 
+  };
+  
+
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
@@ -100,6 +144,7 @@ const SignupForm = () => {
         "http://localhost:3000/api/auth/verify-email",
         {
           otp,
+          email: input.email,
         }
       );
       const data = await resp.data;
@@ -236,6 +281,20 @@ const SignupForm = () => {
                               </InputOTPGroup>
                             </InputOTP>
                           </div>
+                          <p className="text-sm text-muted-foreground text-center mt-2">
+                            {timer > 0 ? `Resend OTP in ${timer}s` : "Didn't get the code?"}
+                          </p>
+
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            disabled={!isResendEnabled}
+                            onClick={handleResendOtp}
+                            className="mx-auto"
+                          >
+                            Resend OTP
+                          </Button>
+
 
                           <Button type="submit" disabled={loading} className="w-full">
                             {loading ? "verifying...." : "Verify OTP"}
@@ -260,7 +319,7 @@ const SignupForm = () => {
                   className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
                 />
               </div>
-</CardContent>
+            </CardContent>
           </Card>
         </div>
       </div>
