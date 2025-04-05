@@ -66,7 +66,7 @@ const data = {
     },
     {
       name: "Others",
-      url: "/search?category=others",
+      url: "/search?category=other",
       icon: ListCollapse,
     },
   ],
