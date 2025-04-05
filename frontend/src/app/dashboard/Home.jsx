@@ -101,7 +101,7 @@ function PlaylistCard({ playlist, large }) {
           } group-hover:scale-105`}
         >
           <img
-            src={playlist.thumbnail || "playlist.jpeg"}
+            src={playlist.thumbnail || '/default_image.png'}
             alt="Playlist Cover"
             className="w-full h-full object-cover"
           />

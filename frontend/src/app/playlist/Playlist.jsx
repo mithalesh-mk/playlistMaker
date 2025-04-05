@@ -470,7 +470,7 @@ const Playlist = () => {
         <div className="bg-gray-900 xl:h-[calc(100vh-100px)] rounded-2xl p-5 shadow-lg">
           {/* Thumbnail */}
           <img
-            src={data?.thumbnail || data?.videos[0]?.thumbnail || './default.jpg'}
+            src={data?.thumbnail || data?.videos[0]?.thumbnail ||  '/default_image.png'}
             alt="playlist"
             className="w-full h-auto object-cover aspect-video rounded-xl mb-5 border border-gray-700"
           />
