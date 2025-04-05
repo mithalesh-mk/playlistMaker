@@ -62,7 +62,7 @@ import {
 import CommentModal from './CommentModal';
 import { useAuth } from '@/userContext/AuthProvider';
 import PlaylistLoading from './playlistLoading';
-
+import { Heart } from 'lucide-react';
 const ShareButton = ({ shareableLink }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(shareableLink);
@@ -222,6 +222,8 @@ const Playlist = () => {
     }
   };
 
+  console.log(data);
+
   const checkBookMark = async () => {
     try {
       const res = await axiosInstance.put(`/bookmark/bookmarks/${playlistId}`);
@@ -234,7 +236,17 @@ const Playlist = () => {
   const addToBookMark = async () => {
     try {
       const res = await axiosInstance.post(`/bookmark/bookmarks/${playlistId}`);
-      if (res.data.success) setBookmark(true);
+      if (res.data.success){
+        setBookmark(true);
+        toast({
+          description: (
+            <>
+              <strong>{data.title}</strong> added to bookmarks!
+            </>
+          ),
+          duration: 2000,
+        })
+      }
     } catch (error) {
       console.log(error);
     }
@@ -245,7 +257,17 @@ const Playlist = () => {
       const res = await axiosInstance.delete(
         `/bookmark/bookmarks/${playlistId}`
       );
-      if (res.data.success) setBookmark(false);
+      if (res.data.success){
+        setBookmark(false);
+        toast({
+          description: (
+            <>
+              <strong>{data.title}</strong> removed from bookmarks!
+            </>
+          ),
+          duration: 2000,
+        })
+      }
     } catch (error) {
       console.log(error);
     }
@@ -440,8 +462,6 @@ const Playlist = () => {
     );
   };
 
-  console.log(data.isOwner);
-
   return (
     <div className="w-full  bg-dark text-white flex flex-col xl:flex-row gap-4 p-4">
       {/* Left Section: Thumbnail and Playlist Info */}
@@ -460,14 +480,14 @@ const Playlist = () => {
             <div className="flex items-center gap-5 mb-6">
               <button
                 onClick={functionLike}
-                className="flex items-center gap-2 text-gray-400 hover:text-white transition"
+                className="flex flex-row justify-center items-center gap-2 text-gray-400 hover:text-white transition"
               >
                 {data.likeDetails?.some((like) => like.email === user.email) ? (
-                  <BiSolidLike size={20} fill="#1983fc" />
+                  <Heart size={24} fill="red" stroke='red' />
                 ) : (
-                  <BiSolidLike size={20} />
+                  <Heart size={24} />
                 )}
-                <span className="text-sm">{noOfLikes}</span>
+                <span className="text-md">{noOfLikes}</span>
               </button>
               {/* Dislike Button */}
               <button
@@ -477,9 +497,9 @@ const Playlist = () => {
                 {data.dislikeDetails?.some(
                   (dislike) => dislike.email === user.email
                 ) ? (
-                  <BiSolidDislike size={20} fill="#1983fc" />
+                  <BiSolidDislike size={24} fill="white" />
                 ) : (
-                  <BiSolidDislike size={20} />
+                  <BiSolidDislike size={24} />
                 )}
                 <span className="text-sm">{noOfDislike}</span>
               </button>
@@ -496,9 +516,9 @@ const Playlist = () => {
                 className="text-gray-400 hover:text-white transition"
               >
                 {isBookmark ? (
-                  <BookmarkCheck size={20} />
+                  <Bookmark size={24} stroke="yello" fill='yellow' />
                 ) : (
-                  <Bookmark size={20} />
+                  <Bookmark size={24} />
                 )}
               </button>
             </div>
