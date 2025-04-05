@@ -163,7 +163,7 @@ const Playlists = () => {
   return (
     <div className="flex flex-col">
       <h2 className="text-lg m-6 font-bold text-gray-200 underline">Your Playlists</h2>
-      <div className="flex flex-row gap-6 mt-2 px-4 md:px-8">
+      <div className="flex flex-wrap flex-row justify-start gap-6 mt-2 px-4 md:px-8">
         {loading && (
           <div className="flex flex-col gap-4">
             {[...Array(3)].map((_, index) => (
@@ -177,7 +177,7 @@ const Playlists = () => {
 
         {playlists.map((playlist) => (
           <div className="bg-gradient-to-br from-gray-800 to-gray-900 text-white p-5 rounded-2xl shadow-2xl w-full sm:w-80 transition-all duration-300 border border-gray-700">
-            <div className="flex justify-end items-end gap-5 mb-4">
+            <div className="flex justify-end  items-end gap-5 mb-4">
               <button
                 className="text-gray-400 hover:text-green-700 transition-all"
                 onClick={() => {
@@ -199,7 +199,7 @@ const Playlists = () => {
             <Link to={`/playlists/${playlist._id}`} key={playlist._id}>
               <div className="relative w-full h-44 rounded-xl overflow-hidden">
                 <img
-                  src={playlist.thumbnail || '/playlist.jpeg'}
+                  src={playlist.thumbnail || '/default_image.png'}
                   alt="Card"
                   className="w-full h-full object-cover transform hover:scale-110 transition-all duration-300"
                 />
