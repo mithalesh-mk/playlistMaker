@@ -10,6 +10,8 @@ import {
   PlusCircleIcon,
   Trash,
   GripVertical,
+  X,
+  CircleX,
 } from 'lucide-react';
 import { BiSolidDislike, BiSolidLike } from 'react-icons/bi';
 import {
@@ -51,6 +53,7 @@ import {
   FaLink,
   FaPlugCirclePlus,
   FaCirclePlus,
+  FaX,
 } from 'react-icons/fa6';
 import {
   FaDiscord,
@@ -63,6 +66,8 @@ import CommentModal from './CommentModal';
 import { useAuth } from '@/userContext/AuthProvider';
 import PlaylistLoading from './playlistLoading';
 import { Heart } from 'lucide-react';
+import ReactPlayer from 'react-player/youtube';
+
 const ShareButton = ({ shareableLink }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(shareableLink);
@@ -165,6 +170,9 @@ const Playlist = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
+
+  const [playVideo, setPlayVideo] = useState('');
+  const [showPlayer, setShowPlayer] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -416,7 +424,10 @@ const Playlist = () => {
           <GripVertical size={18} />
         </button>
         )}
-        <Link to={video.url} className="flex items-center w-full">
+        <Link to={''} className="flex items-center w-full" onClick={()=> {
+          setPlayVideo(video.url)
+          setShowPlayer(true)}
+         } >
           <span className="text-gray-400 w-8 text-center">{index + 1}</span>
           <div className="w-24 h-14 flex-shrink-0">
             <img
@@ -473,11 +484,37 @@ const Playlist = () => {
       <div className="xl:w-1/3 w-full flex-shrink-0 xl:sticky md:top-4">
         <div className="bg-gray-900 xl:h-[calc(100vh-100px)] rounded-2xl p-5 shadow-lg">
           {/* Thumbnail */}
-          <img
-            src={data?.thumbnail || data?.videos[0]?.thumbnail ||  '/default_image.png'}
-            alt="playlist"
-            className="w-full h-auto object-cover aspect-video rounded-xl mb-5 border border-gray-700"
-          />
+          {
+            showPlayer ? (
+              <div className="w-full h-auto relative mx-2 my-3 rounded-xl overflow-hidden">
+                {/* Close Button - Top Right */}
+                <CircleX
+                  size={36}
+                  className="absolute top-3 right-3 text-white cursor-pointer hover:text-red-600 z-10"
+                  onClick={() => setShowPlayer(false)}
+                />
+
+                {/* Video Player */}
+                <div className="aspect-video w-full rounded-xl overflow-hidden">
+                  <ReactPlayer
+                    url={playVideo}
+                    controls={true}
+                    playing={true}
+                    width="100%"
+                    height="100%"
+                    className="react-player"
+                  />
+                </div>
+              </div>
+            ) : (
+              <img
+                src={data?.thumbnail || data?.videos[0]?.thumbnail || '/default_image.png'}
+                alt="playlist"
+                className="w-full h-auto object-cover aspect-video rounded-xl mb-5 border border-gray-700"
+              />
+            )
+          }
+          
           {/* Action Buttons */}
 
           <div className="flex items-center justify-between gap-5">
