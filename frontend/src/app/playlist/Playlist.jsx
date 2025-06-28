@@ -67,6 +67,7 @@ import { useAuth } from '@/userContext/AuthProvider';
 import PlaylistLoading from './playlistLoading';
 import { Heart } from 'lucide-react';
 import ReactPlayer from 'react-player/youtube';
+import { VideoChat } from '@mui/icons-material';
 
 const ShareButton = ({ shareableLink }) => {
   const handleCopy = () => {
@@ -173,6 +174,7 @@ const Playlist = () => {
 
   const [playVideo, setPlayVideo] = useState('');
   const [showPlayer, setShowPlayer] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(''); 
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -413,7 +415,7 @@ const Playlist = () => {
       <li
         ref={setNodeRef}
         style={style}
-        className="flex items-center p-2 relative hover:bg-gray-800 rounded-md transition-colors"
+        className={`flex items-center p-2 relative  rounded-md transition-colors ${videoPlaying===index ? 'bg-gray-600' : 'bg-gray-900 hover:bg-gray-800'}`}
       >
         {data.isOwner && (
           <button
@@ -426,7 +428,9 @@ const Playlist = () => {
         )}
         <Link to={''} className="flex items-center w-full" onClick={()=> {
           setPlayVideo(video.url)
+          setVideoPlaying(index)
           setShowPlayer(true)}
+          
          } >
           <span className="text-gray-400 w-8 text-center">{index + 1}</span>
           <div className="w-24 h-14 flex-shrink-0">
@@ -479,7 +483,7 @@ const Playlist = () => {
   };
 
   return (
-    <div className="w-full  bg-dark text-white flex flex-col xl:flex-row gap-4 p-4">
+    <div className="w-full h-[calc(100vh-500px)]  bg-dark text-white flex flex-col xl:flex-row gap-4 p-4">
       {/* Left Section: Thumbnail and Playlist Info */}
       <div className="xl:w-1/3 w-full flex-shrink-0 xl:sticky md:top-4">
         <div className="bg-gray-900 xl:h-[calc(100vh-100px)] rounded-2xl p-5 shadow-lg">
@@ -631,10 +635,17 @@ const Playlist = () => {
             {data.description}
           </p>
         </div>
+
+         <p
+            className="text-gray-400 relative right-4 bottom-8 text-end text-sm hover:text-white hover:underline cursor-pointer mb-4"
+            onClick={handleOpen}
+          >
+            View Comments
+          </p>
       </div>
 
       {/* Right Section: Video List */}
-      <div className="xl:w-2/3  overflow-hidden w-full  overflow-y-auto">
+      <div className="xl:w-2/3 h-[calc(100vh-100px)] overflow-hidden w-full  overflow-y-auto">
         <div className=" rounded-lg p-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold mb-4">
@@ -643,12 +654,7 @@ const Playlist = () => {
           </div>
 
           {/*Comments */}
-          <p
-            className="text-gray-400 text-end text-sm hover:text-white hover:underline cursor-pointer mb-4"
-            onClick={handleOpen}
-          >
-            View Comments
-          </p>
+         
 
           <CommentModal
             open={open}
