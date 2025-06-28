@@ -18,6 +18,7 @@ const Playlist = lazy(() => import('@/app/playlist/Playlist'));
 const ForgotPassword = lazy(() => import('@/app/login/Forgot-password'));
 const Feedback = lazy(() => import('@/app/feedback/Feedback'));
 import Search from '@/app/search/Search';
+import FeaturedListLoader from '@/app/dashboard/FeaturedListLoader';
 const Notification = lazy(() => import('@/app/Notification'));
 
 const router = createBrowserRouter([
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
         element: (
           <Sidebar>
             <ProtectedRoute>
-              <Suspense fallback={<div>Loading...</div>}>
+              <Suspense fallback={<FeaturedListLoader/>}>
                 <Home />
               </Suspense>
             </ProtectedRoute>
