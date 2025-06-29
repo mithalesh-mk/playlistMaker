@@ -292,8 +292,8 @@ export default function HelpCenter() {
       exit={{ opacity: 0 }}
     >
       <motion.div 
-        className="bg-gray-900 p-8 lg:h-auto h-[80vh] overflow-auto scrollbar-hide rounded-xl shadow-lg w-[450px] relative border border-gray-800" 
-        initial={{ y: 50, opacity: 0 }} 
+  className="bg-gray-900 p-8 max-h-[80vh] overflow-y-auto scrollbar-hide rounded-xl shadow-lg w-[450px] relative border border-gray-800"
+ initial={{ y: 50, opacity: 0 }} 
         animate={{ y: 0, opacity: 1 }} 
         exit={{ y: 50, opacity: 0 }} 
         transition={{ duration: 0.3 }}
